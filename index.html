@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#FBEFF2">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="הנקה ואמהות">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="description" content="יומן משותף להנקה, שינה, תרופות, טעימות והתפתחות, לשני ההורים.">
 <title>הנקה ואמהות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -93,7 +98,7 @@ p{margin:0}
 .ok{background:var(--sage-soft);color:var(--sage)}
 .note{font-size:.75rem;color:var(--ink2);line-height:1.6}
 label.field{display:flex;flex-direction:column;gap:6px;font-weight:500}
-input[type=text],input[type=time],input[type=date],select{min-height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:0 12px;font-size:1rem}
+input[type=text],input[type=email],input[type=password],input[type=time],input[type=date],select{width:100%;min-height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:0 12px;font-size:1rem}
 .stepper{direction:ltr;display:flex;align-items:center;gap:14px}
 .stepper button{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);font-size:1.4rem}
 .stepper output{min-width:96px;text-align:center;font-size:1.375rem;font-weight:600;font-variant-numeric:tabular-nums}
@@ -125,6 +130,15 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .stages li span{height:4px;border-radius:2px;background:currentColor;opacity:.5}
 .stages li[aria-current="step"]{opacity:1;color:var(--dawn);font-weight:600}
 .stages li[aria-current="step"] span{opacity:1}
+.opt{display:flex;align-items:center;gap:14px;width:100%;min-height:88px;padding:18px;border:0;border-radius:24px;background:var(--surface);color:var(--ink);text-align:start;box-shadow:0 1px 2px rgba(38,27,46,.06)}
+.opt.primary{background:var(--dusk);color:var(--on-dusk)}
+.opt-ic{width:48px;height:48px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;background:var(--mist);color:var(--dusk)}
+.opt.primary .opt-ic{background:var(--dawn);color:var(--on-dawn)}
+.opt-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.opt-t{font-weight:600;font-size:1.0625rem}
+.opt-h{font-size:.875rem;opacity:.8}
+.opt .chev{flex:none;opacity:.7}
+[dir=rtl] .opt .chev{transform:scaleX(-1)}
 </style>
 </head>
 <body>
@@ -271,6 +285,8 @@ const hhmm=ms=>{const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinut
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const startOfDay=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime();};
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const LOGO='<svg class="logo" aria-hidden="true" width="32" height="32" viewBox="152 132 740 740"><circle cx="522" cy="502" r="370" fill="#FCC3C8"/><path d="M587 215 C568 315 515 385 445 448 C370 515 325 570 324 635 C323 735 420 790 510 789 C600 788 675 722 720 658" fill="none" stroke="#2A2625" stroke-width="44" stroke-linecap="round"/></svg>';
+const LOGO_BIG='<svg class="logo" aria-hidden="true" width="72" height="72" viewBox="152 132 740 740"><circle cx="522" cy="502" r="370" fill="#FCC3C8"/><path d="M587 215 C568 315 515 385 445 448 C370 515 325 570 324 635 C323 735 420 790 510 789 C600 788 675 722 720 658" fill="none" stroke="#2A2625" stroke-width="34" stroke-linecap="round"/></svg>';
 const IC={
  bottle:'<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M9 5h6l1 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8z"/><path d="M8 12h8"/></svg>',
  pump:'<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/></svg>',
@@ -297,15 +313,15 @@ const t=()=>T[S.lang]||T.he;
 const SB_URL='https://wdwfpjprdffkbvthtcuy.supabase.co';
 const SB_KEY='sb_publishable_Z_gT_Mjz2-BecNNOVXmY9A_0bCRPD8w';
 const AT={
- he:{signup:'הרשמה',login:'כניסה',email:'אימייל',password:'סיסמה',pwHint:'לפחות 6 תווים',authLead:'יומן משותף להנקה, שינה, תרופות וטעימות, לשני ההורים.',toLogin:'כבר רשומה? כניסה',toSignup:'אין לך חשבון? הרשמה',checkEmail:'שלחנו מייל אישור. אחרי האישור חוזרים לכאן ונכנסים.',authErr:'לא הצלחנו להיכנס. בדקי את האימייל והסיסמה ונסי שוב.',weakPw:'הסיסמה צריכה לכלול לפחות 6 תווים.',
+ he:{signup:'הרשמה',login:'כניסה',email:'אימייל',password:'סיסמה',pwHint:'לפחות 6 תווים',authLead:'יומן משותף להנקה, שינה, תרופות וטעימות, לשני ההורים.',toLogin:'כבר רשומה? כניסה',toSignup:'אין לך חשבון? הרשמה',checkEmail:'שלחנו מייל אישור. אחרי האישור חוזרים לכאן ונכנסים.',authErr:'לא הצלחנו להיכנס. בדקי את האימייל והסיסמה ונסי שוב.',weakPw:'הסיסמה צריכה לכלול לפחות 6 תווים.',exists:'האימייל הזה כבר רשום. הקלידי את הסיסמה שלך כדי להיכנס.',
   onbTitle:'איך מתחילים?',newFamily:'יצירת יומן חדש',newFamilyHint:'לאמא או לאבא שמתחילים ראשונים',joinFamily:'הצטרפות ליומן קיים',joinFamilyHint:'קיבלת קוד מבן או בת הזוג',yourName:'איך לקרוא לך ביומן? (למשל: אמא)',code:'קוד הצטרפות (6 ספרות)',join:'הצטרפות',badCode:'הקוד לא נמצא. בדקי שהוקלדו כל 6 הספרות.',
   codeLabel:'קוד ההצטרפות שלכם',logout:'יציאה מהחשבון',working:'רגע…',shareCode:(c)=>'קוד הצטרפות: '+c,
   inviteText:'שלחי לבן או בת הזוג את הקישור ואת הקוד. אחרי ההרשמה בוחרים "הצטרפות ליומן קיים" ומקלידים את הקוד.',signedAs:(e)=>'מחובר/ת בתור '+e,notSaved:'לא נשמר, נסי שוב'},
- en:{signup:'Sign up',login:'Log in',email:'Email',password:'Password',pwHint:'At least 6 characters',authLead:'A shared log for feeds, sleep, medicines and first foods, for both parents.',toLogin:'Already have an account? Log in',toSignup:'No account yet? Sign up',checkEmail:'We sent a confirmation email. Confirm it, then come back and log in.',authErr:'We couldn’t log you in. Check your email and password and try again.',weakPw:'The password needs at least 6 characters.',
+ en:{signup:'Sign up',login:'Log in',email:'Email',password:'Password',pwHint:'At least 6 characters',authLead:'A shared log for feeds, sleep, medicines and first foods, for both parents.',toLogin:'Already have an account? Log in',toSignup:'No account yet? Sign up',checkEmail:'We sent a confirmation email. Confirm it, then come back and log in.',authErr:'We couldn’t log you in. Check your email and password and try again.',weakPw:'The password needs at least 6 characters.',exists:'This email is already registered. Enter your password to log in.',
   onbTitle:'How do you want to start?',newFamily:'Start a new log',newFamilyHint:'For the parent who starts first',joinFamily:'Join an existing log',joinFamilyHint:'You got a code from your partner',yourName:'What should we call you in the log? (e.g. Mom)',code:'Join code (6 digits)',join:'Join',badCode:'That code wasn’t found. Check all 6 digits.',
   codeLabel:'Your join code',logout:'Log out',working:'One moment…',shareCode:(c)=>'Join code: '+c,
   inviteText:'Send your partner the link and the code. After signing up they choose "Join an existing log" and type the code.',signedAs:(e)=>'Signed in as '+e,notSaved:'Not saved, try again'},
- ar:{signup:'تسجيل',login:'دخول',email:'البريد الإلكتروني',password:'كلمة المرور',pwHint:'6 أحرف على الأقل',authLead:'سجل مشترك للرضاعة والنوم والأدوية وأول الأطعمة، للوالدين معًا.',toLogin:'لديكِ حساب؟ دخول',toSignup:'ليس لديكِ حساب؟ تسجيل',checkEmail:'أرسلنا رسالة تأكيد. بعد التأكيد عودي إلى هنا وادخلي.',authErr:'تعذّر الدخول. تحققي من البريد وكلمة المرور وحاولي مجددًا.',weakPw:'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل.',
+ ar:{signup:'تسجيل',login:'دخول',email:'البريد الإلكتروني',password:'كلمة المرور',pwHint:'6 أحرف على الأقل',authLead:'سجل مشترك للرضاعة والنوم والأدوية وأول الأطعمة، للوالدين معًا.',toLogin:'لديكِ حساب؟ دخول',toSignup:'ليس لديكِ حساب؟ تسجيل',checkEmail:'أرسلنا رسالة تأكيد. بعد التأكيد عودي إلى هنا وادخلي.',authErr:'تعذّر الدخول. تحققي من البريد وكلمة المرور وحاولي مجددًا.',weakPw:'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل.',exists:'هذا البريد مسجّل مسبقًا. أدخلي كلمة المرور للدخول.',
   onbTitle:'كيف تبدئين؟',newFamily:'إنشاء سجل جديد',newFamilyHint:'للأم أو الأب الذي يبدأ أولًا',joinFamily:'الانضمام إلى سجل قائم',joinFamilyHint:'وصلك رمز من الشريك',yourName:'ماذا نسميك في السجل؟ (مثلًا: ماما)',code:'رمز الانضمام (6 أرقام)',join:'انضمام',badCode:'لم يُعثر على الرمز. تحققي من الأرقام الستة.',
   codeLabel:'رمز الانضمام الخاص بكم',logout:'تسجيل الخروج',working:'لحظة…',shareCode:(c)=>'رمز الانضمام: '+c,
   inviteText:'أرسلي للشريك الرابط والرمز. بعد التسجيل يختار «الانضمام إلى سجل قائم» ويكتب الرمز.',signedAs:(e)=>'متصل باسم '+e,notSaved:'لم يُحفظ، حاولي مجددًا'}
@@ -380,7 +396,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
 };
 function viewAuth(){
  const A=at(), up=S.authMode!=='login';
- return '<header class="section" style="gap:10px;padding-top:12px"><h1>'+esc(t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+
+ return '<header class="section" style="gap:14px;padding-top:12px">'+LOGO_BIG+'<h1>'+esc(t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+
  '<form class="card" data-form="auth" novalidate><h2 style="font-size:1.25rem">'+esc(up?A.signup:A.login)+'</h2>'+
  '<label class="field" for="auth-email">'+esc(A.email)+'<input id="auth-email" type="email" dir="ltr" autocomplete="email" inputmode="email" required value="'+dv('auth-email')+'"></label>'+
  '<label class="field" for="auth-pw">'+esc(A.password)+'<input id="auth-pw" type="password" dir="ltr" autocomplete="'+(up?'new-password':'current-password')+'" minlength="6" required value="'+dv('auth-pw')+'"></label>'+
@@ -397,10 +413,12 @@ function viewOnboard(){
   '<label class="field" for="join-code">'+esc(A.code)+'<input id="join-code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" dir="ltr" required autocomplete="off" value="'+dv('join-code')+'"></label>'+
   (S.authMsg?'<p class="banner" role="alert">'+esc(S.authMsg)+'</p>':'')+
   '<button class="btn block" type="submit"'+(S.busy?' disabled':'')+'>'+esc(S.busy?A.working:A.join)+'</button></form>';
- return '<header class="section"><h1>'+esc(A.onbTitle)+'</h1><p class="small muted">'+esc(A.signedAs(S.email||''))+'</p></header>'+
-  '<button type="button" class="card topic" style="border:0;gap:6px;flex-direction:column;align-items:flex-start" data-act="onb" data-v="new"><span style="font-weight:600;font-size:1.0625rem">'+esc(A.newFamily)+'</span><span class="small muted">'+esc(A.newFamilyHint)+'</span></button>'+
-  '<button type="button" class="card topic" style="border:0;gap:6px;flex-direction:column;align-items:flex-start" data-act="onb" data-v="join"><span style="font-weight:600;font-size:1.0625rem">'+esc(A.joinFamily)+'</span><span class="small muted">'+esc(A.joinFamilyHint)+'</span></button>'+
-  '<button type="button" class="link" data-act="logout">'+esc(A.logout)+'</button>';
+ const plus='<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+ const chev='<svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+ const opt=(v,cls,ic,title,hint)=>'<button type="button" class="opt'+cls+'" data-act="onb" data-v="'+v+'"><span class="opt-ic">'+ic+'</span><span class="opt-tx"><span class="opt-t">'+esc(title)+'</span><span class="opt-h">'+esc(hint)+'</span></span>'+chev+'</button>';
+ return '<header class="section" style="gap:10px;padding-top:12px"><h1>'+esc(A.onbTitle)+'</h1><p class="muted">'+esc(A.signedAs(S.email||''))+'</p></header>'+
+  '<div class="section" style="gap:12px">'+opt('new',' primary',plus,A.newFamily,A.newFamilyHint)+opt('join','',IC.share,A.joinFamily,A.joinFamilyHint)+'</div>'+
+  '<div class="rule"><button type="button" class="btn ghost block" data-act="logout">'+esc(A.logout)+'</button></div>';
 }
 
 // ---------- derived ----------
@@ -837,7 +855,7 @@ function draw(){
   S.renderDrafts=false; const key=S.view+'|'+build();
   if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
  }
- const tb=document.getElementById('topbar'); const th='<a class="brand" href="#today" aria-label="'+esc(L.appName+', '+L.home)+'">'+IC.home+'<span>'+esc(L.appName)+'</span></a>'+((S.fid&&(S.family.babies||[]).length)?'<button type="button" class="share-btn" data-act="share">'+IC.share+esc(L.share)+'</button>':''); if(tb.innerHTML!==th) tb.innerHTML=th;
+ const tb=document.getElementById('topbar'); const th='<a class="brand" href="#today" aria-label="'+esc(L.appName+', '+L.home)+'">'+LOGO+'<span>'+esc(L.appName)+'</span></a>'+((S.fid&&(S.family.babies||[]).length)?'<button type="button" class="share-btn" data-act="share">'+IC.share+esc(L.share)+'</button>':''); if(tb.innerHTML!==th) tb.innerHTML=th;
  const nav=document.getElementById('tabs'); nav.setAttribute('aria-label',L.nav); nav.dir=L.dir; nav.lang=S.lang; const nh=S.fid?tabs():''; nav.hidden=!S.fid; if(nh!==lastNav){ nav.innerHTML=nh; lastNav=nh; }
  resolveNames();
 }
@@ -943,7 +961,9 @@ document.addEventListener('submit',e=>{
   if(!email||pw.length<6){ S.authMsg=pw.length<6?A.weakPw:A.authErr; render(); return; }
   S.busy=true; S.authMsg=''; render();
   (async()=>{ try{ if(up){ const {data,error}=await Store.sb.auth.signUp({email,password:pw}); if(error) throw error; if(!data.session) S.authMsg=A.checkEmail; } else { const {error}=await Store.sb.auth.signInWithPassword({email,password:pw}); if(error) throw error; } }
-   catch(err){ S.authMsg=A.authErr+(err&&err.message?' ('+err.message+')':''); } S.busy=false; render(); })();
+   catch(err){ const msg=(err&&err.message)||''; console.warn('auth',msg);
+    if(up&&/already|registered|exists/i.test(msg)){ try{ const r=await Store.sb.auth.signInWithPassword({email,password:pw}); if(r.error) throw r.error; }catch(e2){ S.authMode='login'; S.authMsg=A.exists; } }
+    else S.authMsg=A.authErr; } S.busy=false; render(); })();
   return;
  }
  if(f.dataset.form==='join'){
