@@ -171,6 +171,15 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 details summary{list-style:none;min-height:44px;display:flex;align-items:center}
 details summary::-webkit-details-marker{display:none}
 input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:0 14px;font-size:1rem}
+.ill-box{background:var(--bg);border-radius:20px;padding:6px;margin-bottom:4px}
+.ill{display:block;width:100%;max-width:320px;height:auto;margin:0 auto}
+:root{--ill-bg:#FCC3C8;--ill-ink:#2A2625}
+.table-wrap{overflow-x:auto;border-radius:16px;background:var(--surface)}
+.tbl{width:100%;border-collapse:collapse;font-size:.875rem;line-height:1.45}
+.tbl th,.tbl td{padding:10px 12px;text-align:start;vertical-align:top;border-bottom:1px solid var(--line)}
+.tbl thead th{font-weight:600;color:var(--ink2);font-size:.8125rem}
+.tbl tbody th{font-weight:600}
+.tbl tr:last-child th,.tbl tr:last-child td{border-bottom:0}
 </style>
 </head>
 <body>
@@ -338,7 +347,7 @@ const IC={
 
 // ---------- state ----------
 const S={lang:ls.get('gp-lang','he'),theme:ls.get('gp-theme2','light'),renderDrafts:false,view:'today',babyId:ls.get('gp-baby',null),me:null,names:{},
-  mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:null,foodSub:'foods',openFood:null,foodQ:'',foodStyle:null,recStage:'all',recTex:'all',setupTwins:false,devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
+  mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:null,foodSub:'info',openFood:null,foodQ:'',foodStyle:null,recStage:'all',recTex:'all',setupTwins:false,devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
 const t=()=>T[S.lang]||T.he;
 
 // ---------- store (Supabase) ----------
@@ -599,6 +608,7 @@ function viewGuide(){
  '<p style="font-size:1rem;line-height:1.65">'+esc(L.stageText[si])+'</p></section>'+
  '<section class="section" style="gap:0"><h2 style="margin-bottom:4px">'+esc(L.topics)+'</h2>'+L.topicList.filter((x,i)=>i!==4||(S.family.babies||[]).length>1).map(x=>{
   const inner='<span class="mono'+(x[4]?' warm':'')+'" aria-hidden="true">'+esc(x[0])+'</span><span class="grow section" style="gap:2px"><span style="font-weight:500">'+esc(x[1])+'</span><span class="small muted">'+esc(x[2])+'</span></span>';
+  const href=x[3]||(L.topicList.indexOf(x)===1?'latch':L.topicList.indexOf(x)===3?'pump':''); if(href&&!x[3]){ const warm=inner.replace('class="mono"','class="mono warm"'); return '<a class="topic" href="#'+href+'">'+warm+'</a>'; }
   return x[3]?'<a class="topic" href="#'+x[3]+'">'+inner+'</a>':'<div class="topic" style="opacity:.75">'+inner+'<span class="small muted">'+esc(L.soon)+'</span></div>';
  }).join('')+'</section><p class="note">'+esc(L.guideNote)+'</p>';
 }
@@ -618,7 +628,7 @@ function viewSimple(title,text){ return '<header class="section"><h1>'+esc(title
 
 function tabs(){
  const L=t(), v=S.view, H=HT[S.lang]||HT.he;
- const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'))||(k==='home'&&v==='family'))?' aria-current="page"':'';
+ const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'||v==='latch'||v==='pump'))||(k==='home'&&v==='family'))?' aria-current="page"':'';
  return '<div class="in"><a href="#home"'+cur('home')+'>'+IC.home+esc(L.home)+'</a><a href="#today"'+cur('today')+'>'+IC.today+esc(L.feeding)+'</a><a href="#foods"'+cur('foods')+'>'+IC.foods+esc(L.foods)+'</a><a href="#dev"'+cur('dev')+'>'+IC.dev+esc(L.dev)+'</a><a href="#community"'+cur('community')+'>'+IC.comm+esc(L.community)+'</a></div>';
 }
 
@@ -792,8 +802,8 @@ function allergenState(){
   out[a[0]]={exposed:!!mm.exposed||logged,logged,reaction:!!mm.reaction||logReact,logReact,avoid:!!mm.avoid}; });
  return out;
 }
-function foodsSub(){ const F=FT[S.lang]||FT.he; const cur=S.foodSub||'foods';
- return '<div class="seg-scroll" role="tablist" aria-label="'+esc(F.title)+'">'+['foods','allergens','recipes','log','info'].map(k=>'<button type="button" role="tab" class="chip" data-act="fsub" data-v="'+k+'" aria-selected="'+(cur===k)+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
+function foodsSub(){ const F=FT[S.lang]||FT.he; const cur=S.foodSub||'info';
+ return '<div class="seg-scroll" role="tablist" aria-label="'+esc(F.title)+'">'+['info','foods','allergens','recipes','log'].map(k=>'<button type="button" role="tab" class="chip" data-act="fsub" data-v="'+k+'" aria-selected="'+(cur===k)+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
 function tagRow(f){ const F=FT[S.lang]||FT.he; const t=[];
  if(f[10]) t.push('<span class="tag warm">'+esc(F.allergen+': '+alName(f[10]))+'</span>');
  if(f[8]) t.push('<span class="tag">'+esc(F.soft)+'</span>');
@@ -801,10 +811,10 @@ function tagRow(f){ const F=FT[S.lang]||FT.he; const t=[];
  return t.length?'<span class="tags">'+t.join('')+'</span>':''; }
 function viewFoods(){
  const L=t(), F=FT[S.lang]||FT.he, b=baby(); if(!b) return viewSetup();
- const st=tasteStats(), sub=S.foodSub||'foods';
+ const st=tasteStats(), sub=S.foodSub||'info';
  const head='<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(F.title)+'</h1><p class="muted small">'+esc(b.name+', '+F.tasted(Object.keys(st).length))+'</p></div>'+statusPill()+'</div>'+babySwitch()+foodsSub()+'</header>'+(F.langNote?'<p class="banner">'+esc(F.langNote)+'</p>':'');
  let body='';
- if(sub==='foods') body=foodsList(st); else if(sub==='allergens') body=allergensView(); else if(sub==='recipes') body=recipesView(); else if(sub==='log') body=tasteLog(); else body=infoView();
+ if(sub==='info') body=infoView(); else if(sub==='foods') body=foodsList(st); else if(sub==='allergens') body=allergensView(); else if(sub==='recipes') body=recipesView(); else if(sub==='log') body=tasteLog(); else body=foodsList(st);
  return head+body+'<p class="note">'+esc(F.disclaimer)+'</p>';
 }
 function foodsList(st){
@@ -1074,7 +1084,8 @@ function viewDev(){
  const ahead=days!=null&&mi>autoMi, behind=days!=null&&mi<autoMi;
  const peek=ahead?'<span class="badge">מבט קדימה: עוד '+Math.max(1,Math.round(MONTHS[mi][0]-days/30.44))+' חודשים בערך</span>':behind?'<span class="badge" style="background:var(--mist);color:var(--ink2)">חודש שכבר עבר</span>':'';
  const backNow=(ahead||behind)?'<button type="button" class="link" data-act="devnow">חזרה לגיל הנוכחי</button>':'';
- const monthCard='<section class="dark-card" lang="he" dir="rtl">'+peek+(isNow?'<span class="badge">'+esc(H.nowTag+(ageLine?' · '+DX.he.ageIs(Math.floor(days/30.44),Math.floor(days/30.44)<1?Math.floor(days/7):Math.floor((days-Math.floor(days/30.44)*30.44)/7)):''))+'</span>':'')+'<h2 style="font-size:1.375rem">'+esc(mo[1])+'</h2><p style="font-size:1.0625rem;line-height:1.7">'+esc(mo[2])+'</p></section>';
+ const illK=ILL_FOR[mo[0]]; const illus=illK!=null?'<div class="ill-box">'+ILL_WRAP(ILL[illK],esc('איור: '+mo[1]))+'</div>':'';
+ const monthCard='<section class="dark-card" lang="he" dir="rtl">'+illus+peek+(isNow?'<span class="badge">'+esc(H.nowTag+(ageLine?' · '+DX.he.ageIs(Math.floor(days/30.44),Math.floor(days/30.44)<1?Math.floor(days/7):Math.floor((days-Math.floor(days/30.44)*30.44)/7)):''))+'</span>':'')+'<h2 style="font-size:1.375rem">'+esc(mo[1])+'</h2><p style="font-size:1.0625rem;line-height:1.7">'+esc(mo[2])+'</p></section>';
  const spurtCard=(spIn.length||(isNow&&(spNow||spNext)))?'<section class="card" lang="he" dir="rtl"><div class="row" style="gap:10px"><span class="mono warm" aria-hidden="true">↗</span><h2>'+esc(isNow&&spNow?H.spurtNow:H.spurtTitle)+'</h2></div>'+
   (spIn.length?'<p style="font-weight:600">'+esc(spIn.map(s=>s[2]).join(' · '))+'</p>':'')+(isNow&&!spNow&&spNext?'<p class="small muted">'+esc(H.spurtNext(spNext[2]))+'</p>':'')+
   '<p style="line-height:1.7">'+esc(H.spurtText)+'</p><details><summary class="link" style="cursor:pointer">'+esc(H.spurtList)+'</summary><ul class="bul">'+SPURTS.map(s=>'<li>'+esc(s[2])+'</li>').join('')+'</ul><p class="small muted">'+esc(H.spurtNote)+'</p></details></section>':'';
@@ -1096,6 +1107,86 @@ function viewDev(){
  '<p class="note">'+esc(X.sources)+'</p>';
 }
 
+// Original line illustrations for the development section (style matches the app logo:
+// soft pink disc, one dark round-capped line). viewBox 0 0 200 160.
+const ILL_WRAP=(inner,label)=>'<svg class="ill" role="img" aria-label="'+label+'" viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg"><ellipse cx="100" cy="86" rx="92" ry="70" fill="var(--ill-bg)"/><g fill="none" stroke="var(--ill-ink)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'+inner+'</g></svg>';
+const ILL={
+ // newborn asleep, curled, swaddle line
+ 0:'<path d="M30 132h140"/><circle cx="72" cy="104" r="16"/><path d="M67 102h1M79 102h1"/><path d="M88 96c18-10 46-10 60 4 10 10 6 28-10 32H74"/><path d="M104 110c10 2 20 0 28-6"/><path d="M150 46q6-6 12 0M160 34q4-4 8 0"/>',
+ // tummy time, head lifted
+ 1:'<path d="M24 134h152"/><circle cx="66" cy="94" r="16"/><path d="M61 92h1M71 92h1M63 101q4 3 8 0"/><path d="M80 108c22-4 50-2 70 8 10 5 12 16 4 18H60"/><path d="M64 134v-14"/><path d="M150 118l14 8"/>',
+ // on elbows, reaching for a toy
+ 2:'<path d="M24 134h152"/><circle cx="74" cy="84" r="16"/><path d="M69 82h1M79 82h1M71 91q4 3 8 0"/><path d="M88 98c20-2 46 2 62 12 10 6 10 20 0 22H70"/><path d="M70 100v34M70 134h20"/><path d="M60 104l-18-6"/><circle cx="36" cy="94" r="9"/><path d="M36 85v-8"/>',
+ // sitting with support of hands, toy in front
+ 3:'<path d="M24 136h152"/><circle cx="92" cy="52" r="16"/><path d="M87 50h1M97 50h1M89 59q4 3 8 0"/><path d="M88 68c-2 20 2 40 10 54"/><path d="M98 122h40c8 0 10 8 4 10"/><path d="M90 82l-6 30v22M94 84l18 26 12 4"/><rect x="150" y="114" width="20" height="20" rx="4"/>',
+ 4:'<path d="M24 136h152"/><circle cx="90" cy="46" r="16"/><path d="M85 44h1M95 44h1M87 53q4 4 8 0"/><path d="M88 62c-4 22-2 44 6 64h46c8 0 10 8 4 10"/><path d="M94 80l26 4"/><rect x="118" y="76" width="14" height="14" rx="3"/><path d="M90 82l14 18"/><rect x="102" y="98" width="14" height="14" rx="3"/><path d="M136 70l8-6M138 82h10"/>',
+ // pulling to stand at a low table
+ 5:'<path d="M24 138h152"/><path d="M118 92h52M126 92v46M164 92v46"/><circle cx="86" cy="44" r="16"/><path d="M81 42h1M91 42h1M83 51q4 3 8 0"/><path d="M78 62c-6 18-6 34-2 46h20c4-12 4-28-2-46"/><path d="M94 70l26 22M80 72l-8 22"/><path d="M80 108l-4 30M92 108l6 30"/>',
+ // first steps, arms out
+ 6:'<path d="M24 138h152"/><circle cx="100" cy="40" r="16"/><path d="M95 38h1M105 38h1M96 48q4 4 8 0"/><path d="M92 58c-4 18-4 36 0 48h16c4-12 4-30 0-48"/><path d="M92 66l-26-6M108 66l26-6"/><path d="M94 106l-12 32M106 106l10 22 12 4"/><path d="M48 128q6-4 12 0M140 122q6-4 12 0"/>',
+ // walking holding a cup
+ 7:'<path d="M24 138h152"/><circle cx="92" cy="38" r="16"/><path d="M87 36h1M97 36h1M88 46q4 4 8 0"/><path d="M84 56c-4 18-4 36 0 48h16c4-12 4-30 0-48"/><path d="M100 64l18 14"/><path d="M114 70h14l-2 18h-10z"/><path d="M84 64l-10 22"/><path d="M86 104l-8 34M98 104l14 34"/>',
+ // running and kicking a ball
+ 8:'<path d="M24 140h152"/><circle cx="84" cy="36" r="16"/><path d="M79 34h1M89 34h1M80 44q5 5 10 0"/><path d="M78 54c-2 16 0 32 6 44l14-4c-2-14-6-28-12-40"/><path d="M80 62l-22 14M90 62l22-6"/><path d="M84 98l-14 40M96 94l24 22"/><circle cx="140" cy="122" r="14"/><path d="M134 112l6 10 8-6"/>'
+};
+// which illustration per month card (month number -> ILL key)
+const ILL_FOR={1:0,2:1,3:1,4:2,5:2,6:3,7:3,8:4,9:4,10:5,11:5,12:6,15:6,18:7,24:8};
+
+// ---------- nursing articles: latch & positions, pumping & storage (Hebrew; draft for lactation-consultant review) ----------
+const LATCH={
+ lead:'אחיזה טובה היא הבסיס להנקה נוחה. בהנקה טובה התינוק לוקח לפה לא רק את הפטמה אלא גם חלק גדול מהעטרה (האזור הכהה סביב הפטמה), וכך הוא יונק ביעילות וזה לא כואב לך.',
+ steps:['מתיישבים בנוחות: גב נתמך, כתפיים רפויות, וכרית מתחת לתינוק או מתחת למרפק אם צריך.','בטן אל בטן: התינוק פונה אלייך בכל הגוף. האוזן, הכתף והירך שלו בקו ישר, כך שלא צריך לסובב את הראש כדי לינוק.','אף מול פטמה: בהתחלה האף של התינוק נמצא מול הפטמה, והראש מוטה קצת לאחור.','מחכים לפה פתוח לרווחה, כמו פיהוק. אפשר ללטף בעדינות את השפה העליונה עם הפטמה כדי לעודד אותו לפתוח.','מקרבים את התינוק לשד, ולא את השד לתינוק. הסנטר נוגע בשד ראשון, ואז התינוק נצמד עם פה מלא.'],
+ good:['זה לא כואב. אולי משיכה חזקה בשניות הראשונות, ואז נרגע','השפתיים פשוקות החוצה, והסנטר צמוד לשד','רואים יותר עטרה מעל השפה העליונה מאשר מתחת לשפה התחתונה','הלחיים מלאות ועגולות, לא שקועות פנימה','שומעים או רואים בליעות קצביות','בסוף ההנקה הפטמה יוצאת עגולה ושלמה, לא שטוחה או משופעת','השד מרגיש רך יותר אחרי ההנקה'],
+ release:'כדי לשחרר את התינוק מהשד בלי כאב, מכניסים אצבע נקייה בעדינות לזווית הפה שלו. זה משחרר את הוואקום, ואז אפשר להרחיק אותו. ברוב הפעמים התינוק משחרר לבד כשהוא שבע ורגוע.',
+ positions:[
+  ['עריסה (קלאסית)','התינוק שוכב על הצד, בטן אל בטן איתך, והראש שלו נשען על האמה שלך בצד של השד שממנו הוא יונק. היד שלך תומכת לאורך הגב והישבן.','התנוחה המוכרת ביותר. נוחה כשההנקה כבר מתבססת.'],
+  ['עריסה מוצלבת','כמו עריסה, אבל היד הנגדית לשד תומכת בתינוק: כף היד מאחורי הכתפיים והעורף, בלי ללחוץ על אחורי הראש. היד השנייה פנויה כדי לכוון את השד.','טובה לימים הראשונים ולתינוקות שצריכים עזרה בהצמדה, כי יש לך יותר שליטה.'],
+  ['החזקת רוגבי (מתחת לבית השחי)','התינוק שוכב לצידך, הגוף שלו מתחת לבית השחי והרגליים לכיוון הגב שלך. כרית לצד הגוף מרימה אותו לגובה השד, והיד שלך תומכת בכתפיים ובעורף.','מתאימה אחרי ניתוח קיסרי (בלי לחץ על הבטן), לשדיים גדולים, לתינוקות קטנים, ולהנקת תאומים בו־זמנית.'],
+  ['שכיבה על הצד','את והתינוק שוכבים על הצד, פנים מול פנים. כרית מאחורי הגב שלך ומגבת מגולגלת מאחורי הגב של התינוק עוזרות ליציבות.','מאפשרת לנוח בזמן הנקה, למשל בלילה או אחרי לידה. חשוב לשמור על סביבת שינה בטוחה.'],
+  ['הנקה רגועה (שכיבה למחצה)','נשענים לאחור בזווית נוחה, והתינוק שוכב על הבטן שלך, בטן אל בטן. כוח המשיכה מחזיק אותו, והרפלקסים הטבעיים עוזרים לו למצוא את השד בעצמו.','טובה מאוד בימים הראשונים, לתינוקות שמתקשים להיצמד, ולזרימת חלב חזקה.']
+ ],
+ help:['כאב שנמשך לאורך כל ההנקה, או לא משתפר אחרי כמה ימים','סדקים, פצעים או דימום בפטמה','הפטמה יוצאת שטוחה או משופעת אחרי ההנקה','התינוק לא נרגע אחרי הנקות, או שיש מעט חיתולים רטובים'],
+ helpNote:'יועצת הנקה, אחות טיפת חלב או רופא/ת הילדים יכולים לעזור. ייעוץ מוקדם חוסך הרבה כאב.',
+ illusSoon:'איורים לכל תנוחה יתווספו בקרוב.'
+};
+const PUMP={
+ lead:'שאיבה מאפשרת לתת חלב אם גם כשאת לא ליד התינוק, ועוזרת במצבים כמו גודש בשד, חזרה לעבודה, תינוק שמתקשה לינוק או רצון להגביר את כמות החלב.',
+ how:['לפני שאיבה שוטפים ידיים במים וסבון, ומוודאים שהציוד נקי ויבש','אפשר לשאוב ידנית (במגע יד), במשאבה ידנית או במשאבה חשמלית. כל דרך יכולה להתאים, לפי הצורך והנוחות','לפני השאיבה עוזר להירגע: מקום שקט, משהו חם על השד, עיסוי עדין, או להסתכל על תמונה של התינוק','אחרי כל שימוש מפרקים את חלקי המשאבה שבאים במגע עם החלב, שוטפים במים חמים וסבון, ומייבשים באוויר. פועלים לפי הוראות היצרן','אם השאיבה כואבת, כדאי לבדוק את גודל המשפך ואת עוצמת השאיבה'],
+ table:[['טמפרטורת החדר (16°C עד 29°C)','עדיף עד 3 עד 4 שעות','עד 6 שעות, רק אם החדר לא חם מ-29°C'],['תיק קירור עם קרחום','','עד 24 שעות, כשהקרחום צמוד לבקבוק'],['מקרר (על המדף האחורי, לא בדלת)','עדיף עד 3 ימים','עד 8 ימים, ב-4°C ומטה'],['תא הקפאה בתוך המקרר (כמו מיני־בר)','','עד שבועיים'],['מקפיא עם דלת נפרדת','3 עד 4 חודשים','עד 12 חודשים'],['מקפיא עמוק (18°C- ומטה)','6 חודשים','עד 12 חודשים'],['חלב שהופשר במקרר','','עד 24 שעות, במקרר']],
+ tableHead:['איפה','מומלץ','מקסימום'],
+ store:['כלים נקיים ויבשים מזכוכית או מפלסטיק עם מכסה. בבית ולתינוק בריא לא צריך לעקר','שקיות אחסון מיוחדות לחלב אם מתאימות אם יש עליהן תו תקן ישראלי','כותבים על כל כלי את תאריך השאיבה, ואם הופשר גם את תאריך ההפשרה. למעון מוסיפים את שם התינוק','בהקפאה משאירים מעט אוויר לפני הסגירה, כי החלב מתרחב','אם התינוק ישתה את החלב בתוך כשלושה ימים, עדיף לשמור במקרר ולהשתמש בו לפני חלב קפוא','חלב שלא נוצל מהמקרר אפשר להקפיא בתוך 24 שעות'],
+ thaw:['הפרדה של השומן למעלה היא תקינה. מערבלים בעדינות לפני שנותנים','מפשירים במקרר, או מוציאים מהמקפיא כשעה לפני ומחממים בכלי עם מים חמים (לא רותחים)','אפשר לתת חלב קר או בטמפרטורת החדר. חימום בדרך כלל לא הכרחי','לא מחממים חלב אם במיקרוגל ולא במים רותחים','לא מקפיאים שוב חלב שהופשר'],
+ left:'חלב שנשאר בבקבוק שהתינוק כבר שתה ממנו, מסיימים בתוך שעה, ואת השאר שופכים. כדי לא לבזבז, מוזגים כמויות קטנות ומוסיפים לפי הצורך.',
+ go:'בדרך או למעון: תיק קירור עם קרחום צמוד לבקבוק, עד 24 שעות, ובהגעה מעבירים למקרר. במעון החלב נשמר על מדף (לא בדלת) ב-4°C ומטה.',
+ source:'מבוסס על ההנחיות של משרד הבריאות באתר "הורות והורים" (אחסון, הפשרה והובלה של חלב אם). התוכן כללי. בכל שאלה פונים ליועצת הנקה או לטיפת חלב.'
+};
+function artHead(title,back){ const L=t(); return '<header class="section" style="gap:10px"><a class="link" href="#'+(back||'feeding')+'">'+esc((HT[S.lang]||HT.he).guide[0])+'</a><span class="badge">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem" lang="he" dir="rtl">'+esc(title)+'</h1></header>'+(S.lang==='en'?'<p class="banner">This article is in Hebrew for now. English is on the way.</p>':S.lang==='ar'?'<p class="banner">هذا المقال بالعبرية حاليًا. الترجمة إلى العربية قادمة.</p>':''); }
+function viewLatch(){
+ const X=LATCH;
+ return artHead('אחיזה נכונה ותנוחות הנקה')+
+ '<div lang="he" dir="rtl" class="section" style="gap:22px">'+
+ '<p class="prose">'+esc(X.lead)+'</p>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">איך מצמידים לשד</h2><ol class="bul">'+X.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></section>'+
+ '<section class="dark-card"><h2 style="color:var(--dawn)">סימנים לאחיזה טובה</h2><ul class="section" style="list-style:none;margin:0;padding:0;gap:8px">'+X.good.map(s=>'<li class="row" style="align-items:flex-start">'+IC.check+'<span>'+esc(s)+'</span></li>').join('')+'</ul></section>'+
+ '<section class="card"><h2>איך משחררים מהשד</h2><p style="line-height:1.7">'+esc(X.release)+'</p></section>'+
+ '<section class="section" style="gap:12px"><h2 style="font-size:1.25rem">תנוחות הנקה</h2><p class="small muted">'+esc(X.illusSoon)+'</p>'+X.positions.map((p,i)=>'<article class="card" style="gap:8px"><div class="row" style="gap:10px"><span class="mono" aria-hidden="true">'+(i+1)+'</span><h3 style="margin:0;font-size:1.0625rem">'+esc(p[0])+'</h3></div><p style="line-height:1.7">'+esc(p[1])+'</p><p class="small" style="color:var(--sage);font-weight:600">'+esc(p[2])+'</p></article>').join('')+'<p class="small muted">אין תנוחה אחת נכונה. כדאי לנסות כמה ולבחור את מה שנוח לך ולתינוק, ולהחליף ביניהן במהלך היום.</p></section>'+
+ '<section class="warn"><h2>מתי פונים לעזרה</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6">'+X.help.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul><p style="font-weight:600">'+esc(X.helpNote)+'</p></section></div>'+
+ '<p class="note">'+esc(t().guideNote)+'</p>';
+}
+function viewPump(){
+ const X=PUMP;
+ return artHead('שאיבה ואחסון חלב אם')+
+ '<div lang="he" dir="rtl" class="section" style="gap:22px">'+
+ '<p class="prose">'+esc(X.lead)+'</p>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">איך שואבים</h2><ul class="bul">'+X.how.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul></section>'+
+ '<section class="section" style="gap:10px"><h2 style="font-size:1.25rem">כמה זמן אפשר לשמור</h2><div class="table-wrap"><table class="tbl"><caption class="sr">זמני אחסון של חלב אם</caption><thead><tr>'+X.tableHead.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+X.table.map(r=>'<tr><th scope="row">'+esc(r[0])+'</th><td>'+esc(r[1]||'–')+'</td><td>'+esc(r[2])+'</td></tr>').join('')+'</tbody></table></div></section>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">כלים, סימון ושמירה</h2><ul class="bul">'+X.store.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul></section>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">הפשרה וחימום</h2><ul class="bul">'+X.thaw.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul></section>'+
+ '<section class="dark-card"><h2 style="color:var(--dawn)">שאריות מבקבוק</h2><p style="line-height:1.7">'+esc(X.left)+'</p></section>'+
+ '<section class="card"><h2>בדרך ולמעון</h2><p style="line-height:1.7">'+esc(X.go)+'</p></section></div>'+
+ '<p class="note">'+esc(X.source)+'</p>';
+}
+
 // ---------- render ----------
 let raf=0, lastKey='', lastNav='';
 const dv=id=>S.renderDrafts?esc(S.draft[id]||''):'';
@@ -1110,7 +1201,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'pump':return viewPump();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -1270,7 +1361,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['home','today','feeding','article','meds','family','community','foods','dev'];
+const VIEWS=['latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
 function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
