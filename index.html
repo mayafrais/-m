@@ -189,7 +189,9 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 .safety{background:var(--danger-soft);border:2px solid var(--danger);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px}
 .safety h2{color:var(--danger);margin:0;font-size:1.1875rem}
 .safety ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-.safety li{display:flex;gap:10px;align-items:flex-start;font-weight:700;line-height:1.55;color:var(--ink)}
+.safety li{display:flex;gap:10px;align-items:flex-start;font-weight:400;line-height:1.5;color:var(--ink);font-size:.9375rem}
+.safety strong{font-weight:700}
+.safety p{font-size:.9375rem}
 .safety p{margin:0;line-height:1.6}
 .btn.sos{background:var(--danger);color:var(--on-danger);display:flex;align-items:center;justify-content:center;text-decoration:none}
 .sos-pill{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--danger);color:var(--on-danger);font-weight:700;font-size:.875rem;text-decoration:none}
@@ -210,6 +212,15 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 .install-card{background:var(--surface);border:2px dashed var(--dawn);min-height:72px;align-items:center}
 .check-chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 .check-chip input{width:20px;height:20px;accent-color:var(--danger);margin:0}
+.ntabs,.seg-scroll[role="group"][aria-label]{flex-wrap:wrap;overflow:visible}
+.ntabs .chip,.seg-scroll .chip{min-height:40px;padding:0 14px;font-size:.9375rem}
+details.acc{background:var(--surface);border-radius:20px;overflow:hidden}
+details.acc>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;padding:12px 16px;cursor:pointer;font-weight:600;font-size:1.0625rem}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:"";width:10px;height:10px;border-inline-end:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;flex:none;opacity:.6;margin-inline-start:4px}
+details.acc[open]>summary::after{transform:rotate(-135deg)}
+details.acc>.acc-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+details.acc.warn-acc>summary{color:var(--danger)}
 </style>
 </head>
 <body>
@@ -902,10 +913,10 @@ function tasteLog(){
   return '<li style="align-items:flex-start"><span class="time" style="min-width:56px">'+esc(day(e.t))+'<br>'+hhmm(e.t)+'</span><span class="grow section" style="gap:2px"><span style="font-weight:600">'+esc(fname(e.food))+'</span><span class="small muted">'+esc([e.style==='blw'?F.blwT:e.style==='mashed'?F.mashed:'',lk?lk[1]:''].filter(Boolean).join(' · '))+'</span>'+(e.reaction?'<span class="small" style="color:var(--danger);font-weight:600">⚠️ '+esc(F.reactionEv+(rt?': '+rt:''))+'</span>':'')+(e.note?'<span class="small">'+esc(e.note)+'</span>':'')+'<span class="small muted">'+esc(whoLabel(e.by))+'</span></span>'+
    (c?'<span class="confirm"><button type="button" class="yes" data-act="delyes" data-id="'+esc(e.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="delno">'+esc(L.no)+'</button></span>':'<button type="button" class="icon-btn" data-act="delask" data-id="'+esc(e.id)+'" aria-label="'+esc(L.del+': '+fname(e.food))+'">'+IC.trash+'</button>')+'</li>'; }).join('')+'</ul>';
 }
-const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נותנים עד גיל שנה, גם לא בבישול או במאפה.'],['🥛','חלב פרה: לא נותנים לשתייה לפני גיל שנה.'],['🍇','ענבים, עגבניות שרי ואוכמניות: תמיד חוצים לרבעים לאורך או מועכים. אגוזים שלמים, פופקורן וממתקים קשים: לא נותנים.'],['👀','תמיד בהשגחה, כשהתינוק יושב זקוף. לא משאירים לבד עם אוכל, גם לא לרגע.'],['🫁','שיעול והשתנקות הם חלק מהלמידה. חנק שקט, בלי שיעול ובלי קול, הוא מצב חירום: מתקשרים מיד ל-101.']],
+const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נותנים עד גיל שנה, גם לא בבישול או במאפה.'],['🥛','חלב פרה: לא נותנים לשתייה לפני גיל שנה.'],['🍇','ענבים, עגבניות שרי ואוכמניות: תמיד חוצים לרבעים לאורך או מועכים. אגוזים שלמים, פופקורן וממתקים קשים: לא נותנים.'],['👀','השגחה: תמיד, כשהתינוק יושב זקוף. לא משאירים לבד עם אוכל, גם לא לרגע.'],['🫁','חנק שקט הוא מצב חירום: בלי שיעול ובלי קול. מתקשרים מיד ל-101. שיעול והשתנקות, לעומת זאת, הם חלק רגיל מהלמידה.']],
  cpr:'מומלץ מאוד לעבור קורס החייאת תינוקות ועזרה ראשונה לפני שמתחילים טעימות. קורסים כאלה מועברים למשל במד״א.',
  meds:'לפני שמתחילים טעימות: דאגו שכבר תהיה בבית תרופה נגד תגובה אלרגית קלה. שאלו מראש את רופא/ת הילדים איזו תרופה ובאיזה מינון לפי המשקל של התינוק.',call:'חירום: מד״א 101'};
-function safetyBox(){ const X=FSAFE; return '<section class="safety" lang="he" dir="rtl"><h2>⚠️ '+esc(X.title)+'</h2><ul>'+X.items.map(i=>'<li><span aria-hidden="true">'+i[0]+'</span><span>'+esc(i[1])+'</span></li>').join('')+'</ul><p style="font-weight:700">💊 '+esc(X.meds)+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></section>'; }
+function safetyBox(){ const X=FSAFE; return '<section class="safety" lang="he" dir="rtl"><h2>⚠️ '+esc(X.title)+'</h2><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></section>'; }
 function sosPill(){ return '<a class="sos-pill" href="tel:101" aria-label="חירום: התקשרות למד״א 101">📞 101</a>'; }
 function infoView(){
  const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
@@ -1388,6 +1399,24 @@ function viewFamily(){
  '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>';
 }
 
+const ACC_VIEWS=['latch','pump','pacifier','calm','routine','feeding','article','foods'];
+function enhanceAcc(root){
+ if(!ACC_VIEWS.includes(S.view)) return;
+ if(S.view==='foods'&&(S.foodSub||'info')!=='info') return;
+ const secs=[...root.querySelectorAll('section')].filter(sec=>{ const h=sec.querySelector(':scope > h2'); return h&&!sec.classList.contains('safety')&&!sec.closest('details')&&!sec.querySelector('.rtime'); });
+ if(secs.length<3) return;
+ S.accOpen=S.accOpen||{};
+ secs.forEach((sec,i)=>{
+  if(i===0) return;
+  const h=sec.querySelector(':scope > h2'); const key=S.view+'|'+h.textContent;
+  const d=document.createElement('details'); d.className='acc'+(sec.classList.contains('warn')?' warn-acc':''); if(S.accOpen[key]) d.open=true;
+  for(const a of sec.attributes) if(a.name==='lang'||a.name==='dir') d.setAttribute(a.name,a.value);
+  const sum=document.createElement('summary'); sum.textContent=h.textContent; h.remove();
+  const body=document.createElement('div'); body.className='acc-body'; while(sec.firstChild) body.appendChild(sec.firstChild);
+  d.appendChild(sum); d.appendChild(body); sec.replaceWith(d);
+  d.addEventListener('toggle',()=>{ S.accOpen[key]=d.open; });
+ });
+}
 // ---------- nursing section tabs ----------
 const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון'],['pacifier','מוצץ בהנקה']],
  en:[['today','Daily log'],['meds','Medicines & vitamins'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage'],['pacifier','Pacifier & breastfeeding']],
@@ -1413,7 +1442,7 @@ function draw(){
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
-  if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; if(keepQ){ const q=document.getElementById('food-q'); if(q){ q.focus({preventScroll:true}); try{ q.setSelectionRange(keepQ[0],keepQ[1]); }catch(e){} } } const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
+  if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; try{ enhanceAcc(v); }catch(e){} if(keepQ){ const q=document.getElementById('food-q'); if(q){ q.focus({preventScroll:true}); try{ q.setSelectionRange(keepQ[0],keepQ[1]); }catch(e){} } } const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
  }
  const tb=document.getElementById('topbar'); const th='<a class="brand" href="#home" aria-label="'+esc(L.appName+', '+L.home)+'">'+LOGO+'<span>'+esc(L.appName)+'</span></a>'+((S.fid&&(S.family.babies||[]).length)?'<button type="button" class="share-btn" data-act="share">'+IC.share+esc(L.share)+'</button>':''); if(tb.innerHTML!==th) tb.innerHTML=th;
  const nav=document.getElementById('tabs'); nav.setAttribute('aria-label',L.nav); nav.dir=L.dir; nav.lang=S.lang; const nh=S.fid?tabs():''; nav.hidden=!S.fid; if(nh!==lastNav){ nav.innerHTML=nh; lastNav=nh; }
