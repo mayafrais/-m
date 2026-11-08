@@ -1131,7 +1131,7 @@ function viewDev(){
  return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(D.title)+'</h1><p class="muted small">'+esc(b.name+(ageLine?', '+ageLine:''))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
  (b.born?'':'<p class="banner">'+esc(D.noBorn)+'</p>')+(X.langNote?'<p class="banner">'+esc(X.langNote)+'</p>':'')+
  chips+'<p class="small muted" lang="he" dir="rtl">אפשר לבחור כל חודש, גם חודשים שעוד לא הגעתם אליהם, כדי לדעת מה צפוי.</p>'+backNow+monthCard+
- '<section class="section" style="gap:10px"><div class="between"><h2>'+esc(X.checklist(D.age(st[0])))+'</h2><span class="small muted">'+esc(D.progress(k,n))+'</span></div><p class="small muted">'+esc(D.pace)+'</p>'+groups+'</section>'+spurtCard+leapCard+
+ '<section class="section" style="gap:10px"><div class="between"><h2>'+esc(X.checklist(D.age(st[0])))+'</h2><span class="small muted">'+esc(D.progress(k,n))+'</span></div><p class="small muted">'+esc(D.pace)+'</p>'+groups+'</section>'+spurtCard+
  '<section class="card"><h2>'+esc(D.when)+'</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6">'+D.whenList.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p style="line-height:1.6">'+esc(D.whenNote)+'</p></section>'+
  shareLink('dev')+'<p class="note">'+esc(X.sources)+'</p>';
 }
