@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#FBEFF2">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.webmanifest">
-<meta name="apple-mobile-web-app-title" content="הנקה ואמהות">
+<meta name="apple-mobile-web-app-title" content="הורות">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="description" content="יומן משותף להנקה, שינה, תרופות, טעימות והתפתחות, לשני ההורים.">
-<title>הנקה ואמהות</title>
+<title>הורות: הנקה, התפתחות, טעימות</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
 <style>
@@ -221,6 +221,7 @@ details.acc>summary::after{content:"";width:10px;height:10px;border-inline-end:2
 details.acc[open]>summary::after{transform:rotate(-135deg)}
 details.acc>.acc-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
 details.acc.warn-acc>summary{color:var(--danger)}
+img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 </style>
 </head>
 <body>
@@ -277,8 +278,8 @@ const T = {
   artWhen:'מתי פונים לרופא או לטיפת חלב',artWhenList:['פחות חיתולים רטובים מהרגיל, או שתן כהה','התינוק ישנוני מאוד וקשה להעיר אותו להנקה','הצהבת בעור או בעיניים מתגברת'],artDoubt:'בכל ספק, עדיף לשאול.',
   commTitle:'קהילה',commText:'קבוצות של אמהות באותו שלב, קבוצה לתאומים וקבוצה לשעות הלילה. הקהילה נבנית עכשיו ותיפתח בגרסה הבאה.',
   foodsTitle:'טעימות',foodsText:'מודול הטעימות, עם מאגר המזונות, יומן הטעימות והאלרגנים, יחובר לכאן בשלב הבא.',
-  familyLink:'משפחה והגדרות',appName:'הנקה ואמהות',home:'בית',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',
-  share:'שיתוף',shareTitle:'שיתוף עם בן/בת הזוג',shareText:'שלחי את הקישור, ואחר כך אשרי לו/ה גישה מכפתור השיתוף של Claude בראש העמוד. בגרסת הניסיון צריך חשבון Claude באותו ארגון.',shareMsg:(n)=>'מצרפת אותך ליומן של '+n+' באפליקציה הנקה ואמהות: ',whatsapp:'שליחה בוואטסאפ',copy:'העתקת הקישור',copied:'הקישור הועתק',close:'סגירה'},
+  familyLink:'משפחה והגדרות',appName:'הורות',appFull:'הורות: הנקה, התפתחות, טעימות',home:'בית',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',
+  share:'שיתוף',shareTitle:'שיתוף עם בן/בת הזוג',shareText:'שלחי את הקישור, ואחר כך אשרי לו/ה גישה מכפתור השיתוף של Claude בראש העמוד. בגרסת הניסיון צריך חשבון Claude באותו ארגון.',shareMsg:(n)=>'מצרפת אותך ליומן של '+n+' באפליקציה "הורות": ',whatsapp:'שליחה בוואטסאפ',copy:'העתקת הקישור',copied:'הקישור הועתק',close:'סגירה'},
  en:{dir:'ltr',name:'English',today:'Today',feeding:'Feeding',community:'Community',foods:'First foods',nav:'Main navigation',
   left:'Left',right:'Right',both:'Both sides',tapStart:'Tap to start',endedHere:'Last feed ended here',nursingNow:'Nursing now',switchHere:'Switch here',
   finish:'Finish and save',forgot:'Forgot to log? Add a past feed',noFeedYet:'No feeds logged yet. Tap a side to start the timer.',
@@ -316,8 +317,8 @@ const T = {
   artWhen:'When to call a doctor or nurse',artWhenList:['Fewer wet diapers than usual, or dark urine','Very sleepy and hard to wake for feeds','Yellowing of the skin or eyes is getting stronger'],artDoubt:'When in doubt, ask.',
   commTitle:'Community',commText:'Groups of mothers at the same stage, a group for twins and one for the night hours. The community is being built and opens in the next version.',
   foodsTitle:'First foods',foodsText:'The first foods module, with the food guide, tasting log and allergens, will be connected here next.',
-  familyLink:'Family and settings',appName:'Nursing & Motherhood',home:'Home',dev:'Development',twinsQ:'I have twins',twinName:'Second twin\u2019s name',
-  share:'Share',shareTitle:'Share with your partner',shareText:'Send the link, then give them access from Claude\u2019s Share button at the top of the page. In this trial version they need a Claude account in the same organization.',shareMsg:(n)=>'Join '+n+'\u2019s log in the Nursing & Motherhood app: ',whatsapp:'Send on WhatsApp',copy:'Copy link',copied:'Link copied',close:'Close'},
+  familyLink:'Family and settings',appName:'Parenting',appFull:'Parenting: Nursing, Development, First Foods',home:'Home',dev:'Development',twinsQ:'I have twins',twinName:'Second twin\u2019s name',
+  share:'Share',shareTitle:'Share with your partner',shareText:'Send the link, then give them access from Claude\u2019s Share button at the top of the page. In this trial version they need a Claude account in the same organization.',shareMsg:(n)=>'Join '+n+'\u2019s log in the Parenting app: ',whatsapp:'Send on WhatsApp',copy:'Copy link',copied:'Link copied',close:'Close'},
  ar:{dir:'rtl',name:'العربية',today:'اليوم',feeding:'الرضاعة',community:'المجتمع',foods:'أول الأطعمة',nav:'التنقل الرئيسي',
   left:'يسار',right:'يمين',both:'الجهتان',tapStart:'المسي للبدء',endedHere:'هنا انتهت آخر رضعة',nursingNow:'ترضعين الآن',switchHere:'الانتقال لهذه الجهة',
   finish:'إنهاء وحفظ',forgot:'نسيتِ التسجيل؟ أضيفي رضعة سابقة',noFeedYet:'لم تُسجَّل أي رضعة بعد. المسي إحدى الجهتين لبدء المؤقت.',
@@ -355,8 +356,8 @@ const T = {
   artWhen:'متى تتصلين بالطبيب أو العيادة',artWhenList:['حفاضات مبللة أقل من المعتاد، أو بول داكن','الطفل نعسان جدًا ويصعب إيقاظه للرضاعة','اصفرار الجلد أو العينين يزداد'],artDoubt:'عند الشك، اسألي.',
   commTitle:'المجتمع',commText:'مجموعات لأمهات في المرحلة نفسها، ومجموعة للتوائم، وأخرى لساعات الليل. المجتمع قيد البناء وسيفتح في النسخة القادمة.',
   foodsTitle:'أول الأطعمة',foodsText:'سيتم ربط وحدة أول الأطعمة هنا قريبًا، مع دليل الأطعمة وسجل التذوق ومسببات الحساسية.',
-  familyLink:'العائلة والإعدادات',appName:'الرضاعة والأمومة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',
-  share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareText:'أرسلي الرابط، ثم امنحيه صلاحية الوصول من زر المشاركة في Claude أعلى الصفحة. في النسخة التجريبية يلزم حساب Claude في المؤسسة نفسها.',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق الرضاعة والأمومة: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
+  familyLink:'العائلة والإعدادات',appName:'التربية',appFull:'التربية: رضاعة، نمو، أول الأطعمة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',
+  share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareText:'أرسلي الرابط، ثم امنحيه صلاحية الوصول من زر المشاركة في Claude أعلى الصفحة. في النسخة التجريبية يلزم حساب Claude في المؤسسة نفسها.',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق التربية: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
 };
 
 const APP_URL=location.origin;
@@ -370,8 +371,8 @@ const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.par
 const PENDING_JOIN=(()=>{ try{ const q=new URLSearchParams(location.search).get('join'); if(q&&/^\d{6}$/.test(q)){ ls.set('gp-join',q); history.replaceState(null,'',location.pathname+location.hash); } }catch(e){} return null; })();
 const pendingJoin=()=>{ const v=ls.get('gp-join',''); return /^\d{6}$/.test(v)?v:''; };
 const inviteLink=()=>APP_URL+'/?join='+encodeURIComponent(S.invite||'');
-const LOGO='<svg class="logo" aria-hidden="true" width="32" height="32" viewBox="152 132 740 740"><circle cx="522" cy="502" r="370" fill="#FCC3C8"/><path d="M587 215 C568 315 515 385 445 448 C370 515 325 570 324 635 C323 735 420 790 510 789 C600 788 675 722 720 658" fill="none" stroke="#2A2625" stroke-width="44" stroke-linecap="round"/></svg>';
-const LOGO_BIG='<svg class="logo" aria-hidden="true" width="72" height="72" viewBox="152 132 740 740"><circle cx="522" cy="502" r="370" fill="#FCC3C8"/><path d="M587 215 C568 315 515 385 445 448 C370 515 325 570 324 635 C323 735 420 790 510 789 C600 788 675 722 720 658" fill="none" stroke="#2A2625" stroke-width="34" stroke-linecap="round"/></svg>';
+const LOGO='<img class="logo" src="/img/logo-96.png" alt="" width="32" height="32">';
+const LOGO_BIG='<img class="logo" src="/img/logo-256.png" alt="" width="88" height="88">';
 const IC={
  bottle:'<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M9 5h6l1 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8z"/><path d="M8 12h8"/></svg>',
  pump:'<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/></svg>',
@@ -398,7 +399,7 @@ const t=()=>T[S.lang]||T.he;
 const SB_URL='https://wdwfpjprdffkbvthtcuy.supabase.co';
 const SB_KEY='sb_publishable_Z_gT_Mjz2-BecNNOVXmY9A_0bCRPD8w';
 const AT={
- he:{signup:'הרשמה',login:'כניסה',email:'אימייל',password:'סיסמה',pwHint:'לפחות 8 תווים',authLead:'יומן משותף להנקה, שינה, תרופות וטעימות, לשני ההורים.',toLogin:'כבר רשומה? כניסה',toSignup:'אין לך חשבון? הרשמה',checkEmail:'שלחנו מייל אישור. אחרי האישור חוזרים לכאן ונכנסים.',authErr:'לא הצלחנו להיכנס. בדקי את האימייל והסיסמה ונסי שוב.',weakPw:'הסיסמה צריכה לכלול לפחות 8 תווים.',exists:'האימייל הזה כבר רשום. הקלידי את הסיסמה שלך כדי להיכנס.',
+ he:{signup:'הרשמה',login:'כניסה',email:'אימייל',password:'סיסמה',pwHint:'לפחות 8 תווים',authLead:'יומן משותף לשני ההורים: הנקה, שינה, תרופות, טעימות והתפתחות.',toLogin:'כבר רשומה? כניסה',toSignup:'אין לך חשבון? הרשמה',checkEmail:'שלחנו מייל אישור. אחרי האישור חוזרים לכאן ונכנסים.',authErr:'לא הצלחנו להיכנס. בדקי את האימייל והסיסמה ונסי שוב.',weakPw:'הסיסמה צריכה לכלול לפחות 8 תווים.',exists:'האימייל הזה כבר רשום. הקלידי את הסיסמה שלך כדי להיכנס.',
   onbTitle:'איך מתחילים?',newFamily:'יצירת יומן חדש',newFamilyHint:'לאמא או לאבא שמתחילים ראשונים',joinFamily:'הצטרפות ליומן קיים',joinFamilyHint:'קיבלת קוד מבן או בת הזוג',yourName:'איך לקרוא לך ביומן? (למשל: אמא)',code:'קוד הצטרפות (6 ספרות)',join:'הצטרפות',badCode:'הקוד לא נמצא. בדקי שהוקלדו כל 6 הספרות.',invited:'הוזמנת להצטרף ליומן משותף. הקוד כבר מולא, נשאר רק לכתוב איך לקרוא לך.',invitedAuth:'הוזמנת להצטרף ליומן משותף 💕 הירשמי או היכנסי, ומיד אחר כך נצרף אותך.',tooMany:'היו יותר מדי ניסיונות. נסי שוב בעוד שעה, או בקשי מבן או בת הזוג לשלוח את הקוד שוב.',
   codeLabel:'קוד ההצטרפות שלכם',logout:'יציאה מהחשבון',working:'רגע…',shareCode:(c)=>'קוד הצטרפות: '+c,
   inviteText:'שלחי לבן או בת הזוג את הקישור האישי. הוא פותח את האפליקציה עם הקוד שלכם כבר ממולא, ואחרי ההרשמה מצטרפים בלחיצה. הקוד מופיע גם בהודעה, למקרה שצריך להקליד אותו.',signedAs:(e)=>'מחובר/ת בתור '+e,notSaved:'לא נשמר, נסי שוב'},
@@ -482,7 +483,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
 };
 function viewAuth(){
  const A=at(), up=S.authMode!=='login';
- return '<header class="section" style="gap:14px;padding-top:12px">'+LOGO_BIG+'<h1>'+esc(t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+(pendingJoin()?'<p class="banner">'+esc(A.invitedAuth)+'</p>':'')+
+ return '<header class="section" style="gap:14px;padding-top:12px">'+LOGO_BIG+'<h1>'+esc(t().appFull||t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+(pendingJoin()?'<p class="banner">'+esc(A.invitedAuth)+'</p>':'')+
  '<form class="card" data-form="auth" novalidate><h2 style="font-size:1.25rem">'+esc(up?A.signup:A.login)+'</h2>'+
  '<label class="field" for="auth-email">'+esc(A.email)+'<input id="auth-email" type="email" dir="ltr" autocomplete="email" inputmode="email" required value="'+dv('auth-email')+'"></label>'+
  '<label class="field" for="auth-pw">'+esc(A.password)+'<input id="auth-pw" type="password" dir="ltr" autocomplete="'+(up?'new-password':'current-password')+'" minlength="'+(up?8:6)+'" required value="'+dv('auth-pw')+'"></label>'+
@@ -1214,13 +1215,13 @@ function viewPump(){
 // ---------- share with friends ----------
 const SF={
  he:{btn:'שתפו עם חברים',sub:'מכירה מישהי שזה יעזור לה? שלחי לה קישור',title:'שיתוף עם חברים',small:'שתפו עם חברה',
-  msg:{app:'גיליתי אפליקציה חינמית להורים לתינוקות: יומן הנקה משותף לשני ההורים, טעימות ובייבילד, והתפתחות לפי חודשים. שווה לנסות 💕',latch:'מצאתי הסבר ברור על אחיזה נכונה ותנוחות הנקה, באפליקציה "הנקה ואמהות":',pump:'מצאתי טבלה מסודרת של שאיבה ואחסון חלב אם (לפי משרד הבריאות), באפליקציה "הנקה ואמהות":',foods:'מצאתי מדריך נוח לטעימות ובייבילד, עם מאכלים, אלרגנים ומתכונים, באפליקציה "הנקה ואמהות":',dev:'מצאתי מדריך התפתחות לפי חודשים, כולל קפיצות גדילה, באפליקציה "הנקה ואמהות":',pacifier:'מצאתי הסבר ברור על מוצץ בתקופת ההנקה, באפליקציה "הנקה ואמהות":'},
+  msg:{app:'גיליתי אפליקציה חינמית להורים לתינוקות: יומן הנקה משותף לשני ההורים, טעימות ובייבילד, והתפתחות לפי חודשים. שווה לנסות 💕',latch:'מצאתי הסבר ברור על אחיזה נכונה ותנוחות הנקה, באפליקציה "הורות":',pump:'מצאתי טבלה מסודרת של שאיבה ואחסון חלב אם (לפי משרד הבריאות), באפליקציה "הורות":',foods:'מצאתי מדריך נוח לטעימות ובייבילד, עם מאכלים, אלרגנים ומתכונים, באפליקציה "הורות":',dev:'מצאתי מדריך התפתחות לפי חודשים, כולל קפיצות גדילה, באפליקציה "הורות":',pacifier:'מצאתי הסבר ברור על מוצץ בתקופת ההנקה, באפליקציה "הורות":'},
   preview:'כך תיראה ההודעה',more:'שיתוף בדרך אחרת',note:'הקישור מוביל להרשמה לאפליקציה. מי שמקבלת אותו פותחת יומן משלה, והנתונים שלכם לא משותפים איתה.'},
  en:{btn:'Share with friends',sub:'Know someone this would help? Send them a link',title:'Share with friends',small:'Share with a friend',
-  msg:{app:'I found a free app for parents of babies: a feeding log shared by both parents, first foods and baby-led weaning, and development by month. Worth a try 💕',latch:'A clear guide to latching and breastfeeding positions, in the Nursing & Motherhood app:',pump:'A clear table for pumping and storing breast milk, in the Nursing & Motherhood app:',foods:'A handy guide to first foods and baby-led weaning, in the Nursing & Motherhood app:',dev:'A month-by-month development guide, including growth spurts, in the Nursing & Motherhood app:'},
+  msg:{app:'I found a free app for parents of babies: a feeding log shared by both parents, first foods and baby-led weaning, and development by month. Worth a try 💕',latch:'A clear guide to latching and breastfeeding positions, in the Parenting app:',pump:'A clear table for pumping and storing breast milk, in the Parenting app:',foods:'A handy guide to first foods and baby-led weaning, in the Parenting app:',dev:'A month-by-month development guide, including growth spurts, in the Parenting app:'},
   preview:'Your message',more:'Share another way',note:'The link leads to sign-up. Whoever gets it starts their own log; your data is not shared with them.'},
  ar:{btn:'شاركي مع الصديقات',sub:'تعرفين من قد يفيدها هذا؟ أرسلي لها الرابط',title:'المشاركة مع الأصدقاء',small:'شاركي مع صديقة',
-  msg:{app:'وجدت تطبيقًا مجانيًا لأهالي الرضّع: سجل رضاعة مشترك للوالدين، أول الأطعمة والتغذية الذاتية، والنمو حسب الأشهر. يستحق التجربة 💕',latch:'شرح واضح للالتقام الصحيح ووضعيات الرضاعة في تطبيق الرضاعة والأمومة:',pump:'جدول واضح لشفط حليب الأم وتخزينه في تطبيق الرضاعة والأمومة:',foods:'دليل عملي لأول الأطعمة والتغذية الذاتية في تطبيق الرضاعة والأمومة:',dev:'دليل النمو حسب الأشهر، مع طفرات النمو، في تطبيق الرضاعة والأمومة:'},
+  msg:{app:'وجدت تطبيقًا مجانيًا لأهالي الرضّع: سجل رضاعة مشترك للوالدين، أول الأطعمة والتغذية الذاتية، والنمو حسب الأشهر. يستحق التجربة 💕',latch:'شرح واضح للالتقام الصحيح ووضعيات الرضاعة في تطبيق التربية:',pump:'جدول واضح لشفط حليب الأم وتخزينه في تطبيق التربية:',foods:'دليل عملي لأول الأطعمة والتغذية الذاتية في تطبيق التربية:',dev:'دليل النمو حسب الأشهر، مع طفرات النمو، في تطبيق التربية:'},
   preview:'هكذا ستبدو الرسالة',more:'مشاركة بطريقة أخرى',note:'الرابط يقود إلى التسجيل. من تستلمه تبدأ سجلًا خاصًا بها، ولا تتم مشاركة بياناتكم معها.'}
 };
 const IC_HEART='<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
@@ -1339,7 +1340,7 @@ function viewPacifier(){
 // ---------- settings: profile, tasting preferences, install as app ----------
 const ST={
  he:{title:'הגדרות ומשפחה',me:'הפרופיל שלי',myName:'השם שלי ביומן',myNameHint:'כך יופיע ליד מה שאת/ה רושם/ת (למשל: אמא, אבא)',babiesT:'התינוקות',foodPrefs:'העדפות טעימות',style:'סגנון הגשה מועדף',allergy:'אלרגיות: מתכונים עם הרכיבים האלה לא יופיעו',allergyFor:(n)=>'עבור '+n,familyT:'משפחה ושיתוף',display:'תצוגה',install:'שמירה כאפליקציה במסך הבית',installSub:'פותחים בלחיצה אחת, כמו אפליקציה רגילה',
-  instTitle:'שמירה כאפליקציה',instLead:'אפשר לשמור את "הנקה ואמהות" במסך הבית של הטלפון. היא תיפתח במסך מלא, עם האייקון שלה, בלי שורת כתובת, ובלי להוריד שום דבר מחנות האפליקציות.',
+  instTitle:'שמירה כאפליקציה',instLead:'אפשר לשמור את "הורות" במסך הבית של הטלפון. היא תיפתח במסך מלא, עם האייקון שלה, בלי שורת כתובת, ובלי להוריד שום דבר מחנות האפליקציות.',
   already:'האפליקציה כבר שמורה במסך הבית שלך 🎉',installBtn:'התקנה עכשיו',
   iphone:'אייפון (ספארי)',iSteps:['פותחים את האפליקציה בדפדפן ספארי. בכרום באייפון זה עובד רק בגרסאות חדשות, ולכן עדיף ספארי','לוחצים על כפתור השיתוף: ריבוע עם חץ למעלה, בתחתית המסך (באייפד: למעלה)','גוללים למטה ובוחרים "הוספה למסך הבית"','לוחצים "הוסף" בפינה העליונה','האייקון הוורוד מופיע במסך הבית. מעכשיו פותחים משם'],
   galaxy:'גלקסי ואנדרואיד (כרום)',gSteps:['פותחים את האפליקציה בדפדפן כרום','לוחצים על שלוש הנקודות ⋮ בפינה העליונה','בוחרים "הוספה למסך הבית" או "התקנת אפליקציה"','מאשרים "התקנה"','האייקון מופיע במסך הבית ובמגירת האפליקציות'],
