@@ -212,7 +212,7 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 .install-card{background:var(--surface);border:2px dashed var(--dawn);min-height:72px;align-items:center}
 .check-chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 .check-chip input{width:20px;height:20px;accent-color:var(--danger);margin:0}
-.ntabs,.seg-scroll[role="group"][aria-label]{flex-wrap:wrap;overflow:visible}
+.ntabs,.wrap-tabs{flex-wrap:wrap;overflow:visible}
 .ntabs .chip,.seg-scroll .chip{min-height:40px;padding:0 14px;font-size:.9375rem}
 details.acc{background:var(--surface);border-radius:20px;overflow:hidden}
 details.acc>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;padding:12px 16px;cursor:pointer;font-weight:600;font-size:1.0625rem}
@@ -222,6 +222,13 @@ details.acc[open]>summary::after{transform:rotate(-135deg)}
 details.acc>.acc-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
 details.acc.warn-acc>summary{color:var(--danger)}
 img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
+.safety-acc{padding:0}
+.safety-acc>summary{list-style:none;display:flex;flex-direction:column;gap:2px;padding:14px 16px;cursor:pointer;color:var(--danger);font-weight:700;font-size:1.0625rem}
+.safety-acc>summary::-webkit-details-marker{display:none}
+.safety-acc>.safety-body{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px}
+.modal-back{position:fixed;inset:0;background:rgba(20,10,20,.45);z-index:60;display:flex;align-items:flex-end;justify-content:center;padding:12px}
+.modal{max-width:560px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+@media(min-width:600px){.modal-back{align-items:center}}
 </style>
 </head>
 <body>
@@ -810,11 +817,11 @@ const FT={
 // Info / BLW content (Hebrew, from the Lovable app, lightly edited)
 const FINFO=[
  ['intro','טעימות ראשונות לקטנטנים',['התחלת טעימות היא שלב מרגש, וגם קצת מלחיץ. פתאום החלב כבר לא מספיק, ויש עולם שלם של טעמים, מרקמים וריחות להכיר. המטרה כאן היא לעשות סדר, להוריד לחץ, ולתת לכם דרך פשוטה, רגועה ובטוחה להתחיל, בלי למהר ובלי ציפיות לא ריאליות.','זכרו: אוכל בגיל הזה הוא חוויה, משחק ולמידה. לא מבחן.']],
+ ['tips','עקרונות חשובים',[],['מאכל חדש עדיף בשעות היום ולא בערב, כדי שאם תהיה תגובה, רופא יהיה זמין','אין צורך בתיבול: זה טעם ראשון שאינו חלב אם או תמ״ל, והוא חדש ומרגש גם ככה','יריקה, פרצופים ולכלוך הם חלק מהתהליך, לגמרי נורמלי','אין מה למהר: יש לו את כל החיים לאכול','חלב אם או תמ״ל נשארים מקור התזונה המרכזי בשנה הראשונה']],
+ ['safety','בטיחות והיגיינה',[],['בהתחלה תמיד מרככים: בישול, אידוי או אפייה','חותכים בהתאם לשלב. ענבים ועגבניות שרי תמיד לרבעים לאורך','לא נותנים אגוזים שלמים, פופקורן, או גזר ותפוח קשים','משגיחים בכל רגע ולא משאירים תינוק לבד עם אוכל','שוטפים ידיים, פירות וירקות']],
  ['ready','מתי מתחילים',['משרד הבריאות ממליץ על חלב אם בלבד (או תמ״ל) בששת החודשים הראשונים, ולהתחיל טעימות סביב גיל חצי שנה.','סימנים שהתינוק מוכן (לא חייבים את כולם):'],['סקרנות לאוכל: מסתכל עליכם כשאתם אוכלים','מנסה לתפוס אוכל מהיד','פותח פה כשהכפית מתקרבת','מחזיק את פלג הגוף העליון ושולט יחסית בצוואר','יושב, גם אם עדיין רק בתמיכה: על הברכיים שלכם או בכיסא עם תמיכה טובה. לא צריך לחכות שיֵשב לבד']],
  ['blw','מה זה בייבילד?',['בייבילד (Baby-Led Weaning) היא גישה שבה התינוק אוכל בעצמו, עם הידיים, חתיכות אוכל רכות בגודל שנוח לאחוז, במקום שיאכילו אותו בכפית. התינוק מחליט כמה לאכול ובאיזה קצב, ולומד מרקמים שונים כבר מההתחלה.','אפשר גם לשלב: חלק מהארוחות מרוסקות בכפית וחלק אכילה עצמית. אין שיטה אחת נכונה.','בבייבילד מגישים בצורה בטוחה את האוכל של כל המשפחה, עם מעט מלח או בלי מלח בכלל.'],['תמיד בהשגחה, כשהתינוק יושב זקוף','חתיכות גדולות לאחיזה (בערך באורך אצבע של מבוגר), ורכות מאוד: נמעכות בין האגודל לאצבע','ממרחים סמיכים, כמו טחינה וחמאת בוטנים, רק בשכבה דקה ולא בגוש','לא מכניסים אוכל לפה של התינוק. נותנים לו להוביל','השתנקות קלה (שיעול, פרצופים) היא חלק מהלמידה. חנק שקט, בלי שיעול ובלי קול, הוא מצב חירום']],
  ['mashed','מרוסק (בכפית)',['מתחילים במרקם חלק, ובהדרגה עוברים למרקם מעוך ולגושים קטנים ורכים, כדי שהתינוק ילמד ללעוס.','מציעים את הכפית ומחכים שהתינוק יפתח את הפה. כשהוא מסובב את הראש או סוגר את הפה, זה סימן שסיים.']],
- ['tips','עקרונות חשובים',[],['מאכל חדש עדיף בשעות היום ולא בערב, כדי שאם תהיה תגובה, רופא יהיה זמין','אין צורך בתיבול: זה טעם ראשון שאינו חלב אם או תמ״ל, והוא חדש ומרגש גם ככה','יריקה, פרצופים ולכלוך הם חלק מהתהליך, לגמרי נורמלי','אין מה למהר: יש לו את כל החיים לאכול','חלב אם או תמ״ל נשארים מקור התזונה המרכזי בשנה הראשונה']],
- ['safety','בטיחות והיגיינה',[],['בהתחלה תמיד מרככים: בישול, אידוי או אפייה','חותכים בהתאם לשלב. ענבים ועגבניות שרי תמיד לרבעים לאורך','לא נותנים אגוזים שלמים, פופקורן, או גזר ותפוח קשים','משגיחים בכל רגע ולא משאירים תינוק לבד עם אוכל','שוטפים ידיים, פירות וירקות']],
  ['balance','תזונה מאוזנת בקטנה',['אין צורך לספור, לשקול או להילחץ.'],['🍗 חלבון: עוף, בשר, דגים, ביצים, טופו, קטניות','🥕 פחמימות: ירקות, פירות, דגנים','🥑 שומנים טובים: אבוקדו, שמן זית, טחינה']],
  ['afterone','אחרי גיל שנה',[],['🍯 דבש: רק אחרי גיל שנה','🥛 חלב פרה: לא נותנים לשתייה לפני גיל שנה. מוצרי חלב כמו יוגורט וגבינה אפשר כבר מחצי שנה','🧂 מלח וסוכר: כמה שפחות, גם אחר כך']],
  ['calm','לסיום, בלי לחץ',['טעימות הן לא מרוץ. לא חייבים להספיק הכול, ולא חייבים "לאכול יפה". מספיק להיות שם, להציע, לאפשר, ולסמוך על התינוק שלכם.']]
@@ -840,7 +847,7 @@ function allergenState(){
  return out;
 }
 function foodsSub(){ const F=FT[S.lang]||FT.he; const cur=S.foodSub||'info';
- return '<div class="seg-scroll" role="group" aria-label="'+esc(F.title)+'">'+['info','foods','allergens','recipes','log'].map(k=>'<button type="button" class="chip" data-act="fsub" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
+ return '<div class="seg-scroll wrap-tabs" role="group" aria-label="'+esc(F.title)+'">'+['info','foods','allergens','recipes','log'].map(k=>'<button type="button" class="chip" data-act="fsub" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
 function tagRow(f){ const F=FT[S.lang]||FT.he; const t=[];
  if(f[10]) t.push('<span class="tag warm">'+esc(F.allergen+': '+alName(f[10]))+'</span>');
  if(f[8]) t.push('<span class="tag">'+esc(F.soft)+'</span>');
@@ -852,7 +859,7 @@ function viewFoods(){
  const head='<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(F.title)+'</h1><p class="muted small">'+esc(b.name+', '+F.tasted(Object.keys(st).length))+'</p></div><div class="row" style="gap:8px">'+sosPill()+statusPill()+'</div></div>'+babySwitch()+foodsSub()+'</header>'+(F.langNote?'<p class="banner">'+esc(F.langNote)+'</p>':'');
  let body='';
  if(sub==='info') body=infoView(); else if(sub==='foods') body=foodsList(st); else if(sub==='allergens') body=allergensView(); else if(sub==='recipes') body=recipesView(); else if(sub==='log') body=tasteLog(); else body=foodsList(st);
- return head+body+'<p class="note">'+esc(F.disclaimer)+'</p>';
+ return head+body+'<p class="note">'+esc(F.disclaimer)+'</p>'+safetyModal();
 }
 function foodsList(st){
  const F=FT[S.lang]||FT.he, cat=S.foodCat||'all', q=(S.foodQ||'').trim();
@@ -917,7 +924,8 @@ function tasteLog(){
 const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נותנים עד גיל שנה, גם לא בבישול או במאפה.'],['🥛','חלב פרה: לא נותנים לשתייה לפני גיל שנה.'],['🍇','ענבים, עגבניות שרי ואוכמניות: תמיד חוצים לרבעים לאורך או מועכים. אגוזים שלמים, פופקורן וממתקים קשים: לא נותנים.'],['👀','השגחה: תמיד, כשהתינוק יושב זקוף. לא משאירים לבד עם אוכל, גם לא לרגע.'],['🫁','חנק שקט הוא מצב חירום: בלי שיעול ובלי קול. מתקשרים מיד ל-101. שיעול והשתנקות, לעומת זאת, הם חלק רגיל מהלמידה.']],
  cpr:'מומלץ מאוד לעבור קורס החייאת תינוקות ועזרה ראשונה לפני שמתחילים טעימות. קורסים כאלה מועברים למשל במד״א.',
  meds:'לפני שמתחילים טעימות: דאגו שכבר תהיה בבית תרופה נגד תגובה אלרגית קלה. שאלו מראש את רופא/ת הילדים איזו תרופה ובאיזה מינון לפי המשקל של התינוק.',call:'חירום: מד״א 101'};
-function safetyBox(){ const X=FSAFE; return '<section class="safety" lang="he" dir="rtl"><h2>⚠️ '+esc(X.title)+'</h2><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></section>'; }
+function safetyBox(){ const X=FSAFE; return '<details class="safety safety-acc" lang="he" dir="rtl"'+(S.safetyOpen?' open':'')+'><summary data-act="safetytoggle"><span>⚠️ '+esc(X.title)+'</span><span class="small" style="font-weight:500">דבש, חנק, אלרגיה, 101</span></summary><div class="safety-body"><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></div></details>'; }
+function safetyModal(){ const X=FSAFE; if(ls.get('gp-safety-ack',false)) return ''; return '<div class="modal-back"><div class="modal safety" role="dialog" aria-modal="true" aria-labelledby="safety-t" lang="he" dir="rtl"><h2 id="safety-t">⚠️ '+esc(X.title)+'</h2><p class="small">לפני שמתחילים טעימות, כמה דברים חשובים. תמיד אפשר לחזור אליהם בלשונית "בייבילד ומידע".</p><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><button type="button" class="btn block" data-act="safetyack">קראתי, הבנתי</button></div></div>'; }
 function sosPill(){ return '<a class="sos-pill" href="tel:101" aria-label="חירום: התקשרות למד״א 101">📞 101</a>'; }
 function infoView(){
  const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
@@ -1284,7 +1292,7 @@ function viewRoutine(){
  '<section class="card"><h2>📚 ספרים ושירים</h2>'+L(BOOKS)+'</section>'+
  '<section class="card"><h2>שינה בטוחה</h2>'+L(SAFESLEEP)+'</section>'+
  '</div>'+shareLink('dev')+
- '<p class="note">מבוסס על מקורות ישראליים: מדריך השינה של מכבי שירותי בריאות ודף המידע "שינה בשנה הראשונה" של אנה קוגן (אחות ויועצת הנקה מוסמכת), ובנוסף על המלצות AASM ו-AAP לשינה בטוחה. הדוגמאות כלליות: כל תינוק שונה, ואין צורך להיצמד לשעון.</p>';
+ '<p class="note">מבוסס על מקורות ישראליים: מדריך השינה של מכבי שירותי בריאות ומידע של יועצות הנקה ושינה מוסמכות, ובנוסף על המלצות AASM ו-AAP לשינה בטוחה. הדוגמאות כלליות: כל תינוק שונה, ואין צורך להיצמד לשעון.</p>';
 }
 
 // ---------- calming techniques & pacifier (Hebrew) ----------
@@ -1300,7 +1308,7 @@ const CALM={
  more:['מגע עור לעור על החזה','יציאה החוצה לאוויר, טיול קצר עם העגלה או המנשא','אמבטיה חמימה','החלפת ידיים: לפעמים התינוק נרגע אצל ההורה השני'],
  you:'אם הבכי לא נגמר ואת מרגישה שאת מאבדת סבלנות, זה קורה להרבה הורים. מניחים את התינוק בבטחה על הגב במיטה, יוצאים מהחדר לכמה דקות, נושמים, ומבקשים עזרה מבן או בת הזוג או ממישהו קרוב. אף פעם לא מנערים תינוק.',
  doctor:['חום של 38°C ומעלה בתינוק מתחת לגיל 3 חודשים','בכי שונה מהרגיל: צווחני, חלש מאוד, או שלא נרגע בכלל במשך שעות','התינוק לא אוכל, מקיא שוב ושוב, או ישנוני ורפוי באופן חריג','כל דבר שמרגיש לך לא תקין'],
- source:'מבוסס על שיטת "5 ה-S" של ד״ר הארווי קארפ, על המלצות איגוד רופאי הילדים האמריקאי (AAP) לשינה בטוחה, ועל מידע מקובל להורים. כדאי לקרוא גם את הפוסט של אנה קוגן על טכניקות הרגעה באתר Nurse With Love.'
+ source:'מבוסס על שיטת "5 ה-S" של ד״ר הארווי קארפ, על המלצות איגוד רופאי הילדים האמריקאי (AAP) לשינה בטוחה, ועל מידע מקובל להורים.'
 };
 const PACI={
  lead:'מוצץ יכול לעזור להרגיע תינוק, וכשנותנים אותו בזמן השינה הוא גם מוריד את הסיכון למוות בעריסה. בתקופת ההנקה חשוב לדעת מתי ואיך להשתמש בו, כדי שלא יבוא על חשבון ההנקה.',
@@ -1310,7 +1318,7 @@ const PACI={
  signsNote:'אם את מזהה אחד מהסימנים האלה, כדאי לצמצם את המוצץ ולהתייעץ עם יועצת הנקה או טיפת חלב.',
  safe:['מוצץ מחלק אחד, בגודל שמתאים לגיל','לא קושרים מוצץ בחוט או בשרשרת סביב הצוואר או ליד העריסה','לא טובלים בדבש, בסוכר או בשום דבר מתוק','בודקים לפני כל שימוש: אם יש סדק או קרע, מחליפים','שוטפים במים וסבון. בחודשים הראשונים אפשר גם להרתיח או לעקר'],
  wean:'אין לחץ להיגמל מוקדם. מומלץ להתחיל להפחית בהדרגה בשנה השנייה, ולהיפרד מהמוצץ עד גיל 3 בערך, כדי לא להשפיע על התפתחות השיניים.',
- source:'מבוסס על המלצות איגוד רופאי הילדים האמריקאי (AAP) לשינה בטוחה ולהנקה, ועל מידע מקובל להורים. כדאי לקרוא גם את הפוסט של אנה קוגן על מוצץ בתקופת ההנקה באתר Nurse With Love.'
+ source:'מבוסס על המלצות איגוד רופאי הילדים האמריקאי (AAP) לשינה בטוחה ולהנקה, ועל מידע מקובל להורים.'
 };
 function ul(arr){ return '<ul class="bul">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'; }
 function hebOnly(){ return S.lang!=='he'?'<p class="banner">'+esc(S.lang==='ar'?'هذا القسم بالعبرية حاليًا. الترجمة قادمة.':'This section is in Hebrew for now. A translation is on the way.')+'</p>':''; }
@@ -1443,7 +1451,7 @@ function draw(){
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
-  if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; try{ enhanceAcc(v); }catch(e){} if(keepQ){ const q=document.getElementById('food-q'); if(q){ q.focus({preventScroll:true}); try{ q.setSelectionRange(keepQ[0],keepQ[1]); }catch(e){} } } const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
+  if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; try{ enhanceAcc(v); }catch(e){} try{ v.querySelectorAll('.seg-scroll:not(.wrap-tabs) .chip[aria-pressed="true"]').forEach(c=>{ const r=c.parentElement; r.scrollLeft=c.offsetLeft-(r.clientWidth-c.offsetWidth)/2; }); }catch(e){} if(keepQ){ const q=document.getElementById('food-q'); if(q){ q.focus({preventScroll:true}); try{ q.setSelectionRange(keepQ[0],keepQ[1]); }catch(e){} } } const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
  }
  const tb=document.getElementById('topbar'); const th='<a class="brand" href="#home" aria-label="'+esc(L.appName+', '+L.home)+'">'+LOGO+'<span>'+esc(L.appName)+'</span></a>'+((S.fid&&(S.family.babies||[]).length)?'<button type="button" class="share-btn" data-act="share">'+IC.share+esc(L.share)+'</button>':''); if(tb.innerHTML!==th) tb.innerHTML=th;
  const nav=document.getElementById('tabs'); nav.setAttribute('aria-label',L.nav); nav.dir=L.dir; nav.lang=S.lang; const nh=S.fid?tabs():''; nav.hidden=!S.fid; if(nh!==lastNav){ nav.innerHTML=nh; lastNav=nh; }
@@ -1521,6 +1529,8 @@ document.addEventListener('click',e=>{
  if(a==='share'){ openSheet({mode:'share',type:'share'}); return; }
  if(a==='sharefriends'){ shareFriends(el.dataset.v||'app'); return; }
  if(a==='devage'){ S.devAge=Number(el.dataset.v); render(); return; }
+ if(a==='safetyack'){ ls.set('gp-safety-ack',true); render(); return; }
+ if(a==='safetytoggle'){ e.preventDefault(); S.safetyOpen=!S.safetyOpen; render(); return; }
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
