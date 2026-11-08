@@ -331,6 +331,9 @@ const hhmm=ms=>{const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinut
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const startOfDay=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime();};
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+const PENDING_JOIN=(()=>{ try{ const q=new URLSearchParams(location.search).get('join'); if(q&&/^\d{6}$/.test(q)){ ls.set('gp-join',q); history.replaceState(null,'',location.pathname+location.hash); } }catch(e){} return null; })();
+const pendingJoin=()=>{ const v=ls.get('gp-join',''); return /^\d{6}$/.test(v)?v:''; };
+const inviteLink=()=>APP_URL+'/?join='+encodeURIComponent(S.invite||'');
 const LOGO='<svg class="logo" aria-hidden="true" width="32" height="32" viewBox="152 132 740 740"><circle cx="522" cy="502" r="370" fill="#FCC3C8"/><path d="M587 215 C568 315 515 385 445 448 C370 515 325 570 324 635 C323 735 420 790 510 789 C600 788 675 722 720 658" fill="none" stroke="#2A2625" stroke-width="44" stroke-linecap="round"/></svg>';
 const LOGO_BIG='<svg class="logo" aria-hidden="true" width="72" height="72" viewBox="152 132 740 740"><circle cx="522" cy="502" r="370" fill="#FCC3C8"/><path d="M587 215 C568 315 515 385 445 448 C370 515 325 570 324 635 C323 735 420 790 510 789 C600 788 675 722 720 658" fill="none" stroke="#2A2625" stroke-width="34" stroke-linecap="round"/></svg>';
 const IC={
@@ -360,17 +363,17 @@ const SB_URL='https://wdwfpjprdffkbvthtcuy.supabase.co';
 const SB_KEY='sb_publishable_Z_gT_Mjz2-BecNNOVXmY9A_0bCRPD8w';
 const AT={
  he:{signup:'הרשמה',login:'כניסה',email:'אימייל',password:'סיסמה',pwHint:'לפחות 8 תווים',authLead:'יומן משותף להנקה, שינה, תרופות וטעימות, לשני ההורים.',toLogin:'כבר רשומה? כניסה',toSignup:'אין לך חשבון? הרשמה',checkEmail:'שלחנו מייל אישור. אחרי האישור חוזרים לכאן ונכנסים.',authErr:'לא הצלחנו להיכנס. בדקי את האימייל והסיסמה ונסי שוב.',weakPw:'הסיסמה צריכה לכלול לפחות 8 תווים.',exists:'האימייל הזה כבר רשום. הקלידי את הסיסמה שלך כדי להיכנס.',
-  onbTitle:'איך מתחילים?',newFamily:'יצירת יומן חדש',newFamilyHint:'לאמא או לאבא שמתחילים ראשונים',joinFamily:'הצטרפות ליומן קיים',joinFamilyHint:'קיבלת קוד מבן או בת הזוג',yourName:'איך לקרוא לך ביומן? (למשל: אמא)',code:'קוד הצטרפות (6 ספרות)',join:'הצטרפות',badCode:'הקוד לא נמצא. בדקי שהוקלדו כל 6 הספרות.',tooMany:'היו יותר מדי ניסיונות. נסי שוב בעוד שעה, או בקשי מבן או בת הזוג לשלוח את הקוד שוב.',
+  onbTitle:'איך מתחילים?',newFamily:'יצירת יומן חדש',newFamilyHint:'לאמא או לאבא שמתחילים ראשונים',joinFamily:'הצטרפות ליומן קיים',joinFamilyHint:'קיבלת קוד מבן או בת הזוג',yourName:'איך לקרוא לך ביומן? (למשל: אמא)',code:'קוד הצטרפות (6 ספרות)',join:'הצטרפות',badCode:'הקוד לא נמצא. בדקי שהוקלדו כל 6 הספרות.',invited:'הוזמנת להצטרף ליומן משותף. הקוד כבר מולא, נשאר רק לכתוב איך לקרוא לך.',invitedAuth:'הוזמנת להצטרף ליומן משותף 💕 הירשמי או היכנסי, ומיד אחר כך נצרף אותך.',tooMany:'היו יותר מדי ניסיונות. נסי שוב בעוד שעה, או בקשי מבן או בת הזוג לשלוח את הקוד שוב.',
   codeLabel:'קוד ההצטרפות שלכם',logout:'יציאה מהחשבון',working:'רגע…',shareCode:(c)=>'קוד הצטרפות: '+c,
-  inviteText:'שלחי לבן או בת הזוג את הקישור ואת הקוד. אחרי ההרשמה בוחרים "הצטרפות ליומן קיים" ומקלידים את הקוד.',signedAs:(e)=>'מחובר/ת בתור '+e,notSaved:'לא נשמר, נסי שוב'},
+  inviteText:'שלחי לבן או בת הזוג את הקישור האישי. הוא פותח את האפליקציה עם הקוד שלכם כבר ממולא, ואחרי ההרשמה מצטרפים בלחיצה. הקוד מופיע גם בהודעה, למקרה שצריך להקליד אותו.',signedAs:(e)=>'מחובר/ת בתור '+e,notSaved:'לא נשמר, נסי שוב'},
  en:{signup:'Sign up',login:'Log in',email:'Email',password:'Password',pwHint:'At least 8 characters',authLead:'A shared log for feeds, sleep, medicines and first foods, for both parents.',toLogin:'Already have an account? Log in',toSignup:'No account yet? Sign up',checkEmail:'We sent a confirmation email. Confirm it, then come back and log in.',authErr:'We couldn’t log you in. Check your email and password and try again.',weakPw:'The password needs at least 8 characters.',exists:'This email is already registered. Enter your password to log in.',
-  onbTitle:'How do you want to start?',newFamily:'Start a new log',newFamilyHint:'For the parent who starts first',joinFamily:'Join an existing log',joinFamilyHint:'You got a code from your partner',yourName:'What should we call you in the log? (e.g. Mom)',code:'Join code (6 digits)',join:'Join',badCode:'That code wasn’t found. Check all 6 digits.',tooMany:'Too many attempts. Try again in an hour, or ask your partner to resend the code.',
+  onbTitle:'How do you want to start?',newFamily:'Start a new log',newFamilyHint:'For the parent who starts first',joinFamily:'Join an existing log',joinFamilyHint:'You got a code from your partner',yourName:'What should we call you in the log? (e.g. Mom)',code:'Join code (6 digits)',join:'Join',badCode:'That code wasn’t found. Check all 6 digits.',invited:'You were invited to a shared log. The code is already filled in; just add what to call you.',invitedAuth:'You were invited to a shared log 💕 Sign up or log in and we’ll add you right after.',tooMany:'Too many attempts. Try again in an hour, or ask your partner to resend the code.',
   codeLabel:'Your join code',logout:'Log out',working:'One moment…',shareCode:(c)=>'Join code: '+c,
-  inviteText:'Send your partner the link and the code. After signing up they choose "Join an existing log" and type the code.',signedAs:(e)=>'Signed in as '+e,notSaved:'Not saved, try again'},
+  inviteText:'Send your partner the personal link. It opens the app with your code already filled in, so after signing up they join with one tap. The code is also in the message, in case they need to type it.',signedAs:(e)=>'Signed in as '+e,notSaved:'Not saved, try again'},
  ar:{signup:'تسجيل',login:'دخول',email:'البريد الإلكتروني',password:'كلمة المرور',pwHint:'8 أحرف على الأقل',authLead:'سجل مشترك للرضاعة والنوم والأدوية وأول الأطعمة، للوالدين معًا.',toLogin:'لديكِ حساب؟ دخول',toSignup:'ليس لديكِ حساب؟ تسجيل',checkEmail:'أرسلنا رسالة تأكيد. بعد التأكيد عودي إلى هنا وادخلي.',authErr:'تعذّر الدخول. تحققي من البريد وكلمة المرور وحاولي مجددًا.',weakPw:'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.',exists:'هذا البريد مسجّل مسبقًا. أدخلي كلمة المرور للدخول.',
-  onbTitle:'كيف تبدئين؟',newFamily:'إنشاء سجل جديد',newFamilyHint:'للأم أو الأب الذي يبدأ أولًا',joinFamily:'الانضمام إلى سجل قائم',joinFamilyHint:'وصلك رمز من الشريك',yourName:'ماذا نسميك في السجل؟ (مثلًا: ماما)',code:'رمز الانضمام (6 أرقام)',join:'انضمام',badCode:'لم يُعثر على الرمز. تحققي من الأرقام الستة.',tooMany:'محاولات كثيرة جدًا. حاولي بعد ساعة، أو اطلبي من الشريك إرسال الرمز مجددًا.',
+  onbTitle:'كيف تبدئين؟',newFamily:'إنشاء سجل جديد',newFamilyHint:'للأم أو الأب الذي يبدأ أولًا',joinFamily:'الانضمام إلى سجل قائم',joinFamilyHint:'وصلك رمز من الشريك',yourName:'ماذا نسميك في السجل؟ (مثلًا: ماما)',code:'رمز الانضمام (6 أرقام)',join:'انضمام',badCode:'لم يُعثر على الرمز. تحققي من الأرقام الستة.',invited:'تمت دعوتك للانضمام إلى سجل مشترك. الرمز مكتوب مسبقًا، بقي أن تكتبي كيف نناديك.',invitedAuth:'تمت دعوتك للانضمام إلى سجل مشترك 💕 سجّلي أو ادخلي وسنضمّك مباشرةً بعد ذلك.',tooMany:'محاولات كثيرة جدًا. حاولي بعد ساعة، أو اطلبي من الشريك إرسال الرمز مجددًا.',
   codeLabel:'رمز الانضمام الخاص بكم',logout:'تسجيل الخروج',working:'لحظة…',shareCode:(c)=>'رمز الانضمام: '+c,
-  inviteText:'أرسلي للشريك الرابط والرمز. بعد التسجيل يختار «الانضمام إلى سجل قائم» ويكتب الرمز.',signedAs:(e)=>'متصل باسم '+e,notSaved:'لم يُحفظ، حاولي مجددًا'}
+  inviteText:'أرسلي للشريك الرابط الشخصي. يفتح التطبيق والرمز مكتوب مسبقًا، وبعد التسجيل ينضم بلمسة واحدة. الرمز موجود في الرسالة أيضًا إذا احتاج لكتابته.',signedAs:(e)=>'متصل باسم '+e,notSaved:'لم يُحفظ، حاولي مجددًا'}
 };
 const at=()=>AT[S.lang]||AT.he;
 const Store={sb:null,fid:null,channel:null,timer:{},
@@ -389,7 +392,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   S.ready=false; render();
   const {data,error}=await this.sb.from('family_members').select('family_id').eq('user_id',S.me).order('joined_at',{ascending:true}).limit(1);
   if(error){ S.mode='error'; S.ready=true; render(); return; }
-  if(data&&data.length){ await this.open(data[0].family_id); } else { S.mode='onboard'; S.ready=true; render(); }
+  if(data&&data.length){ await this.open(data[0].family_id); } else { S.mode='onboard'; if(pendingJoin()&&!S.onb){ S.onb='join'; S.draft['join-code']=pendingJoin(); } S.ready=true; render(); }
  },
  async open(fid){
   this.fid=fid; S.fid=fid; S.mode='db'; { const h=(location.hash||'').slice(1); if(!VIEWS.includes(h)){ S.view='home'; try{ history.replaceState(null,'','#home'); }catch(e){} } }
@@ -442,7 +445,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
 };
 function viewAuth(){
  const A=at(), up=S.authMode!=='login';
- return '<header class="section" style="gap:14px;padding-top:12px">'+LOGO_BIG+'<h1>'+esc(t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+
+ return '<header class="section" style="gap:14px;padding-top:12px">'+LOGO_BIG+'<h1>'+esc(t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+(pendingJoin()?'<p class="banner">'+esc(A.invitedAuth)+'</p>':'')+
  '<form class="card" data-form="auth" novalidate><h2 style="font-size:1.25rem">'+esc(up?A.signup:A.login)+'</h2>'+
  '<label class="field" for="auth-email">'+esc(A.email)+'<input id="auth-email" type="email" dir="ltr" autocomplete="email" inputmode="email" required value="'+dv('auth-email')+'"></label>'+
  '<label class="field" for="auth-pw">'+esc(A.password)+'<input id="auth-pw" type="password" dir="ltr" autocomplete="'+(up?'new-password':'current-password')+'" minlength="'+(up?8:6)+'" required value="'+dv('auth-pw')+'"></label>'+
@@ -455,7 +458,7 @@ function viewOnboard(){
  const A=at(), L=t(), m=S.onb||'';
  if(m==='new') return viewSetup();
  if(m==='join') return '<header class="section"><button type="button" class="link" data-act="onb" data-v="">'+esc(L.back)+'</button><h1>'+esc(A.joinFamily)+'</h1></header>'+
-  '<form class="card" data-form="join"><label class="field" for="join-name">'+esc(A.yourName)+'<input id="join-name" type="text" required autocomplete="off" value="'+dv('join-name')+'"></label>'+
+  (pendingJoin()?'<p class="banner">'+esc(A.invited)+'</p>':'')+'<form class="card" data-form="join"><label class="field" for="join-name">'+esc(A.yourName)+'<input id="join-name" type="text" required autocomplete="off" value="'+dv('join-name')+'"></label>'+
   '<label class="field" for="join-code">'+esc(A.code)+'<input id="join-code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" dir="ltr" required autocomplete="off" value="'+dv('join-code')+'"></label>'+
   (S.authMsg?'<p class="banner" role="alert">'+esc(S.authMsg)+'</p>':'')+
   '<button class="btn block" type="submit"'+(S.busy?' disabled':'')+'>'+esc(S.busy?A.working:A.join)+'</button></form>';
@@ -1235,7 +1238,7 @@ function drawSheet(){
  if(sheet.type==='feed'||sheet.type==='sleep') body+='<fieldset><legend>'+esc(L.howLong)+'</legend><div class="stepper"><button type="button" data-sh="mins" data-v="-5" aria-label="'+esc(L.less5)+'">−</button><output aria-live="polite">'+sheet.mins+' '+esc(L.min)+'</output><button type="button" data-sh="mins" data-v="5" aria-label="'+esc(L.more5)+'">+</button></div></fieldset>';
  if(sheet.type==='bottle'||sheet.type==='pump') body+='<fieldset><legend>'+esc(L.howMuch)+'</legend><div class="stepper"><button type="button" data-sh="ml" data-v="-10" aria-label="'+esc(L.less10)+'">−</button><output aria-live="polite">'+sheet.ml+' '+esc(L.ml)+'</output><button type="button" data-sh="ml" data-v="10" aria-label="'+esc(L.more10)+'">+</button></div></fieldset>';
  if(sheet.mode==='taste') body+=tasteSheetBody();
- if(sheet.mode==='share'){ const b=baby(); const msg=L.shareMsg(b?b.name:'')+APP_URL+'\n'+at().shareCode(S.invite||''); body+='<div class="card" style="align-items:center;gap:4px"><span class="small muted">'+esc(at().codeLabel)+'</span><span dir="ltr" style="font-size:2rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums">'+esc(S.invite||'')+'</span></div>'; body+='<p>'+esc(at().inviteText)+'</p><a class="btn block" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="https://wa.me/?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">'+esc(L.whatsapp)+'</a><button type="button" class="btn ghost block" data-sh="copy">'+esc(sheet.copied?L.copied:L.copy)+'</button><p id="share-url" dir="ltr" class="small" style="user-select:all;word-break:break-all;padding:10px 12px;border-radius:12px;background:var(--surface)">'+esc(APP_URL)+'</p>'; }
+ if(sheet.mode==='share'){ const b=baby(); const msg=L.shareMsg(b?b.name:'')+inviteLink()+'\n'+at().shareCode(S.invite||''); body+='<div class="card" style="align-items:center;gap:4px"><span class="small muted">'+esc(at().codeLabel)+'</span><span dir="ltr" style="font-size:2rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums">'+esc(S.invite||'')+'</span></div>'; body+='<p>'+esc(at().inviteText)+'</p><a class="btn block" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="https://wa.me/?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">'+esc(L.whatsapp)+'</a><button type="button" class="btn ghost block" data-sh="copy">'+esc(sheet.copied?L.copied:L.copy)+'</button><p id="share-url" dir="ltr" class="small" style="user-select:all;word-break:break-all;padding:10px 12px;border-radius:12px;background:var(--surface)">'+esc(inviteLink())+'</p>'; }
  if(sheet.mode==='friends'){ const X=SF[S.lang]||SF.he, sh=shareInfo(sheet.kind); body+='<div class="card" style="gap:6px"><span class="small muted">'+esc(X.preview)+'</span><p style="line-height:1.6;white-space:pre-line">'+esc(sh.text)+'</p><p dir="ltr" class="small" style="word-break:break-all;color:var(--dusk)" id="share-url">'+esc(sh.url)+'</p></div><a class="btn block" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="https://wa.me/?text='+encodeURIComponent(sh.full)+'" target="_blank" rel="noopener">'+esc(L.whatsapp)+'</a><button type="button" class="btn ghost block" data-sh="copyfull">'+esc(sheet.copied?L.copied:L.copy)+'</button>'+(navigator.share?'<button type="button" class="btn ghost block" data-sh="native">'+esc(X.more)+'</button>':'')+'<p class="small muted">'+esc(X.note)+'</p>'; }
  if(sheet.type==='diaper') body+='<fieldset><legend>'+esc(L.whichKind)+'</legend>'+chips('kind',[['wet',L.kinds.wet],['dirty',L.kinds.dirty],['both',L.kinds.both]],sheet.kind)+'</fieldset>';
  r.innerHTML='<div class="scrim" data-sh="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title" dir="'+L.dir+'" lang="'+S.lang+'"><h2 id="sh-title" style="font-size:1.375rem">'+esc(title)+'</h2>'+body+
@@ -1248,7 +1251,7 @@ document.getElementById('sheet-root').addEventListener('click',e=>{
  if(k==='scrim'){ if(e.target===el) closeSheet(); return; }
  if(k==='cancel') return closeSheet();
  if(k==='save') return saveSheet();
- if(k==='copy'){ const done=()=>{ sheet.copied=true; drawSheet(); say(t().copied); }; const sel=()=>{ const n=document.getElementById('share-url'); if(n){ const r=document.createRange(); r.selectNodeContents(n); const s=getSelection(); s.removeAllRanges(); s.addRange(r);} }; try{ navigator.clipboard.writeText(APP_URL).then(done,sel); }catch(e){ sel(); } return; }
+ if(k==='copy'){ const done=()=>{ sheet.copied=true; drawSheet(); say(t().copied); }; const sel=()=>{ const n=document.getElementById('share-url'); if(n){ const r=document.createRange(); r.selectNodeContents(n); const s=getSelection(); s.removeAllRanges(); s.addRange(r);} }; try{ navigator.clipboard.writeText(inviteLink()).then(done,sel); }catch(e){ sel(); } return; }
  if(k==='copyfull'){ const sh=shareInfo(sheet.kind); const done=()=>{ sheet.copied=true; drawSheet(); say(t().copied); }; try{ navigator.clipboard.writeText(sh.full).then(done,()=>{}); }catch(e){} return; }
  if(k==='native'){ const sh=shareInfo(sheet.kind); try{ navigator.share({title:t().appName,text:sh.text,url:sh.url}).catch(()=>{}); }catch(e){} return; }
  if(k==='mins') sheet.mins=Math.max(1,Math.min(180,sheet.mins+Number(v)));
@@ -1339,7 +1342,7 @@ document.addEventListener('submit',e=>{
   const A=at(), code=document.getElementById('join-code').value.replace(/\D/g,''), name=document.getElementById('join-name').value.trim();
   if(code.length!==6){ S.authMsg=A.badCode; render(); return; }
   S.busy=true; S.authMsg=''; render();
-  Store.joinFamily(code,name).then(()=>{ S.busy=false; S.draft={}; S.onb=''; render(); },(err)=>{ S.busy=false; S.authMsg=/too many/i.test((err&&err.message)||'')?A.tooMany:A.badCode; render(); });
+  Store.joinFamily(code,name).then(()=>{ ls.set('gp-join',''); S.busy=false; S.draft={}; S.onb=''; render(); },(err)=>{ S.busy=false; S.authMsg=/too many/i.test((err&&err.message)||'')?A.tooMany:A.badCode; render(); });
   return;
  }
  if(f.dataset.form==='setup'){
