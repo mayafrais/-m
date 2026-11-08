@@ -139,6 +139,38 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .opt-h{font-size:.875rem;opacity:.8}
 .opt .chev{flex:none;opacity:.7}
 [dir=rtl] .opt .chev{transform:scaleX(-1)}
+.view>*{min-width:0}
+.seg-scroll{max-width:100%;min-width:0;display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.seg-scroll::-webkit-scrollbar{display:none}
+.seg-scroll .chip{flex:none;position:relative}
+.chip[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.75rem;font-weight:500;padding:3px 10px;border-radius:999px;background:var(--mist);color:var(--ink2)}
+.tag.warm{background:var(--dawn-soft);color:var(--dawn-text)}
+.tag.ok{background:var(--sage-soft);color:var(--sage)}
+.foods{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.food{background:var(--surface);border-radius:20px;overflow:hidden}
+.food-head{display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:10px 14px;border:0;background:transparent;color:var(--ink);text-align:start}
+.food-head .chev{flex:none;opacity:.6;transition:transform .2s}
+.food.open .food-head .chev{transform:rotate(180deg)}
+.food-body{padding:0 14px 16px;display:flex;flex-direction:column;gap:12px}
+.food-body h3{margin:4px 0 0;font-size:.9375rem}
+.thumb{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;background:var(--mist)}
+.thumb.emoji{display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+.food-img{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:16px;background:var(--mist)}
+.done{color:var(--sage);display:inline-flex}
+.al-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:none;box-shadow:inset 0 0 0 3px var(--surface)}
+.bul{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px;line-height:1.6}
+.img-pair{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.img-pair img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:14px;background:var(--mist)}
+.home-small{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt.slim{min-height:72px;padding:14px;flex-direction:column;align-items:flex-start;gap:8px}
+.opt.slim .chev{display:none}
+.opt.slim .opt-ic{width:40px;height:40px}
+.opt.slim .opt-h{font-size:.8125rem}
+details summary{list-style:none;min-height:44px;display:flex;align-items:center}
+details summary::-webkit-details-marker{display:none}
+input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:0 14px;font-size:1rem}
 </style>
 </head>
 <body>
@@ -195,7 +227,7 @@ const T = {
   artWhen:'מתי פונים לרופא או לטיפת חלב',artWhenList:['פחות חיתולים רטובים מהרגיל, או שתן כהה','התינוק ישנוני מאוד וקשה להעיר אותו להנקה','הצהבת בעור או בעיניים מתגברת'],artDoubt:'בכל ספק, עדיף לשאול.',
   commTitle:'קהילה',commText:'קבוצות של אמהות באותו שלב, קבוצה לתאומים וקבוצה לשעות הלילה. הקהילה נבנית עכשיו ותיפתח בגרסה הבאה.',
   foodsTitle:'טעימות',foodsText:'מודול הטעימות, עם מאגר המזונות, יומן הטעימות והאלרגנים, יחובר לכאן בשלב הבא.',
-  familyLink:'משפחה והגדרות',appName:'הנקה ואמהות',home:'לעמוד הראשי',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',
+  familyLink:'משפחה והגדרות',appName:'הנקה ואמהות',home:'בית',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',
   share:'שיתוף',shareTitle:'שיתוף עם בן/בת הזוג',shareText:'שלחי את הקישור, ואחר כך אשרי לו/ה גישה מכפתור השיתוף של Claude בראש העמוד. בגרסת הניסיון צריך חשבון Claude באותו ארגון.',shareMsg:(n)=>'מצרפת אותך ליומן של '+n+' באפליקציה הנקה ואמהות: ',whatsapp:'שליחה בוואטסאפ',copy:'העתקת הקישור',copied:'הקישור הועתק',close:'סגירה'},
  en:{dir:'ltr',name:'English',today:'Today',feeding:'Feeding',community:'Community',foods:'First foods',nav:'Main navigation',
   left:'Left',right:'Right',both:'Both sides',tapStart:'Tap to start',endedHere:'Last feed ended here',nursingNow:'Nursing now',switchHere:'Switch here',
@@ -273,7 +305,7 @@ const T = {
   artWhen:'متى تتصلين بالطبيب أو العيادة',artWhenList:['حفاضات مبللة أقل من المعتاد، أو بول داكن','الطفل نعسان جدًا ويصعب إيقاظه للرضاعة','اصفرار الجلد أو العينين يزداد'],artDoubt:'عند الشك، اسألي.',
   commTitle:'المجتمع',commText:'مجموعات لأمهات في المرحلة نفسها، ومجموعة للتوائم، وأخرى لساعات الليل. المجتمع قيد البناء وسيفتح في النسخة القادمة.',
   foodsTitle:'أول الأطعمة',foodsText:'سيتم ربط وحدة أول الأطعمة هنا قريبًا، مع دليل الأطعمة وسجل التذوق ومسببات الحساسية.',
-  familyLink:'العائلة والإعدادات',appName:'الرضاعة والأمومة',home:'الصفحة الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',
+  familyLink:'العائلة والإعدادات',appName:'الرضاعة والأمومة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',
   share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareText:'أرسلي الرابط، ثم امنحيه صلاحية الوصول من زر المشاركة في Claude أعلى الصفحة. في النسخة التجريبية يلزم حساب Claude في المؤسسة نفسها.',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق الرضاعة والأمومة: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
 };
 
@@ -306,7 +338,7 @@ const IC={
 
 // ---------- state ----------
 const S={lang:ls.get('gp-lang','he'),theme:ls.get('gp-theme2','light'),renderDrafts:false,view:'today',babyId:ls.get('gp-baby',null),me:null,names:{},
-  mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:-1,setupTwins:false,devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
+  mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:null,foodSub:'foods',openFood:null,foodQ:'',foodStyle:null,recStage:'all',recTex:'all',setupTwins:false,devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
 const t=()=>T[S.lang]||T.he;
 
 // ---------- store (Supabase) ----------
@@ -338,7 +370,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
  async onSession(sess){
   S.session=sess||null; S.me=sess&&sess.user?sess.user.id:null; S.email=sess&&sess.user?sess.user.email:'';
   if(this.channel){ this.sb.removeChannel(this.channel); this.channel=null; }
-  this.fid=null; S.fid=null; S.family={babies:[],active:{},sleep:{},milestones:{}}; S.events=[]; S.meds=[]; S.members=[];
+  this.fid=null; S.fid=null; S.family={babies:[],active:{},sleep:{},milestones:{},allergens:{},prefs:{}}; S.events=[]; S.meds=[]; S.members=[];
   if(!S.me){ S.ready=true; S.mode='auth'; render(); return; }
   S.ready=false; render();
   const {data,error}=await this.sb.from('family_members').select('family_id').eq('user_id',S.me).order('joined_at',{ascending:true}).limit(1);
@@ -346,7 +378,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   if(data&&data.length){ await this.open(data[0].family_id); } else { S.mode='onboard'; S.ready=true; render(); }
  },
  async open(fid){
-  this.fid=fid; S.fid=fid; S.mode='db'; S.view='today'; if((location.hash||'').slice(1)!=='today'){ try{ history.replaceState(null,'','#today'); }catch(e){} }
+  this.fid=fid; S.fid=fid; S.mode='db'; { const h=(location.hash||'').slice(1); if(!VIEWS.includes(h)){ S.view='home'; try{ history.replaceState(null,'','#home'); }catch(e){} } }
   await this.refetchAll();
   S.ready=true;
   const ch=this.sb.channel('family-'+fid);
@@ -358,7 +390,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
  },
  soon(what){ clearTimeout(this.timer[what]); this.timer[what]=setTimeout(()=>this['load_'+what](),150); },
  async refetchAll(){ await Promise.all([this.load_family(),this.load_events(),this.load_meds(),this.load_members()]); },
- async load_family(){ const {data}=await this.sb.from('families').select('state,invite_code').eq('id',this.fid).maybeSingle(); if(data){ const s=data.state||{}; S.family={babies:s.babies||[],active:s.active||{},sleep:s.sleep||{},milestones:s.milestones||{}}; S.invite=data.invite_code; render(); } },
+ async load_family(){ const {data}=await this.sb.from('families').select('state,invite_code').eq('id',this.fid).maybeSingle(); if(data){ const s=data.state||{}; S.family={babies:s.babies||[],active:s.active||{},sleep:s.sleep||{},milestones:s.milestones||{},allergens:s.allergens||{},prefs:s.prefs||{}}; S.invite=data.invite_code; render(); } },
  async load_events(){ const {data}=await this.sb.from('events').select('id,baby,type,t,data,by_user').eq('family_id',this.fid).order('t',{ascending:false}).limit(400); if(data){ S.events=data.map(r=>Object.assign({},r.data||{},{id:r.id,baby:r.baby,type:r.type,t:Number(r.t),by:r.by_user})); const known=new Set(S.members.map(m=>m.user_id)); if(S.events.some(e=>e.by&&!known.has(e.by))) this.load_members(); render(); } },
  async load_meds(){ const {data}=await this.sb.from('meds').select('id,baby,name,note').eq('family_id',this.fid).order('created_at'); if(data){ S.meds=data; render(); } },
  async load_members(){ const {data}=await this.sb.from('family_members').select('user_id,display_name').eq('family_id',this.fid); if(data){ S.members=data; render(); } },
@@ -368,7 +400,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   if(!this.fid) return;
   const {data,error}=await this.sb.rpc('patch_family_state',{p_family:this.fid,p_patch:patch});
   if(error){ say(at().notSaved); this.load_family(); return; }
-  if(data){ S.family={babies:data.babies||[],active:data.active||{},sleep:data.sleep||{},milestones:data.milestones||{}}; render(); }
+  if(data){ S.family={babies:data.babies||[],active:data.active||{},sleep:data.sleep||{},milestones:data.milestones||{},allergens:data.allergens||{},prefs:data.prefs||{}}; render(); }
  },
  async addEvent(ev){
   const {baby,type,t:tm}=ev; const rest=Object.assign({},ev); delete rest.baby; delete rest.type; delete rest.t;
@@ -452,8 +484,7 @@ function say(msg){ const el=document.getElementById('live'); el.textContent=''; 
 // ---------- views ----------
 function headerHTML(title,sub){
  const L=t();
- const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting);
- return '<header class="section" style="gap:16px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(title)+'</h1>'+(sub?'<p class="muted small">'+esc(sub)+'</p>':'')+'</div><a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a></div>'+babySwitch()+'</header>';
+ return '<header class="section" style="gap:16px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(title)+'</h1>'+(sub?'<p class="muted small">'+esc(sub)+'</p>':'')+'</div>'+statusPill()+'</div>'+babySwitch()+'</header>';
 }
 function babySwitch(){
  const bs=S.family.babies||[]; if(bs.length<2) return '';
@@ -509,7 +540,7 @@ function viewToday(){
    (c?'<span class="confirm"><button type="button" class="yes" data-act="delyes" data-id="'+esc(e.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="delno">'+esc(L.no)+'</button></span>'
      :'<button type="button" class="icon-btn" data-act="delask" data-id="'+esc(e.id)+'" aria-label="'+esc(L.del+': '+evText(e)+' '+hhmm(e.t))+'">'+IC.trash+'</button>')+'</li>';
  }).join('')+'</ul>':'<p class="empty">'+esc(L.nothingToday)+'</p>';
- return headerHTML(L.today,dateLine())+
+ return headerHTML(L.feeding,dateLine())+
  (S.mode==='local'?'<p class="banner">'+esc(L.local)+'</p>':'')+
  '<section class="feed" aria-label="'+esc(L.feeding)+'"><p class="muted" aria-live="polite" style="text-align:center">'+esc(status)+'</p><div class="circle">'+half('L')+half('R')+'</div>'+
  (act?'<button type="button" class="btn ink" style="width:min(256px,72vw)" data-act="finish">'+esc(L.finish)+'</button>':'<button type="button" class="link" data-act="past">'+esc(L.forgot)+'</button>')+'</section>'+
@@ -520,7 +551,8 @@ function viewToday(){
  '</nav>'+
  '<section class="section rule" aria-label="'+esc(L.last24)+'"><div class="between"><h2>'+esc(L.last24)+'</h2><span class="small muted">'+esc(L.totals(feeds.length,diapers.length))+'</span></div>'+ribbon+axis+
  '<div class="legend"><span class="row" style="gap:6px"><span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:var(--dawn)"></span>'+esc(L.legendFeed)+'</span><span class="row" style="gap:6px"><span aria-hidden="true" style="width:16px;height:6px;border-radius:3px;background:var(--dusk);opacity:.4"></span>'+esc(L.legendSleep)+'</span></div></section>'+
- '<section class="section" aria-label="'+esc(L.recent)+'"><h2>'+esc(L.recent)+'</h2>'+rows+'</section>';
+ '<section class="section" aria-label="'+esc(L.recent)+'"><h2>'+esc(L.recent)+'</h2>'+rows+'</section>'+
+ '<a class="opt" href="#feeding" style="text-decoration:none;min-height:72px"><span class="opt-ic">'+IC.guide+'</span><span class="opt-tx"><span class="opt-t">'+esc((HT[S.lang]||HT.he).guide[0])+'</span><span class="opt-h">'+esc((HT[S.lang]||HT.he).guide[1])+'</span></span></a>';
 }
 function qb(type,label){ return '<button type="button" class="qbtn" data-act="quick" data-type="'+type+'"><span class="ic">'+IC[type]+'</span>'+esc(label)+'</button>'; }
 function clock(start){ const s=Math.max(0,Math.floor((Date.now()-start)/1000)); const h=Math.floor(s/3600); return (h?h+':':'')+pad(Math.floor(s/60)%60)+':'+pad(s%60); }
@@ -548,7 +580,7 @@ function viewFamily(){
  const bs=S.family.babies||[];
  const ids=[...new Set([S.me].concat((S.members||[]).map(m=>m.user_id)).filter(Boolean))];
  const mem=ids.length?'<ul class="list">'+ids.map(id=>'<li><span class="mono" aria-hidden="true">'+esc((whoLabel(id)||'?').slice(0,1))+'</span><span class="grow">'+esc(whoLabel(id))+'</span></li>').join('')+'</ul>':'';
- return '<header class="section" style="gap:4px"><a class="link" href="#today">'+esc(L.back)+'</a><h1>'+esc(L.family)+'</h1><p class="muted small">'+esc(L.familyHint)+'</p></header>'+
+ return '<header class="section" style="gap:4px"><a class="link" href="#home">'+esc(L.back)+'</a><h1>'+esc(L.family)+'</h1><p class="muted small">'+esc(L.familyHint)+'</p></header>'+
  '<section class="card"><h2>'+esc(L.babies)+'</h2>'+bs.map((x,i)=>'<div class="section" style="gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)"><label class="field" for="bn-'+i+'">'+esc(L.babyName)+'<input id="bn-'+i+'" type="text" value="'+esc(x.name)+'" data-baby-name="'+esc(x.id)+'"></label><label class="field" for="bb-'+i+'">'+esc(L.born)+'<input id="bb-'+i+'" type="date" value="'+esc(x.born||'')+'" data-baby-born="'+esc(x.id)+'"></label>'+(bs.length>1?'<button type="button" class="link small" data-act="rmbaby" data-id="'+esc(x.id)+'">'+esc(L.removeBaby)+'</button>':'')+'</div>').join('')+
  '<button type="button" class="btn ghost" data-act="addbaby">'+esc(L.addBaby)+'</button></section>'+
  (mem?'<section class="section"><h2>'+esc(L.members)+'</h2>'+mem+'</section>':'')+
@@ -561,7 +593,7 @@ function viewGuide(){
  const L=t(), b=baby(); if(!b) return viewSetup();
  const days=ageWeeks(b), si=stageIndex(days);
  const wk=days==null?'':L.weeks(Math.floor(days/7)+1);
- return '<header class="section" style="gap:2px"><h1>'+esc(L.feeding)+'</h1><p class="muted small">'+esc(L.guideFor(b.name,wk))+'</p></header>'+
+ return '<header class="section" style="gap:2px"><a class="link" href="#today">'+esc(L.back)+'</a><h1>'+esc((HT[S.lang]||HT.he).guide[0])+'</h1><p class="muted small">'+esc(L.guideFor(b.name,wk))+'</p></header>'+
  '<section class="dark-card" aria-labelledby="stage-h"><span class="badge">'+esc(L.draft)+'</span><h2 id="stage-h" style="font-size:1.25rem">'+esc(L.stageTitle)+'</h2>'+
  '<ol class="stages">'+L.stages.map((s,i)=>'<li'+(i===si?' aria-current="step"':'')+'><span></span>'+esc(s)+'</li>').join('')+'</ol>'+
  '<p style="font-size:1rem;line-height:1.65">'+esc(L.stageText[si])+'</p></section>'+
@@ -585,137 +617,305 @@ function viewArticle(){
 function viewSimple(title,text){ return '<header class="section"><h1>'+esc(title)+'</h1></header><p class="empty" style="text-align:start;line-height:1.7">'+esc(text)+'</p>'; }
 
 function tabs(){
- const L=t(), v=S.view;
- const cur=k=>(k===v||(k==='feeding'&&v==='article')||(k==='today'&&(v==='meds'||v==='family')))?' aria-current="page"':'';
- return '<div class="in"><a href="#today"'+cur('today')+'>'+IC.today+esc(L.today)+'</a><a href="#feeding"'+cur('feeding')+'>'+IC.guide+esc(L.feeding)+'</a><a href="#dev"'+cur('dev')+'>'+IC.dev+esc(L.dev)+'</a><a href="#foods"'+cur('foods')+'>'+IC.foods+esc(L.foods)+'</a><a href="#community"'+cur('community')+'>'+IC.comm+esc(L.community)+'</a></div>';
+ const L=t(), v=S.view, H=HT[S.lang]||HT.he;
+ const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'))||(k==='home'&&v==='family'))?' aria-current="page"':'';
+ return '<div class="in"><a href="#home"'+cur('home')+'>'+IC.home+esc(L.home)+'</a><a href="#today"'+cur('today')+'>'+IC.today+esc(L.feeding)+'</a><a href="#foods"'+cur('foods')+'>'+IC.foods+esc(L.foods)+'</a><a href="#dev"'+cur('dev')+'>'+IC.dev+esc(L.dev)+'</a><a href="#community"'+cur('community')+'>'+IC.comm+esc(L.community)+'</a></div>';
 }
 
-// ---------- first foods (content from the "My First Food" booklet) ----------
-const HINT={
- cook:{he:'מבשלים לריכוך ומועכים',en:'Cook until soft and mash',ar:'تُطهى حتى تلين وتُهرس'},
- raw:{he:'מועכים פרי בשל, בלי בישול',en:'Mash when ripe, no cooking',ar:'تُهرس ناضجة دون طهي'},
- well:{he:'מבשלים היטב, טוחנים או קוצצים דק',en:'Cook through, blend or chop finely',ar:'تُطهى جيدًا وتُطحن أو تُفرم ناعمًا'},
- small:{he:'מועכים או חותכים לאורך, אף פעם לא שלם',en:'Mash or cut lengthwise, never whole',ar:'تُهرس أو تُقطع طوليًا، لا تُقدَّم كاملة'},
- chick:{he:'מבשלים היטב ומועכים חלק, בלי גרגרים שלמים',en:'Cook well and mash smooth, no whole beans',ar:'تُطهى جيدًا وتُهرس ناعمًا، دون حبوب كاملة'},
- oats:{he:'מבשלים לדייסה רכה',en:'Cook into a soft porridge',ar:'تُطهى كعصيدة طرية'},
- peanut:{he:'חמאת בוטנים מדוללת במים או במחית. לא בכף ולא בוטנים שלמים',en:'Peanut butter thinned with water or purée. Never a spoonful or whole nuts',ar:'زبدة فول سوداني مخففة بالماء أو بالهريس. لا بالملعقة ولا حبات كاملة'},
- sesame:{he:'טחינה גולמית מדוללת',en:'Raw tahini, thinned',ar:'طحينة نيئة مخففة'},
- egg:{he:'ביצה מבושלת היטב, מעוכה',en:'Well-cooked egg, mashed',ar:'بيضة مطهوة جيدًا، مهروسة'},
- milk:{he:'יוגורט או גבינה רכה. חלב כמשקה עיקרי רק מגיל שנה',en:'Yogurt or soft cheese. Cow’s milk as a main drink only from age one',ar:'لبن زبادي أو جبنة طرية. الحليب كمشروب رئيسي فقط من عمر سنة'},
- wheat:{he:'פסטה רכה, פתיתים או לחם רך',en:'Soft pasta, couscous or soft bread',ar:'معكرونة طرية أو كسكس أو خبز طري'},
- soy:{he:'טופו רך, מעוך',en:'Soft tofu, mashed',ar:'توفو طري، مهروس'},
- fish:{he:'דג מבושל היטב, בלי עצמות',en:'Well-cooked fish, no bones',ar:'سمك مطهو جيدًا، بلا عظام'},
- nuts:{he:'חמאת שקדים או אגוזים מדוללת. לא אגוזים שלמים',en:'Thinned almond or nut butter. Never whole nuts',ar:'زبدة لوز أو مكسرات مخففة. لا مكسرات كاملة'}
-};
-// [id, category, allergen, he, en, ar, hint]
+// ---------- first foods (content from the "טעימות" app the user built in Lovable) ----------
+const IMG_BASE='https://wdwfpjprdffkbvthtcuy.supabase.co/storage/v1/object/public/content/foods/';
+const FOOD_IMG=['zucchini','carrot','sweet-potato','avocado','banana','apple','pumpkin','potato','pear','mango','chicken','beef','turkey','egg','oatmeal','rice','pasta','olive-oil','tahini','peanut-butter','honey'];
+const FCATS=[['vegetables','🥦','ירקות','Vegetables','خضار'],['fruits','🍎','פירות','Fruit','فواكه'],['proteins','🍗','חלבונים','Proteins','بروتينات'],['grains','🌾','דגנים/קטניות','Grains & legumes','حبوب وبقوليات'],['fats','🥑','שומנים','Fats','دهون'],['after-one','🎂','אחרי גיל שנה','After age one','بعد عمر سنة']];
+const ALLERGENS=[['milk','🥛','חלב','Milk','حليب'],['eggs','🥚','ביצים','Eggs','بيض'],['fish','🐟','דגים','Fish','سمك'],['shellfish','🦐','פירות ים','Shellfish','مأكولات بحرية'],['tree-nuts','🌰','אגוזים','Tree nuts','مكسرات'],['peanuts','🥜','בוטנים','Peanuts','فول سوداني'],['wheat','🌾','חיטה','Wheat','قمح'],['soy','🫘','סויה','Soy','صويا'],['sesame','⚪','שומשום','Sesame','سمسم']];
+// [id, category, he, en, ar, mashed, blw, tags, needs softening, blw-safe, allergen type]
 const FOODS=[
- ['zucchini','veg',0,'קישוא','Zucchini','كوسا','cook'],['pumpkin','veg',0,'דלעת','Pumpkin','يقطين','cook'],['carrot','veg',0,'גזר','Carrot','جزر','cook'],
- ['potato','veg',0,'תפוח אדמה','Potato','بطاطا','cook'],['sweetpotato','veg',0,'בטטה','Sweet potato','بطاطا حلوة','cook'],['eggplant','veg',0,'חציל','Eggplant','باذنجان','cook'],
- ['tomato','veg',0,'עגבנייה','Tomato','طماطم','small'],['pepper','veg',0,'פלפל','Pepper','فلفل حلو','cook'],['cauliflower','veg',0,'כרובית','Cauliflower','قرنبيط','cook'],
- ['broccoli','veg',0,'ברוקולי','Broccoli','بروكلي','cook'],['avocado','veg',0,'אבוקדו','Avocado','أفوكادو','raw'],
- ['apple','fruit',0,'תפוח','Apple','تفاح','cook'],['pear','fruit',0,'אגס','Pear','إجاص','cook'],['banana','fruit',0,'בננה','Banana','موز','raw'],
- ['melon','fruit',0,'מלון','Melon','شمام','raw'],['watermelon','fruit',0,'אבטיח','Watermelon','بطيخ','raw'],['blueberry','fruit',0,'אוכמניות','Blueberries','توت أزرق','small'],
- ['mango','fruit',0,'מנגו','Mango','مانجو','raw'],['peach','fruit',0,'אפרסק','Peach','خوخ','raw'],['kiwi','fruit',0,'קיווי','Kiwi','كيوي','raw'],['strawberry','fruit',0,'תות','Strawberry','فراولة','small'],
- ['chicken','prot',0,'עוף','Chicken','دجاج','well'],['turkey','prot',0,'הודו','Turkey','ديك رومي','well'],['beef','prot',0,'בקר','Beef','لحم بقر','well'],
- ['lentils','prot',0,'עדשים','Lentils','عدس','well'],['chickpeas','prot',0,'חומוס','Chickpeas','حمص','chick'],['beans','prot',0,'שעועית','Beans','فاصولياء','chick'],
- ['oats','prot',0,'שיבולת שועל','Oats','شوفان','oats'],['rice','prot',0,'אורז','Rice','أرز','well'],
- ['peanut','all',1,'בוטנים','Peanut','فول سوداني','peanut'],['sesame','all',1,'שומשום','Sesame','سمسم','sesame'],['egg','all',1,'ביצה','Egg','بيض','egg'],
- ['milk','all',1,'חלב','Milk','حليب','milk'],['wheat','all',1,'חיטה','Wheat','قمح','wheat'],['soy','all',1,'סויה','Soy','صويا','soy'],
- ['fish','all',1,'דגים','Fish','سمك','fish'],['nuts','all',1,'אגוזי עץ','Tree nuts','مكسرات','nuts']
+ ['zucchini','vegetables','קישוא','Zucchini','كوسا','לבשל או לאדות עד רכות מלאה, למעוך במזלג או לטחון','לחתוך למקלות עבים ורכים, לאדות עד רכות',['התחלה מומלצת','קל לעיכול'],1,1,''],
+ ['pumpkin','vegetables','דלעת / דלורית','Pumpkin','يقطين','לאפות או לאדות עד רכות, למעוך','לחתוך לפלחים גדולים, לאפות עד רכות',['מתוק טבעי','עשיר בוויטמין A'],1,1,''],
+ ['carrot','vegetables','גזר','Carrot','جزر','לבשל או לאדות עד רכות מלאה, למעוך היטב','לחתוך למקלות עבים, לאדות עד רכות מלאה. לא נא!',['עשיר בוויטמין A','מתוק'],1,1,''],
+ ['potato','vegetables','תפוח אדמה','Potato','بطاطا','לבשל או לאדות, למעוך עם מעט מים או חלב אם','לחתוך למקלות עבים, לאפות או לאדות עד רכות',['משביע','בסיס מצוין'],1,1,''],
+ ['sweet-potato','vegetables','בטטה','Sweet potato','بطاطا حلوة','לאפות או לאדות, למעוך','לחתוך למקלות עבים, לאפות עד רכות',['מתוק טבעי','עשיר בוויטמינים'],1,1,''],
+ ['eggplant','vegetables','חציל','Eggplant','باذنجان','לאפות עד רכות, לקלף ולמעוך','לחתוך לרצועות, לאפות עד רכות מלאה',['טעם עדין'],1,1,''],
+ ['tomato','vegetables','עגבנייה','Tomato','طماطم','לבשל לרוטב חלק, להסיר קליפות וזרעים','רק רכה מאוד. עגבניות שרי תמיד חותכים לרבעים',['עשיר בליקופן'],1,0,''],
+ ['pepper','vegetables','פלפל / גמבה','Pepper','فلفل حلو','לקלות או לאדות, לקלף ולמעוך','לקלות, לקלף ולחתוך לרצועות רכות',['עשיר בוויטמין C'],1,1,''],
+ ['cauliflower','vegetables','כרובית','Cauliflower','قرنبيط','לאדות עד רכות מלאה, למעוך','פרחים גדולים, לאדות עד רכות',['קל לעיכול'],1,1,''],
+ ['broccoli','vegetables','ברוקולי','Broccoli','بروكلي','לאדות עד רכות, למעוך','פרח גדול לאחיזה, לאדות עד רכות',['עשיר בברזל'],1,1,''],
+ ['avocado','vegetables','אבוקדו','Avocado','أفوكادو','למעוך טרי, לא לבשל','לחתוך למקלות או לחצאים קטנים',['שומנים בריאים','לא דורש בישול'],0,1,''],
+ ['apple','fruits','תפוח','Apple','تفاح','חובה לבשל, לאדות או לאפות עד רכות, ואז למעוך','פלחים מבושלים ורכים. לא נא ולא בקוביות!',['חובה לרכך'],1,0,''],
+ ['pear','fruits','אגס','Pear','إجاص','אם קשה, לאדות. אם בשל מאוד, למעוך','פלחים רכים. אם קשה, לאדות',['עדין לבטן'],1,1,''],
+ ['banana','fruits','בננה','Banana','موز','למעוך טרי','חצי בננה מקולפת חלקית, לאחיזה',['קל להכנה','אנרגיה'],0,1,''],
+ ['melon','fruits','מלון','Melon','شمام','למעוך טרי','רצועות גדולות לאחיזה',['מרענן','קיץ'],0,1,''],
+ ['watermelon','fruits','אבטיח','Watermelon','بطيخ','למעוך ולהסיר גרעינים','רצועות גדולות ללא גרעינים',['מרענן','קיץ'],0,1,''],
+ ['blueberries','fruits','אוכמניות','Blueberries','توت أزرق','למעוך היטב. לא שלמות!','למעוך או לחתוך. לא שלמות!',['נוגדי חמצון','חובה למעוך'],0,0,''],
+ ['strawberry','fruits','תות','Strawberry','فراولة','למעוך טרי','תותים גדולים בשלמותם או חצויים',['ויטמין C'],0,1,''],
+ ['kiwi','fruits','קיווי','Kiwi','كيوي','לקלף ולמעוך','פלחים רכים לאחיזה',['ויטמין C'],0,1,''],
+ ['mango','fruits','מנגו','Mango','مانجو','למעוך בשל','רצועות בשלות לאחיזה',['מתוק','טרופי'],0,1,''],
+ ['peach','fruits','אפרסק','Peach','خوخ','לקלף ולמעוך בשל','פלחים בשלים לאחיזה',['עונתי','קיץ'],0,1,''],
+ ['chicken','proteins','עוף','Chicken','دجاج','לבשל היטב, לטחון או לקצוץ דק מאוד','רצועות רכות או בשר מפורק',['חלבון איכותי'],1,1,''],
+ ['beef','proteins','בקר','Beef','لحم بقر','בישול ארוך, טחינה או קיצוץ דק','בשר מפורק ורך',['עשיר בברזל'],1,1,''],
+ ['turkey','proteins','הודו','Turkey','ديك رومي','כמו עוף: לבשל היטב ולטחון','רצועות רכות או בשר מפורק',['רזה','חלבון'],1,1,''],
+ ['fish','proteins','דגים','Fish','سمك','לבשל היטב, לוודא שאין עצמות, למעוך','פילה רך ללא עצמות',['אומגה 3'],1,1,'fish'],
+ ['tofu','proteins','טופו','Tofu','توفو','למעוך או לקצוץ דק','מקלות טופו רכים',['צמחי'],0,1,'soy'],
+ ['legumes','proteins','קטניות','Legumes','بقوليات','לבשל היטב ולמעוך','מעוכות או כממרח',['סיבים','חלבון צמחי'],1,1,''],
+ ['egg','proteins','ביצה','Egg','بيض','לבשל קשה ולמעוך','רצועות חביתה או ביצה קשה חצויה',['חלבון מלא'],1,1,'eggs'],
+ ['oatmeal','grains','שיבולת שועל','Oats','شوفان','לבשל עד רכות עם מים או חלב אם','דייסה סמיכה או מאפינס שיבולת שועל',['סיבים','משביע'],1,1,''],
+ ['rice','grains','אורז','Rice','أرز','לבשל עד רכות מלאה, למעוך','כדורי אורז רכים',['בסיסי','קל לעיכול'],1,1,''],
+ ['pasta','grains','פסטה','Pasta','معكرونة','לבשל היטב ולקצוץ','צורות גדולות לאחיזה',[],1,1,'wheat'],
+ ['olive-oil','fats','שמן זית','Olive oil','زيت زيتون','להוסיף כפית לפירה','לטבול בו מזון או להוסיף לאוכל',['שומן בריא'],0,1,''],
+ ['tahini','fats','טחינה','Tahini','طحينة','למהול ולערבב, ממרח דק','ממרח דק על מזון. לא גוש!',[],0,0,'sesame'],
+ ['peanut-butter','fats','חמאת בוטנים','Peanut butter','زبدة فول سوداني','למהול ולערבב, ממרח דק מאוד','ממרח דק מאוד. לא גוש!',[],0,0,'peanuts'],
+ ['almond-butter','fats','חמאת שקדים','Almond butter','زبدة لوز','למהול ולערבב, ממרח דק','ממרח דק על מזון. לא גוש!',[],0,0,'tree-nuts'],
+ ['honey','after-one','דבש','Honey','عسل','רק אחרי גיל שנה!','רק אחרי גיל שנה!',['רק אחרי שנה'],0,1,''],
+ ['milk','after-one','חלב פרה','Cow’s milk','حليب بقر','כמשקה עיקרי, רק אחרי גיל שנה','כמשקה עיקרי, רק אחרי גיל שנה',['רק אחרי שנה'],0,1,'milk']
 ];
-// [he name, en name, ar name, ingredients, he, en, ar]
+const LEGACY_FOOD={sweetpotato:'sweet-potato',blueberry:'blueberries',oats:'oatmeal',lentils:'legumes',chickpeas:'legumes',beans:'legumes',peanut:'peanut-butter',sesame:'tahini',nuts:'almond-butter',wheat:'pasta',soy:'tofu'};
+// [id, name, description, stage b/a, texture m/b/c, allergens, ingredients, steps, mashed, blw]
 const RECIPES=[
- ['קישוא ותפוח אדמה','Zucchini and potato','كوسا وبطاطا',['zucchini','potato'],'מאדים עד לריכוך ומועכים יחד.','Steam until soft and mash together.','تُطهى على البخار حتى تلين وتُهرس معًا.'],
- ['גזר ואבוקדו','Carrot and avocado','جزر وأفوكادو',['carrot','avocado'],'מבשלים גזר היטב ומועכים עם אבוקדו בשל.','Cook the carrot well and mash with ripe avocado.','يُطهى الجزر جيدًا ويُهرس مع أفوكادو ناضج.'],
- ['תפוח ובננה','Apple and banana','تفاح وموز',['apple','banana'],'מרככים תפוח ומועכים עם בננה.','Soften the apple and mash with banana.','يُليَّن التفاح ويُهرس مع الموز.'],
- ['דלעת ועוף','Pumpkin and chicken','يقطين ودجاج',['pumpkin','chicken'],'מבשלים היטב וטוחנים למרקם רך ואחיד.','Cook well and blend to a soft, even texture.','يُطهى جيدًا ويُطحن لقوام طري ومتجانس.'],
- ['מרק קישוא ברוקולי','Zucchini and broccoli soup','شوربة كوسا وبروكلي',['zucchini','broccoli'],'מבשלים עד לריכוך ומרסקים.','Cook until soft and blend.','تُطهى حتى تلين وتُهرس.'],
- ['בטטה ועוף','Sweet potato and chicken','بطاطا حلوة ودجاج',['sweetpotato','chicken'],'מבשלים את שניהם היטב וטוחנים או קוצצים דק בהתאם למוכנות.','Cook both well, then blend or chop finely to suit your baby.','يُطهى الاثنان جيدًا ويُطحنان أو يُفرمان ناعمًا حسب استعداد الطفل.'],
- ['קישוא וטופו','Zucchini and tofu','كوسا وتوفو',['zucchini','soy'],'מאדים קישוא ומועכים עם טופו רך. סויה היא אלרגן.','Steam the zucchini and mash with soft tofu. Soy is an allergen.','تُطهى الكوسا على البخار وتُهرس مع توفو طري. الصويا من مسببات الحساسية.'],
- ['חומוס וגזר','Chickpeas and carrot','حمص وجزر',['chickpeas','carrot'],'מבשלים היטב ומועכים למחית חלקה, בלי גרגרים שלמים.','Cook well and mash smooth, with no whole chickpeas.','يُطهى جيدًا ويُهرس ناعمًا، دون حبات كاملة.'],
- ['אגס ודלעת','Pear and pumpkin','إجاص ويقطين',['pear','pumpkin'],'מרככים ומועכים יחד.','Soften and mash together.','يُليَّنان ويُهرسان معًا.'],
- ['תפוח ואפרסק','Apple and peach','تفاح وخوخ',['apple','peach'],'מרככים את הפירות ומועכים.','Soften the fruit and mash.','تُليَّن الفواكه وتُهرس.'],
- ['בננה ואבוקדו','Banana and avocado','موز وأفوكادو',['banana','avocado'],'מועכים פירות בשלים ומגישים מיד.','Mash ripe fruit and serve straight away.','تُهرس الفواكه الناضجة وتُقدَّم فورًا.'],
- ['עוף וברוקולי','Chicken and broccoli','دجاج وبروكلي',['chicken','broccoli'],'מבשלים היטב וטוחנים עם מעט מי בישול.','Cook well and blend with a little cooking water.','يُطهى جيدًا ويُطحن مع قليل من ماء الطهي.']
+ ['orange-soup','מרק כתום קלאסי','מרקם חלק, בסיס מעולה לטעימות ראשונות','b','c',[],['בטטה','גזר','דלעת','מעט שמן זית'],['לחתוך את כל הירקות לקוביות','לבשל במים עד רכות מלאה','לטחון למחית חלקה'],'לטחון למחית חלקה','להסמיך למחית סמיכה ולהגיש לטבילה (לא מרק דליל)'],
+ ['orange-soup-lentils','מרק כתום עם עדשים','וריאציה מוכרת שמוסיפה חלבון מהצומח','a','c',[],['בטטה','גזר','דלעת','עדשים כתומות','שמן זית'],['לבשל ירקות ועדשים יחד עד רכות','לטחון חלק','להוסיף שמן זית'],'לטחון חלק','להסמיך ולהגיש לטבילה עם מקל ירק רך או לחם מתאים'],
+ ['zucchini-puree','מחית קישוא עדינה','טעם רגוע, קלאסי לפתיחה','b','m',[],['1 קישוא בינוני'],['לאדות או לבשל קישוא עד רכות מלאה','לטחון חלק'],'קישוא מאודה או מבושל, טחון חלק','מקלות קישוא מאודים ורכים מאוד'],
+ ['sweet-potato-puree','מחית בטטה חלקה','מתיקות טבעית, מרקם נעים','b','c',[],['1 בטטה בינונית'],['לאפות או לאדות בטטה עד רכות מלאה','למעוך במזלג'],'בטטה אפויה או מאודה, מעוכה','מקלות בטטה עבים ורכים מאוד'],
+ ['carrot-pumpkin-puree','מחית גזר ודלעת','שילוב נפוץ אחרי שכל ירק נטעם לבד','b','m',[],['1 גזר','פלח דלעת'],['לרכך ולמעוך או לטחון'],'לרכך ולמעוך או לטחון','מקלות גזר עבים ורכים מאוד ופלחי דלעת רכים'],
+ ['pea-parsley-pesto','פסטו אפונה ופטרוזיליה','ממרח ירוק לפסטה, ללחם או לירקות','a','c',[],['אפונה ירוקה','פטרוזיליה','שמן זית','מעט לימון'],['לבשל אפונה עד רכות','לטחון עם פטרוזיליה ושמן זית'],'כממרח חלק','מריחה דקה על טוסט, או כמטבל סמיך'],
+ ['sweet-potato-fingers','אצבעות בטטה אפויות','אוכל אצבעות סופר פופולרי','a','b',[],['בטטה','שמן זית'],['לחתוך בטטה לאצבעות עבות','לשמן קלות','לאפות עד רכות מלאה'],'לפרק לפירורים או למעוך בצלחת','אצבעות עבות ורכות מאוד לאחיזה'],
+ ['porridge-fingers','אצבעות דייסה','אחד המתכונים הנפוצים בעולם לבייבילד','a','b',['milk'],['שיבולת שועל','חלב או יוגורט','בננה מעוכה'],['לבשל דייסה סמיכה','לשטח בתבנית','לקרר ולחתוך לאצבעות'],'לפרק לקוביות רכות או לרכך ביוגורט','אצבעות רכות של שיבולת שועל'],
+ ['omelette-fingers','אומלט אצבעות','קל, מהיר, מתאים לרצועות לאחיזה','a','b',['eggs'],['1 ביצה','מעט שמן'],['לטרוף ביצה','לטגן חביתה דקה עד שמבושלת לגמרי','לחתוך לרצועות'],'קוביות קטנות ורכות','רצועות אומלט רכות'],
+ ['baby-omelette-veggies','אומלט לתינוק עם ירקות','וריאציה נפוצה עם ירקות קצוצים דק','a','b',['eggs','milk'],['1 ביצה','ירקות קצוצים דק','מעט גבינה (לא חובה)'],['לערבב ביצה עם ירקות','לטגן עד שמבושל לגמרי ולחתוך לרצועות'],'קוביות קטנות','רצועות'],
+ ['egg-muffins','מאפינס ביצה קטנים','מאפינס מלוחים ורכים, קלאסי לקופסה','a','b',['eggs','milk'],['2 ביצים','ירקות קצוצים','גבינה מגוררת'],['לערבב הכול','לחלק לתבנית מאפינס','לאפות עד שמוצק'],'לפרק לפירורים או לקוביות','חצי מאפין רך'],
+ ['banana-pancake','פנקייק בננה קלאסי','מהמתכונים האהובים על הורים','a','b',['eggs','wheat'],['1 בננה','1 ביצה','קמח'],['למעוך בננה','לערבב עם ביצה וקמח','לטגן פנקייקים קטנים'],'חתיכות קטנות, או מעוך עם יוגורט','רצועות פנקייק רכות'],
+ ['banana-oat-pancake','פנקייק בננה ושיבולת שועל','וריאציה נפוצה מאוד על בסיס שיבולת שועל','a','b',['eggs'],['1 בננה','1 ביצה','שיבולת שועל טחונה'],['לטחון שיבולת שועל','למעוך בננה ולערבב עם ביצה ושיבולת שועל','לטגן פנקייקים קטנים'],'חתיכות קטנות ורכות','רצועות'],
+ ['cheese-pancakes','שלוליות גבינה','הקלאסיקה הישראלית','a','b',['milk','eggs','wheat'],['גבינה לבנה','ביצה','קמח'],['לערבב גבינה עם ביצה וקמח','לטגן שלוליות קטנות'],'לפרק לפירורים רכים','שלולית רכה, חצויה או ברבעים לאחיזה'],
+ ['banana-muffins','מאפינס בננה','עוגת בננה אישית','a','b',['eggs','wheat'],['2 בננות בשלות','1 ביצה','קמח','שמן'],['למעוך בננות','לערבב עם שאר המרכיבים','לאפות בתבנית מאפינס'],'פירורים רכים','חצי מאפין רך'],
+ ['veggie-muffins','מאפינס ירקות','עוד קלאסיקה של בלוגי הורים','a','b',['eggs','wheat','milk'],['ירקות מגוררים','ביצים','קמח','גבינה'],['לערבב ירקות עם ביצים וקמח','לאפות בתבנית מאפינס'],'פירורים רכים','חצי מאפין רך'],
+ ['sweet-potato-fritters','לביבות בטטה','לביבה רכה ונוחה','a','b',['eggs','wheat'],['בטטה מגוררת','ביצה','קמח'],['לערבב בטטה מגוררת עם ביצה וקמח','לטגן לביבות קטנות עד שמבושלות'],'פירורים רכים','לביבה רכה חצויה'],
+ ['orange-lentil-fritters','לביבות עדשים כתומות','בריא וטעים','a','b',[],['עדשים כתומות מבושלות','ירקות','תבלינים עדינים'],['לרסק עדשים מבושלות','לערבב עם ירקות','לאפות או לטגן'],'מעיכה בצלחת','קציצה רכה'],
+ ['colorful-lentil-fritters','לביבות עדשים צבעוניות','וריאציה עם ירקות בפנים','a','b',[],['עדשים','ירקות צבעוניים מגוררים'],['לבשל עדשים','לערבב עם ירקות ולאפות'],'פירורים רכים','לביבה רכה'],
+ ['baked-chicken-patties','קציצות עוף אפויות','שימושי מאוד להכנה מראש','a','b',[],['עוף טחון','ירקות קצוצים','תבלינים עדינים'],['לערבב עוף עם ירקות','ליצור קציצות ולאפות עד שמבושלות לגמרי'],'פירוק דק ומעיכה','חצאים או רבעים רכים מאוד'],
+ ['baked-fish-patties','קציצות דגים אפויות','קציצות רכות לידיים קטנות','a','b',['fish','eggs'],['דג לבן או טונה','תפוח אדמה מעוך','ביצה'],['לערבב דג עם תפוח אדמה מעוך','ליצור קציצות ולאפות','לוודא שאין עצמות!'],'פירורים רכים','קציצה רכה חצויה'],
+ ['fish-patties-red-sauce','קציצות דגים ברוטב אדום עדין','קציצות ברוטב, ביתי במיוחד','a','c',['fish'],['דג','רוטב עגבניות עדין','ירקות'],['להכין קציצות דג','לבשל ברוטב עגבניות עדין'],'טחינה או קיצוץ בתוך הרוטב','קציצה רכה מאוד (ללא עצמות) ורוטב סמיך'],
+ ['salmon-fish-cakes','קציצות סלמון','קלאסיקה בינלאומית לבייבילד','a','b',['fish','eggs'],['סלמון','תפוח אדמה','ביצה'],['לרסק סלמון מבושל עם תפוח אדמה','ליצור עוגיות ולאפות'],'פירורים רכים','עוגת סלמון רכה חצויה'],
+ ['veggie-quiche','פשטידת ירקות מגוררים','מכניסים לתבנית וזהו','a','c',['eggs','wheat','milk'],['ירקות מגוררים','ביצים','קמח','גבינה'],['לערבב הכול','לאפות בתבנית','לחתוך לריבועים'],'לפרק לפירורים','ריבועים רכים לאחיזה'],
+ ['sweet-potato-lentil-patties','קציצות בטטה ועדשים','שילוב משביע','a','b',[],['בטטה מעוכה','עדשים מבושלות'],['לערבב בטטה מעוכה עם עדשים','ליצור קציצות ולאפות'],'מעיכה בצלחת','קציצה רכה'],
+ ['baby-hummus','חומוס ביתי עדין לתינוק','מטבל וממרח שמופיע המון בבייבילד','a','c',['sesame'],['חומוס מבושל','טחינה','לימון','שמן זית'],['לטחון חומוס מבושל עם טחינה','להוסיף לימון ושמן זית'],'כממרח חלק','מריחה דקה על טוסט, או כמטבל סמיך'],
+ ['avocado-yogurt-dip','מטבל אבוקדו ויוגורט','מטבל עם שומן טוב','a','c',['milk'],['אבוקדו','יוגורט'],['למעוך אבוקדו עם יוגורט'],'כמטבל חלק','מטבל לטבילה עם מקלות ירק רכים'],
+ ['tahini-sauce','טחינה רכה לשילוב באוכל','דרך נפוצה לחשוף לשומשום','a','c',['sesame'],['טחינה גולמית','מים','לימון'],['לדלל טחינה במים','להוסיף לימון לפי הטעם'],'לערבב מעט בתוך מחית או יוגורט','מריחה דקה או שילוב ברוטב סמיך (לא גוש)'],
+ ['peanut-butter-blend','חמאת בוטנים עדינה לשילוב','דרך בטוחה יותר לחשוף לבוטנים','a','c',['peanuts'],['חמאת בוטנים טבעית'],['לערבב כמות קטנה בתוך יוגורט, דייסה או מחית','לא להגיש בגוש!'],'לערבב ממש מעט בתוך יוגורט, דייסה או מחית','מריחה דקה מאוד על טוסט או שילוב בדייסה'],
+ ['banana-oat-bars','ברים של שיבולת שועל ובננה','מצוין להכנה מראש','a','b',[],['שיבולת שועל','בננות','שמן'],['למעוך בננות עם שיבולת שועל','לשטח בתבנית ולאפות','לחתוך לברים'],'קוביות רכות','אצבעות או מלבנים רכים לאחיזה'],
+ ['avocado-toast','טוסט אבוקדו רך','לארוחת בוקר או לנשנוש','a','b',['wheat'],['לחם רך','אבוקדו בשל'],['לקלות לחם קלות','למרוח אבוקדו מעוך','לחתוך לרצועות'],'קוביות קטנות של טוסט רך עם אבוקדו מעוך','רצועות טוסט עבות עם מריחה דקה'],
+ ['hummus-toast','טוסט חומוס עדין','דרך פשוטה להכניס קטניות','a','b',['wheat','sesame'],['לחם רך','חומוס'],['למרוח חומוס על לחם','לחתוך לרצועות'],'טוסט רך מפורר עם חומוס','רצועות טוסט עם מריחה דקה'],
+ ['yogurt-fruit-bowl','יוגורט עם פרי','בסיס מעולה לפירות מרוסקים או מעוכים','a','c',['milk'],['יוגורט','פרי עונתי'],['לערבב יוגורט עם פרי מעוך'],'יוגורט עם פרי מעוך','מטבל סמיך וחתיכות פרי רכות מאוד'],
+ ['oven-veggie-sticks','מקלות ירק בתנור','בסיס בייבילד קלאסי','a','b',[],['בטטה, קישוא, דלעת או כרובית','שמן זית'],['לחתוך ירקות למקלות עבים','לשמן ולאפות עד רכות מלאה'],'פירורים רכים או מעיכה','מקלות עבים ורכים מאוד'],
+ ['soft-tofu-sticks','מקלות טופו רך','חלבון צמחי נוח לאחיזה','a','b',['soy'],['טופו רך'],['לחתוך טופו למקלות','אפשר לצרוב קלות במחבת'],'מעיכה לתוך מחית','מקלות טופו רכים'],
+ ['veggie-pasta','פסטה ירקות','פתרון ביתי לשילוב ירקות','a','c',['wheat'],['פסטה קטנה','ירקות','רוטב עגבניות'],['לבשל פסטה עד רכות','לטחון ירקות לרוטב','לערבב יחד'],'פסטה קטנה מאוד ורוטב טחון','פסטה רכה מאוד ורוטב סמיך'],
+ ['avocado-banana','אבוקדו בננה','שילוב קרמי ומזין בלי בישול','b','m',[],['רבע אבוקדו בשל','רבע בננה'],['למעוך את האבוקדו במזלג','להוסיף את הבננה ולמעוך יחד','לערבב עד מרקם אחיד'],'',''],
+ ['carrot-apple-puree','גזר ותפוח','שילוב מתוק ובריא','b','m',[],['1 גזר בינוני','חצי תפוח'],['לקלף גזר ותפוח ולחתוך לקוביות','לאדות יחד כ-15 דקות, עד רכות מלאה','לטחון או למעוך למרקם חלק'],'',''],
+ ['chicken-veggie-mash','עוף וירקות','ארוחה עשירה בחלבון','a','m',[],['50 גרם חזה עוף','חצי קישוא','חצי גזר'],['לבשל את העוף היטב, עד שמבושל לגמרי','לאדות את הירקות','לטחון הכול יחד עם מעט מי הבישול'],'',''],
+ ['oatmeal-banana','דייסת שיבולת שועל עם בננה','ארוחת בוקר משביעה','b','m',[],['2 כפות שיבולת שועל','חצי כוס מים','רבע בננה'],['לבשל שיבולת שועל במים עד רכות','להוסיף בננה מעוכה','לערבב היטב'],'',''],
+ ['tahini-banana-toast','טוסט טחינה ובננה','חשיפה לשומשום בצורה בטוחה','b','b',['sesame','wheat'],['פרוסת לחם רך','כפית טחינה','רבע בננה'],['למרוח שכבה דקה של טחינה על הלחם','להוסיף פרוסות בננה','לחתוך לרצועות לאחיזה'],'',''],
+ ['peanut-oatmeal','דייסה עם חמאת בוטנים','חשיפה לבוטנים בצורה בטוחה','b','m',['peanuts'],['2 כפות שיבולת שועל','חצי כפית חמאת בוטנים טבעית'],['לבשל דייסה רגילה','להמיס לתוכה כמות קטנה של חמאת בוטנים','לערבב היטב עד שנמסה'],'',''],
+ ['fish-potato-mash','דג עם תפוח אדמה','ארוחה עשירה באומגה 3','a','m',['fish'],['50 גרם פילה דג לבן','תפוח אדמה קטן','כפית שמן זית'],['לאפות או לאדות את הדג היטב','לבשל תפוח אדמה עד רכות','לבדוק שאין עצמות!','למעוך יחד עם שמן זית'],'','']
 ];
 const FT={
- he:{title:'טעימות',tasted:(n)=>n+' מזונות נטעמו',allergens:'אלרגנים',alNot:'עוד לא',alOk:'הוצג, להמשיך להציע',alBad:'הייתה תגובה',
-  cats:[['all','הכול'],['veg','ירקות'],['fruit','פירות'],['prot','חלבונים ודגנים'],['allg','אלרגנים']],
-  notYet:'עוד לא טעם/ה',times:(n)=>n===1?'טעם/ה פעם אחת':'טעם/ה '+n+' פעמים',
-  ready:'לפני שמתחילים',readyText:'לרוב מתחילים סביב גיל שישה חודשים, כשרואים סימני מוכנות:',readyList:['שליטה בראש ובצוואר','ישיבה יציבה עם תמיכה','עניין באוכל','בולע/ת במקום לדחוף את האוכל החוצה'],readyNote:'חלב אם או תמ״ל נשארים מקור התזונה המרכזי בשנה הראשונה.',
-  logTitle:(f)=>'טעימה: '+f,how:'איך מגישים',liked:'איך היה?',likes:[['yes','אהב/ה'],['meh','ככה ככה'],['no','לא אהב/ה']],texture:'מרקם',textures:[['puree','מרוסק'],['mash','מעוך'],['finger','מזון אצבעות']],
-  reaction:'הייתה תגובה חריגה (פריחה, הקאה, נפיחות)',emergency:'קושי בנשימה, נפיחות בלשון או בגרון, או תגובה בכמה מערכות בגוף: מתקשרים מיד למד״א 101.',
-  allergenTip:'אלרגן: מציגים לבד, בכמות קטנה ובמרקם בטוח. אם נסבל, ממשיכים להציע באופן קבוע. באקזמה קשה או אלרגיה ידועה מתייעצים עם הרופא לפני.',
-  recipes:'מתכונים',fits:'כל המרכיבים כבר נטעמו',needs:(x)=>'עוד לא נטעם: '+x,
-  safety:'בטיחות',safetyList:['מושיבים זקוף ומשגיחים בכל רגע','לא נותנים ענבים או עגבניות שרי שלמים, אגוזים שלמים, פופקורן, או גזר ותפוח קשים','אין דבש לפני גיל שנה','לא מוסיפים מלח או סוכר','לא מחממים שוב ושוב שאריות מהצלחת של התינוק'],
-  source:'התוכן מבוסס על החוברת My First Food ועובר בדיקה של דיאטנית תינוקות.',tasteEv:'טעימה',reactionEv:'תגובה',
-  calm:'טעימות הן לא מרוץ. מספיק להציע, לאפשר ולסמוך על התינוק.'},
- en:{title:'First foods',tasted:(n)=>n+' foods tasted',allergens:'Allergens',alNot:'Not yet',alOk:'Introduced, keep offering',alBad:'Had a reaction',
-  cats:[['all','All'],['veg','Vegetables'],['fruit','Fruit'],['prot','Proteins and grains'],['allg','Allergens']],
-  notYet:'Not tasted yet',times:(n)=>n===1?'Tasted once':'Tasted '+n+' times',
-  ready:'Before you start',readyText:'Most babies start around six months, when you see signs of readiness:',readyList:['Good head and neck control','Sits steadily with support','Interested in food','Swallows instead of pushing food out'],readyNote:'Breast milk or formula stays the main food in the first year.',
-  logTitle:(f)=>'Tasting: '+f,how:'How to serve',liked:'How did it go?',likes:[['yes','Liked it'],['meh','So-so'],['no','Didn’t like it']],texture:'Texture',textures:[['puree','Purée'],['mash','Mashed'],['finger','Finger food']],
-  reaction:'There was an unusual reaction (rash, vomiting, swelling)',emergency:'Trouble breathing, swelling of the tongue or throat, or a reaction in several parts of the body: call an ambulance now (101 in Israel).',
-  allergenTip:'Allergen: introduce on its own, in a small amount and a safe texture. If tolerated, keep offering it regularly. With severe eczema or a known allergy, talk to your doctor first.',
-  recipes:'Recipes',fits:'Every ingredient already tasted',needs:(x)=>'Not tasted yet: '+x,
-  safety:'Safety',safetyList:['Sit upright and stay with your baby the whole time','No whole grapes or cherry tomatoes, whole nuts, popcorn, or hard raw carrot and apple','No honey before age one','No added salt or sugar','Don’t reheat leftovers from your baby’s plate again and again'],
-  source:'Content is based on the My First Food booklet and is being reviewed by a paediatric dietitian.',tasteEv:'Tasting',reactionEv:'reaction',
-  calm:'First foods are not a race. Offer, let them explore, and trust your baby.'},
- ar:{title:'أول الأطعمة',tasted:(n)=>n+' أطعمة تذوقها',allergens:'مسببات الحساسية',alNot:'لم يُقدَّم بعد',alOk:'قُدِّم، استمري بتقديمه',alBad:'حدث تفاعل',
-  cats:[['all','الكل'],['veg','خضار'],['fruit','فواكه'],['prot','بروتينات وحبوب'],['allg','مسببات الحساسية']],
-  notYet:'لم يتذوقه بعد',times:(n)=>n===1?'تذوقه مرة واحدة':'تذوقه '+n+' مرات',
-  ready:'قبل البدء',readyText:'يبدأ معظم الأطفال في عمر ستة أشهر تقريبًا، عند ظهور علامات الاستعداد:',readyList:['تحكم جيد بالرأس والرقبة','يجلس بثبات مع دعم','يُظهر اهتمامًا بالطعام','يبلع بدل أن يدفع الطعام للخارج'],readyNote:'حليب الأم أو الحليب الصناعي يبقى الغذاء الرئيسي في السنة الأولى.',
-  logTitle:(f)=>'تذوق: '+f,how:'طريقة التقديم',liked:'كيف كان؟',likes:[['yes','أحبه'],['meh','عادي'],['no','لم يحبه']],texture:'القوام',textures:[['puree','مهروس ناعم'],['mash','مهروس'],['finger','طعام بالأصابع']],
-  reaction:'حدث تفاعل غير عادي (طفح، تقيؤ، تورم)',emergency:'صعوبة في التنفس، أو تورم اللسان أو الحلق، أو تفاعل في عدة أجهزة بالجسم: اتصلي فورًا بالإسعاف 101.',
-  allergenTip:'مسبب حساسية: يُقدَّم وحده، بكمية صغيرة وبقوام آمن. إذا تحمّله الطفل، استمري بتقديمه بانتظام. مع إكزيما شديدة أو حساسية معروفة، استشيري الطبيب أولًا.',
-  recipes:'وصفات',fits:'كل المكونات تذوقها من قبل',needs:(x)=>'لم يتذوقه بعد: '+x,
-  safety:'السلامة',safetyList:['يجلس الطفل منتصبًا مع مراقبة دائمة','لا عنب أو طماطم كرزية كاملة، ولا مكسرات كاملة أو فشار، ولا جزر وتفاح نيء قاسٍ','لا عسل قبل عمر سنة','لا ملح ولا سكر مضاف','لا تُسخَّن بقايا صحن الطفل مرارًا'],
-  source:'المحتوى مبني على كتيّب My First Food وتراجعه أخصائية تغذية أطفال.',tasteEv:'تذوق',reactionEv:'تفاعل',
-  calm:'أول الأطعمة ليست سباقًا. يكفي أن تقدّمي وتسمحي وتثقي بطفلك.'}
+ he:{title:'טעימות',hub:'טעימות ראשונות',sub:{foods:'מאכלים',allergens:'אלרגנים',recipes:'מתכונים',log:'כבר טעמנו',info:'בייבילד ומידע'},
+  tasted:(n)=>n+' מאכלים נטעמו',all:'הכול',search:'חיפוש מאכל',noResults:'לא נמצא מאכל בשם הזה',
+  soft:'דורש ריכוך',blw:'מתאים לבייבילד',allergen:'אלרגן',blwWarn:'בבייבילד: לרכך ולחתוך בצורה בטוחה, כמו שכתוב למעלה',newMorning:'מאכל חדש? עדיף לתת בבוקר.',
+  mashed:'מרוסק',blwT:'בייבילד',tasteBtn:'טעמנו',tastedTimes:(n)=>n===1?'טעם/ה פעם אחת':'טעם/ה '+n+' פעמים',notYet:'עוד לא טעם/ה',
+  prepTitle:'איך מכינים?',prepText:'אידוי, בישול או אפייה עד רכות מלאה (נמעך בקלות במזלג). בלי מלח ובלי תיבול חריף בהתחלה.',
+  logTitle:(f)=>'טעימה: '+f,howServed:'איך הוגש?',liked:'איך היה?',likes:[['yes','אהב/ה'],['meh','ניטרלי'],['no','לא זרם']],
+  reactionQ:'הייתה תגובה חריגה?',reactionTypes:[['rash','פריחה או אודם'],['vomit','הקאה'],['diarrhea','שלשול'],['swelling','נפיחות בפנים או בשפתיים'],['breathing','צפצופים או קושי בנשימה'],['other','אחר']],
+  notes:'הערות (לא חובה)',notDiagnosis:'זה לא אבחון רפואי, רק תיעוד של מה שקרה.',
+  emergency:'קושי בנשימה, נפיחות בפנים, בלשון או בגרון, או חולשה חריגה: מתקשרים מיד למד״א 101.',
+  alIntro:'כאן מסמנים חשיפה וחשד לתגובה. זה לא אבחון רפואי.',alTip:'עדיף לנסות אלרגן חדש בבוקר, מאכל אחד בכל פעם, בהשגחה ובקשב.',alTip2:'טיפ נפוץ: לתת לטעום כמות קטנה (כרבע כפית) בכל בוקר, שלושה ימים ברציפות.',
+  alNot:'עוד לא נחשף/ה',alOk:'נחשף/ה, להמשיך להציע',alBad:'הייתה תגובה או חשד',exposed:'נחשף/ה',hadReaction:'הייתה תגובה או חשד',avoid:'להסתיר במתכונים',fromLog:'סומן אוטומטית מיומן הטעימות',
+  stage:'שלב',texture:'מרקם',stages:[['all','הכול'],['b','התחלה'],['a','מתקדם']],textures:[['all','הכול'],['m','מרוסק'],['b','בייבילד'],['c','משולב']],
+  hidden:(x)=>'מוסתרים מתכונים עם: '+x,noRecipes:'אין מתכונים שמתאימים לסינון הזה',ingredients:'מצרכים',steps:'הוראות הכנה',personal:'מותאם לאלרגנים שסימנת',
+  logEmpty:'עוד לא טעמתם כלום. בוחרים מאכל ולוחצים "טעמנו".',toFoods:'לרשימת המאכלים',reactionEv:'תגובה',tasteEv:'טעימה',
+  style:'איך תרצו להגיש?',styles:[['mashed','מרוסק (כפית)','האכלה בכפית עם מזון מעוך'],['blw','בייבילד','התינוק אוכל לבד, עם הידיים'],['combined','משולב','גם כפית וגם אכילה עצמית']],styleNote:'אין שיטה אחת נכונה. יש מה שמתאים לתינוק שלכם, כל עוד ההגשה בטוחה.',
+  langNote:'',disclaimer:'המידע באפליקציה אינו מהווה ייעוץ רפואי. לכל שאלה פונים לרופא/ת הילדים או לטיפת חלב.'},
+ en:{title:'First foods',hub:'First foods',sub:{foods:'Foods',allergens:'Allergens',recipes:'Recipes',log:'Tasted',info:'BLW & info'},
+  tasted:(n)=>n+' foods tasted',all:'All',search:'Search foods',noResults:'No food by that name',
+  soft:'Needs softening',blw:'BLW friendly',allergen:'Allergen',blwWarn:'For BLW: soften and cut safely, as described above',newMorning:'New food? Mornings are best.',
+  mashed:'Mashed',blwT:'BLW',tasteBtn:'Tasted',tastedTimes:(n)=>n===1?'Tasted once':'Tasted '+n+' times',notYet:'Not tasted yet',
+  prepTitle:'How to prepare',prepText:'Steam, boil or bake until fully soft (mashes easily with a fork). No salt or spicy seasoning at first.',
+  logTitle:(f)=>'Tasting: '+f,howServed:'How was it served?',liked:'How did it go?',likes:[['yes','Liked it'],['meh','Neutral'],['no','Not a fan']],
+  reactionQ:'Was there an unusual reaction?',reactionTypes:[['rash','Rash or redness'],['vomit','Vomiting'],['diarrhea','Diarrhoea'],['swelling','Swelling of face or lips'],['breathing','Wheezing or trouble breathing'],['other','Other']],
+  notes:'Notes (optional)',notDiagnosis:'This is not a diagnosis, only a record of what happened.',
+  emergency:'Trouble breathing, swelling of the face, tongue or throat, or unusual weakness: call an ambulance now (101 in Israel).',
+  alIntro:'Mark exposure and suspected reactions here. This is not a diagnosis.',alTip:'Try a new allergen in the morning, one food at a time, while watching closely.',alTip2:'A common tip: offer a small amount (about ¼ teaspoon) each morning for three days in a row.',
+  alNot:'Not introduced yet',alOk:'Introduced, keep offering',alBad:'Reaction or suspected reaction',exposed:'Introduced',hadReaction:'Reaction or suspicion',avoid:'Hide in recipes',fromLog:'Marked automatically from the tasting log',
+  stage:'Stage',texture:'Texture',stages:[['all','All'],['b','Starting'],['a','Advanced']],textures:[['all','All'],['m','Mashed'],['b','BLW'],['c','Combined']],
+  hidden:(x)=>'Hidden recipes with: '+x,noRecipes:'No recipes match this filter',ingredients:'Ingredients',steps:'Method',personal:'Matched to the allergens you marked',
+  logEmpty:'Nothing tasted yet. Pick a food and tap "Tasted".',toFoods:'Go to foods',reactionEv:'reaction',tasteEv:'Tasting',
+  style:'How would you like to serve?',styles:[['mashed','Mashed (spoon)','Spoon-feeding mashed food'],['blw','Baby-led weaning','Baby feeds themselves with their hands'],['combined','Combined','Both spoon and self-feeding']],styleNote:'There is no single right method. What matters is what suits your baby, as long as food is served safely.',
+  langNote:'Food descriptions and recipes are in Hebrew for now. English is on the way.',disclaimer:'Information in this app is not medical advice. For any question, ask your paediatrician or baby clinic.'},
+ ar:{title:'أول الأطعمة',hub:'أول الأطعمة',sub:{foods:'الأطعمة',allergens:'مسببات الحساسية',recipes:'وصفات',log:'تذوّقنا',info:'التغذية الذاتية ومعلومات'},
+  tasted:(n)=>n+' أطعمة تذوقها',all:'الكل',search:'ابحثي عن طعام',noResults:'لا يوجد طعام بهذا الاسم',
+  soft:'يحتاج تليينًا',blw:'مناسب للتغذية الذاتية',allergen:'مسبب حساسية',blwWarn:'في التغذية الذاتية: تُليَّن وتُقطَّع بطريقة آمنة كما هو مذكور أعلاه',newMorning:'طعام جديد؟ الأفضل صباحًا.',
+  mashed:'مهروس',blwT:'تغذية ذاتية',tasteBtn:'تذوّقنا',tastedTimes:(n)=>n===1?'تذوقه مرة واحدة':'تذوقه '+n+' مرات',notYet:'لم يتذوقه بعد',
+  prepTitle:'طريقة التحضير',prepText:'على البخار أو بالسلق أو بالخَبز حتى يلين تمامًا (يُهرس بسهولة بالشوكة). دون ملح أو توابل حارة في البداية.',
+  logTitle:(f)=>'تذوق: '+f,howServed:'كيف قُدِّم؟',liked:'كيف كان؟',likes:[['yes','أحبه'],['meh','عادي'],['no','لم يعجبه']],
+  reactionQ:'هل حدث تفاعل غير عادي؟',reactionTypes:[['rash','طفح أو احمرار'],['vomit','تقيؤ'],['diarrhea','إسهال'],['swelling','تورم الوجه أو الشفتين'],['breathing','صفير أو صعوبة في التنفس'],['other','غير ذلك']],
+  notes:'ملاحظات (اختياري)',notDiagnosis:'هذا ليس تشخيصًا طبيًا، بل توثيق لما حدث.',
+  emergency:'صعوبة في التنفس، أو تورم الوجه أو اللسان أو الحلق، أو ضعف غير عادي: اتصلي فورًا بالإسعاف 101.',
+  alIntro:'هنا تسجّلين التعرّض والاشتباه بتفاعل. هذا ليس تشخيصًا طبيًا.',alTip:'الأفضل تجربة مسبب حساسية جديد صباحًا، طعامًا واحدًا كل مرة، مع المراقبة.',alTip2:'نصيحة شائعة: كمية صغيرة (نحو ربع ملعقة صغيرة) كل صباح لثلاثة أيام متتالية.',
+  alNot:'لم يُقدَّم بعد',alOk:'قُدِّم، استمري بتقديمه',alBad:'حدث تفاعل أو اشتباه',exposed:'قُدِّم',hadReaction:'تفاعل أو اشتباه',avoid:'إخفاء في الوصفات',fromLog:'سُجِّل تلقائيًا من سجل التذوق',
+  stage:'المرحلة',texture:'القوام',stages:[['all','الكل'],['b','البداية'],['a','متقدم']],textures:[['all','الكل'],['m','مهروس'],['b','تغذية ذاتية'],['c','مدمج']],
+  hidden:(x)=>'وصفات مخفية تحتوي على: '+x,noRecipes:'لا توجد وصفات مناسبة لهذا الاختيار',ingredients:'المكونات',steps:'طريقة التحضير',personal:'مطابق لمسببات الحساسية التي حددتِها',
+  logEmpty:'لم يتذوق شيئًا بعد. اختاري طعامًا واضغطي "تذوّقنا".',toFoods:'إلى قائمة الأطعمة',reactionEv:'تفاعل',tasteEv:'تذوق',
+  style:'كيف تحبين التقديم؟',styles:[['mashed','مهروس (بالملعقة)','الإطعام بالملعقة بطعام مهروس'],['blw','التغذية الذاتية','الطفل يأكل وحده بيديه'],['combined','مدمج','الملعقة والأكل الذاتي معًا']],styleNote:'لا توجد طريقة واحدة صحيحة. المهم ما يناسب طفلك، ما دام التقديم آمنًا.',
+  langNote:'أوصاف الأطعمة والوصفات بالعبرية حاليًا. الترجمة إلى العربية قادمة.',disclaimer:'المعلومات في التطبيق ليست استشارة طبية. لأي سؤال توجهي إلى طبيب الأطفال أو عيادة الأم والطفل.'}
 };
-const fname=(id)=>{ const f=FOODS.find(x=>x[0]===id); if(!f) return id; return S.lang==='en'?f[4]:S.lang==='ar'?f[5]:f[3]; };
+// Info / BLW content (Hebrew, from the Lovable app, lightly edited)
+const FINFO=[
+ ['intro','טעימות ראשונות לקטנטנים',['התחלת טעימות היא שלב מרגש, וגם קצת מלחיץ. פתאום החלב כבר לא מספיק, ויש עולם שלם של טעמים, מרקמים וריחות להכיר. המטרה כאן היא לעשות סדר, להוריד לחץ, ולתת לכם דרך פשוטה, רגועה ובטוחה להתחיל, בלי למהר ובלי ציפיות לא ריאליות.','זכרו: אוכל בגיל הזה הוא חוויה, משחק ולמידה. לא מבחן.']],
+ ['ready','סימני מוכנות',['לרוב מתחילים סביב גיל חצי שנה, כשהתינוק מראה:'],['סקרנות לאוכל: מסתכל עליכם כשאתם אוכלים','מנסה לתפוס אוכל מהיד','פותח פה כשהכפית מתקרבת','מחזיק את פלג הגוף העליון ושולט יחסית בצוואר','יושב, גם אם בתמיכה או על הברכיים שלכם']],
+ ['blw','מה זה בייבילד?',['בייבילד (Baby-Led Weaning) היא גישה שבה התינוק אוכל בעצמו, עם הידיים, חתיכות אוכל רכות בגודל שנוח לאחוז, במקום שיאכילו אותו בכפית. התינוק מחליט כמה לאכול ובאיזה קצב, ולומד מרקמים שונים כבר מההתחלה.','אפשר גם לשלב: חלק מהארוחות מרוסקות בכפית וחלק אכילה עצמית. אין שיטה אחת נכונה.','בבייבילד מגישים בצורה בטוחה את האוכל של כל המשפחה, עם מעט מלח או בלי מלח בכלל.'],['תמיד בהשגחה, כשהתינוק יושב זקוף','חתיכות גדולות לאחיזה (בערך באורך אצבע של מבוגר), ורכות מאוד: נמעכות בין האגודל לאצבע','ממרחים סמיכים, כמו טחינה וחמאת בוטנים, רק בשכבה דקה ולא בגוש','לא מכניסים אוכל לפה של התינוק. נותנים לו להוביל','השתנקות קלה (שיעול, פרצופים) היא חלק מהלמידה. חנק שקט, בלי שיעול ובלי קול, הוא מצב חירום']],
+ ['mashed','מרוסק (בכפית)',['מתחילים במרקם חלק, ובהדרגה עוברים למרקם מעוך ולגושים קטנים ורכים, כדי שהתינוק ילמד ללעוס.','מציעים את הכפית ומחכים שהתינוק יפתח את הפה. כשהוא מסובב את הראש או סוגר את הפה, זה סימן שסיים.']],
+ ['tips','עקרונות חשובים',[],['מאכל חדש עדיף בשעות היום ולא בערב, כדי שאם תהיה תגובה, רופא יהיה זמין','אין צורך בתיבול: זה טעם ראשון שאינו חלב אם או תמ״ל, והוא חדש ומרגש גם ככה','יריקה, פרצופים ולכלוך הם חלק מהתהליך, לגמרי נורמלי','אין מה למהר: יש לו את כל החיים לאכול','חלב אם או תמ״ל נשארים מקור התזונה המרכזי בשנה הראשונה']],
+ ['safety','בטיחות והיגיינה',[],['בהתחלה תמיד מרככים: בישול, אידוי או אפייה','חותכים בהתאם לשלב. ענבים ועגבניות שרי תמיד לרבעים לאורך','לא נותנים אגוזים שלמים, פופקורן, או גזר ותפוח קשים','משגיחים בכל רגע ולא משאירים תינוק לבד עם אוכל','שוטפים ידיים, פירות וירקות']],
+ ['balance','תזונה מאוזנת בקטנה',['אין צורך לספור, לשקול או להילחץ.'],['🍗 חלבון: עוף, בשר, דגים, ביצים, טופו, קטניות','🥕 פחמימות: ירקות, פירות, דגנים','🥑 שומנים טובים: אבוקדו, שמן זית, טחינה']],
+ ['afterone','אחרי גיל שנה',[],['🍯 דבש: רק אחרי גיל שנה','🥛 חלב פרה כמשקה עיקרי: רק אחרי גיל שנה','🧂 מלח וסוכר: כמה שפחות, גם אחר כך']],
+ ['calm','לסיום, בלי לחץ',['טעימות הן לא מרוץ. לא חייבים להספיק הכול, ולא חייבים "לאכול יפה". מספיק להיות שם, להציע, לאפשר, ולסמוך על התינוק שלכם.']]
+];
+const fobj=(id)=>{ id=LEGACY_FOOD[id]||id; return FOODS.find(x=>x[0]===id)||null; };
+const fname=(id)=>{ const f=fobj(id); if(!f) return id; return S.lang==='en'?f[3]:S.lang==='ar'?f[4]:f[2]; };
+const lix=()=>S.lang==='en'?3:S.lang==='ar'?4:2;
+const catName=(c)=>{ const x=FCATS.find(y=>y[0]===c); return x?x[lix()]:c; };
+const alName=(a)=>{ const x=ALLERGENS.find(y=>y[0]===a); return x?x[lix()]:a; };
+const hasImg=(id)=>FOOD_IMG.includes(id);
 function tasteStats(){
- const m={}; evs().filter(e=>e.type==='taste').forEach(e=>{ const s=m[e.food]||(m[e.food]={n:0,liked:null,reaction:false,last:0}); s.n++; if(e.reaction) s.reaction=true; if(e.t>s.last){s.last=e.t;s.liked=e.liked;} });
+ const m={}; evs().filter(e=>e.type==='taste').forEach(e=>{ const id=LEGACY_FOOD[e.food]||e.food; const s=m[id]||(m[id]={n:0,liked:null,reaction:false,last:0}); s.n++; if(e.reaction) s.reaction=true; if(e.t>s.last){s.last=e.t;s.liked=e.liked;} });
  return m;
 }
+function allergenState(){
+ const b=baby(); const man=((S.family.allergens||{})[b&&b.id])||{}; const st=tasteStats(); const out={};
+ ALLERGENS.forEach(a=>{ const foods=FOODS.filter(f=>f[10]===a[0]).map(f=>f[0]); const logged=foods.some(f=>st[f]); const logReact=foods.some(f=>st[f]&&st[f].reaction); const mm=man[a[0]]||{};
+  out[a[0]]={exposed:!!mm.exposed||logged,logged,reaction:!!mm.reaction||logReact,logReact,avoid:!!mm.avoid}; });
+ return out;
+}
+function foodsSub(){ const F=FT[S.lang]||FT.he; const cur=S.foodSub||'foods';
+ return '<div class="seg-scroll" role="tablist" aria-label="'+esc(F.title)+'">'+['foods','allergens','recipes','log','info'].map(k=>'<button type="button" role="tab" class="chip" data-act="fsub" data-v="'+k+'" aria-selected="'+(cur===k)+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
+function tagRow(f){ const F=FT[S.lang]||FT.he; const t=[];
+ if(f[10]) t.push('<span class="tag warm">'+esc(F.allergen+': '+alName(f[10]))+'</span>');
+ if(f[8]) t.push('<span class="tag">'+esc(F.soft)+'</span>');
+ if(f[9]) t.push('<span class="tag ok">'+esc(F.blw)+'</span>');
+ return t.length?'<span class="tags">'+t.join('')+'</span>':''; }
 function viewFoods(){
  const L=t(), F=FT[S.lang]||FT.he, b=baby(); if(!b) return viewSetup();
- const st=tasteStats(), cat=S.foodCat||'all';
- const tastedN=Object.keys(st).length;
- const likeLabel=v=>{ const x=F.likes.find(l=>l[0]===v); return x?x[1]:''; };
- const allergenRow='<ul class="list" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px">'+FOODS.filter(f=>f[2]).map(f=>{
-  const s=st[f[0]]; const state=!s?'not':s.reaction?'bad':'ok';
+ const st=tasteStats(), sub=S.foodSub||'foods';
+ const head='<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(F.title)+'</h1><p class="muted small">'+esc(b.name+', '+F.tasted(Object.keys(st).length))+'</p></div>'+statusPill()+'</div>'+babySwitch()+foodsSub()+'</header>'+(F.langNote?'<p class="banner">'+esc(F.langNote)+'</p>':'');
+ let body='';
+ if(sub==='foods') body=foodsList(st); else if(sub==='allergens') body=allergensView(); else if(sub==='recipes') body=recipesView(); else if(sub==='log') body=tasteLog(); else body=infoView();
+ return head+body+'<p class="note">'+esc(F.disclaimer)+'</p>';
+}
+function foodsList(st){
+ const F=FT[S.lang]||FT.he, cat=S.foodCat||'all', q=(S.foodQ||'').trim();
+ const chips='<div class="seg-scroll" role="group" aria-label="'+esc(F.sub.foods)+'"><button type="button" class="chip" data-act="fcat" data-v="all" aria-pressed="'+(cat==='all')+'">'+esc(F.all)+'</button>'+FCATS.map(c=>'<button type="button" class="chip" data-act="fcat" data-v="'+c[0]+'" aria-pressed="'+(cat===c[0])+'"><span aria-hidden="true">'+c[1]+'</span> '+esc(c[lix()])+'</button>').join('')+'</div>';
+ const search='<label class="field sr-label" for="food-q"><span class="sr">'+esc(F.search)+'</span><input id="food-q" type="search" placeholder="'+esc(F.search)+'" autocomplete="off" value="'+esc(S.foodQ||'')+'"></label>';
+ const list=FOODS.filter(f=>(cat==='all'||f[1]===cat)&&(!q||f[2].includes(q)||f[3].toLowerCase().includes(q.toLowerCase())||f[4].includes(q)||f[7].some(x=>x.includes(q))));
+ const rows=list.map(f=>{
+  const s=st[f[0]], open=S.openFood===f[0];
+  const meta=s?F.tastedTimes(s.n)+(s.reaction?' · '+F.alBad:''):F.notYet;
+  const thumb=hasImg(f[0])?'<img class="thumb" src="'+IMG_BASE+f[0]+'.jpg" alt="" loading="lazy" width="56" height="56">':'<span class="thumb emoji" aria-hidden="true">'+(FCATS.find(c=>c[0]===f[1])||['','🍽️'])[1]+'</span>';
+  const style=S.foodStyle||((S.family.prefs||{}).feedingStyle==='blw'?'blw':'mashed');
+  return '<li class="food'+(open?' open':'')+'"><button type="button" class="food-head" data-act="food" data-food="'+f[0]+'" aria-expanded="'+open+'">'+thumb+'<span class="grow section" style="gap:2px"><span class="row" style="gap:6px;font-weight:600">'+esc(fname(f[0]))+(s?'<span class="done" aria-hidden="true">'+IC.check+'</span>':'')+'</span><span class="small muted">'+esc(meta)+'</span></span><svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
+   (open?'<div class="food-body">'+tagRow(f)+
+    (hasImg(f[0])?'<img class="food-img" src="'+IMG_BASE+f[0]+'.jpg" alt="'+esc(fname(f[0])+': '+F.mashed+' / '+F.blwT)+'" loading="lazy" width="512" height="512">':'')+
+    '<div class="seg" role="group" style="grid-template-columns:1fr 1fr"><button type="button" data-act="fstyle" data-v="mashed" aria-pressed="'+(style==='mashed')+'">🥣 '+esc(F.mashed)+'</button><button type="button" data-act="fstyle" data-v="blw" aria-pressed="'+(style==='blw')+'">🤚 '+esc(F.blwT)+'</button></div>'+
+    '<p lang="he" dir="rtl" style="line-height:1.7">'+esc(style==='blw'?f[6]:f[5])+'</p>'+
+    (style==='blw'&&!f[9]?'<p class="banner">⚠️ '+esc(F.blwWarn)+'</p>':'')+
+    (s?'':'<p class="small muted">💡 '+esc(F.newMorning)+'</p>')+
+    '<button type="button" class="btn block" data-act="taste" data-food="'+f[0]+'">'+IC.check+' '+esc(F.tasteBtn)+'</button></div>':'')+'</li>';
+ }).join('');
+ return '<section class="card" style="gap:6px"><h2>'+esc(F.prepTitle)+'</h2><p class="small" style="line-height:1.6">'+esc(F.prepText)+'</p></section>'+
+  '<section class="section" style="gap:12px">'+search+chips+(rows?'<ul class="foods">'+rows+'</ul>':'<p class="empty">'+esc(F.noResults)+'</p>')+'</section>';
+}
+function allergensView(){
+ const F=FT[S.lang]||FT.he, as=allergenState();
+ const cards=ALLERGENS.map(a=>{ const s=as[a[0]]; const state=s.reaction?'bad':s.exposed?'ok':'not';
   const color=state==='bad'?'var(--danger)':state==='ok'?'var(--sage)':'var(--line)';
-  return '<li style="padding:10px 0;gap:10px"><span aria-hidden="true" style="width:12px;height:12px;border-radius:50%;flex:none;background:'+color+'"></span><span class="grow section" style="gap:0"><span style="font-weight:500">'+esc(fname(f[0]))+'</span><span class="small muted">'+esc(state==='bad'?F.alBad:state==='ok'?F.alOk:F.alNot)+'</span></span></li>';
- }).join('')+'</ul>';
- const list=FOODS.filter(f=>cat==='all'||(cat==='allg'?f[2]:f[1]===cat)).map(f=>{
-  const s=st[f[0]];
-  const meta=s?F.times(s.n)+(s.liked?', '+likeLabel(s.liked):''):F.notYet;
-  return '<button type="button" class="topic" data-act="taste" data-food="'+f[0]+'"><span class="mono'+(f[2]?' warm':'')+'" aria-hidden="true">'+(s?IC.check:esc(fname(f[0]).slice(0,1)))+'</span><span class="grow section" style="gap:2px"><span style="font-weight:500">'+esc(fname(f[0]))+'</span><span class="small muted">'+esc(meta)+(s&&s.reaction?' · '+esc(F.alBad):'')+'</span></span></button>';
- }).join('');
- const ri=S.lang==='en'?1:S.lang==='ar'?2:0;
- const recipes=RECIPES.map((r,i)=>{
-  const missing=r[3].filter(x=>!st[x]); const open=S.openRecipe===i;
-  return '<li style="list-style:none;border-bottom:1px solid var(--line)"><button type="button" class="topic" style="border:0" data-act="recipe" data-i="'+i+'" aria-expanded="'+open+'"><span class="grow section" style="gap:2px"><span style="font-weight:500">'+esc(r[ri])+'</span><span class="small" style="color:'+(missing.length?'var(--ink2)':'var(--sage)')+'">'+esc(missing.length?F.needs(missing.map(fname).join(', ')):F.fits)+'</span></span></button>'+
-   (open?'<p style="padding:0 0 14px;line-height:1.7">'+esc(r[4+ri])+'</p>':'')+'</li>';
- }).join('');
- return '<header class="section" style="gap:16px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(F.title)+'</h1><p class="muted small">'+esc(b.name+', '+F.tasted(tastedN))+'</p></div><a class="pill" href="#family">'+esc(L.familyLink)+'</a></div>'+babySwitch()+'</header>'+
- (tastedN===0?'<section class="dark-card"><h2 style="font-size:1.125rem">'+esc(F.ready)+'</h2><p>'+esc(F.readyText)+'</p><ul style="margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:4px">'+F.readyList.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p class="small" style="opacity:.85">'+esc(F.readyNote)+'</p></section>':'')+
- '<section class="section"><h2>'+esc(F.allergens)+'</h2>'+allergenRow+'</section>'+
- '<section class="section"><div class="chips" role="group" aria-label="'+esc(F.title)+'">'+F.cats.map(c=>'<button type="button" class="chip" data-act="fcat" data-v="'+c[0]+'" aria-pressed="'+(cat===c[0])+'">'+esc(c[1])+'</button>').join('')+'</div><div>'+list+'</div></section>'+
- '<section class="section"><h2>'+esc(F.recipes)+'</h2><ul style="margin:0;padding:0">'+recipes+'</ul></section>'+
- '<section class="warn" style="border-color:var(--line)"><h2 style="color:var(--ink)">'+esc(F.safety)+'</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6;display:flex;flex-direction:column;gap:4px">'+F.safetyList.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>'+
- '<p class="prose" style="font-size:1rem">'+esc(F.calm)+'</p><p class="note">'+esc(F.source)+'</p>';
+  const cb=(k,label,on,dis)=>'<label class="row" style="min-height:44px;gap:10px"><input type="checkbox" data-allergen="'+a[0]+'" data-k="'+k+'"'+(on?' checked':'')+(dis?' disabled':'')+' style="width:22px;height:22px;accent-color:'+(k==='reaction'?'var(--danger)':'var(--sage)')+'"><span>'+esc(label)+'</span></label>';
+  return '<li class="card" style="gap:6px;list-style:none"><div class="row" style="gap:12px"><span class="al-dot" aria-hidden="true" style="background:'+color+'">'+a[1]+'</span><span class="grow section" style="gap:0"><span style="font-weight:600">'+esc(a[lix()])+'</span><span class="small muted">'+esc(state==='bad'?F.alBad:state==='ok'?F.alOk:F.alNot)+'</span></span></div>'+
+   cb('exposed',F.exposed,s.exposed,s.logged)+cb('reaction',F.hadReaction,s.reaction,s.logReact)+cb('avoid',F.avoid,s.avoid,false)+
+   ((s.logged||s.logReact)?'<p class="small muted">'+esc(F.fromLog)+'</p>':'')+'</li>'; }).join('');
+ return '<section class="section" style="gap:8px"><p>'+esc(F.alIntro)+'</p><p class="banner">'+esc(F.alTip)+'</p><p class="small muted">💡 '+esc(F.alTip2)+'</p></section>'+
+  '<ul class="section" style="margin:0;padding:0;gap:12px">'+cards+'</ul>'+
+  '<section class="warn"><p style="font-weight:600;color:var(--danger)">'+esc(F.emergency)+'</p></section>';
+}
+function recipesView(){
+ const F=FT[S.lang]||FT.he, as=allergenState(), stg=S.recStage||'all', tex=S.recTex||'all';
+ const avoid=ALLERGENS.filter(a=>as[a[0]].avoid||as[a[0]].reaction).map(a=>a[0]);
+ const list=RECIPES.filter(r=>(stg==='all'||r[3]===stg)&&(tex==='all'||r[4]===tex)&&!r[5].some(x=>avoid.includes(x)));
+ const hiddenN=RECIPES.filter(r=>r[5].some(x=>avoid.includes(x))).length;
+ const chips=(act,opts,val)=>'<div class="seg-scroll">'+opts.map(o=>'<button type="button" class="chip" data-act="'+act+'" data-v="'+o[0]+'" aria-pressed="'+(val===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>';
+ const texName=(x)=>(F.textures.find(o=>o[0]===x)||['',''])[1], stName=(x)=>(F.stages.find(o=>o[0]===x)||['',''])[1];
+ const rows=list.map(r=>{ const open=S.openRecipe===r[0];
+  return '<li class="food'+(open?' open':'')+'"><button type="button" class="food-head" data-act="recipe" data-i="'+r[0]+'" aria-expanded="'+open+'"><span class="grow section" style="gap:4px"><span style="font-weight:600" lang="he" dir="rtl">'+esc(r[1])+'</span><span class="small muted" lang="he" dir="rtl">'+esc(r[2])+'</span><span class="tags"><span class="tag">'+esc(stName(r[3]))+'</span><span class="tag">'+esc(texName(r[4]))+'</span>'+r[5].map(a=>'<span class="tag warm">'+esc(alName(a))+'</span>').join('')+'</span></span><svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
+   (open?'<div class="food-body" lang="he" dir="rtl"><h3>'+esc(F.ingredients)+'</h3><ul class="bul">'+r[6].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><h3>'+esc(F.steps)+'</h3><ol class="bul">'+r[7].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+
+    (r[8]?'<p><strong>🥣 '+esc(F.mashed)+':</strong> '+esc(r[8])+'</p>':'')+(r[9]?'<p><strong>🤚 '+esc(F.blwT)+':</strong> '+esc(r[9])+'</p>':'')+'</div>':'')+'</li>'; }).join('');
+ return '<section class="section" style="gap:10px"><p class="small muted">'+esc(F.personal)+'</p><p class="small" style="font-weight:600">'+esc(F.stage)+'</p>'+chips('rstage',F.stages,stg)+'<p class="small" style="font-weight:600">'+esc(F.texture)+'</p>'+chips('rtex',F.textures,tex)+
+  (hiddenN?'<p class="banner">🚫 '+esc(F.hidden(avoid.map(alName).join(', ')))+'</p>':'')+'</section>'+
+  (rows?'<ul class="foods">'+rows+'</ul>':'<p class="empty">'+esc(F.noRecipes)+'</p>');
+}
+function tasteLog(){
+ const F=FT[S.lang]||FT.he, L=t(); const list=evs().filter(e=>e.type==='taste');
+ if(!list.length) return '<div class="empty section" style="gap:12px;align-items:center"><span style="font-size:2rem" aria-hidden="true">🍽️</span><p>'+esc(F.logEmpty)+'</p><button type="button" class="btn ghost" data-act="fsub" data-v="foods">'+esc(F.toFoods)+'</button></div>';
+ const day=(ms)=>{ try{ return new Date(ms).toLocaleDateString(S.lang==='ar'?'ar-u-nu-latn':S.lang==='en'?'en-GB':'he-IL',{day:'numeric',month:'short'}); }catch(e){ return ''; } };
+ return '<ul class="list">'+list.map(e=>{ const lk=F.likes.find(l=>l[0]===e.liked); const c=S.confirmDel===e.id;
+  const rt=(e.reactionTypes||[]).map(k=>(F.reactionTypes.find(x=>x[0]===k)||['',k])[1]).join(', ');
+  return '<li style="align-items:flex-start"><span class="time" style="min-width:56px">'+esc(day(e.t))+'<br>'+hhmm(e.t)+'</span><span class="grow section" style="gap:2px"><span style="font-weight:600">'+esc(fname(e.food))+'</span><span class="small muted">'+esc([e.style==='blw'?F.blwT:e.style==='mashed'?F.mashed:'',lk?lk[1]:''].filter(Boolean).join(' · '))+'</span>'+(e.reaction?'<span class="small" style="color:var(--danger);font-weight:600">⚠️ '+esc(F.reactionEv+(rt?': '+rt:''))+'</span>':'')+(e.note?'<span class="small">'+esc(e.note)+'</span>':'')+'<span class="small muted">'+esc(whoLabel(e.by))+'</span></span>'+
+   (c?'<span class="confirm"><button type="button" class="yes" data-act="delyes" data-id="'+esc(e.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="delno">'+esc(L.no)+'</button></span>':'<button type="button" class="icon-btn" data-act="delask" data-id="'+esc(e.id)+'" aria-label="'+esc(L.del+': '+fname(e.food))+'">'+IC.trash+'</button>')+'</li>'; }).join('')+'</ul>';
+}
+function infoView(){
+ const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
+ const styles='<section class="card"><h2>'+esc(F.style)+'</h2><div class="section" style="gap:8px">'+F.styles.map(s=>'<button type="button" class="opt'+(pref===s[0]?' primary':'')+'" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'" style="min-height:72px"><span class="opt-tx"><span class="opt-t">'+esc(s[1])+'</span><span class="opt-h">'+esc(s[2])+'</span></span>'+(pref===s[0]?IC.check:'')+'</button>').join('')+'</div><p class="small muted">'+esc(F.styleNote)+'</p></section>';
+ const blocks=FINFO.map(x=>'<section class="section prose" lang="he" dir="rtl"><h2 style="font-size:1.25rem">'+esc(x[1])+'</h2>'+x[2].map(p=>'<p>'+esc(p)+'</p>').join('')+(x[3]?'<ul>'+x[3].map(li=>'<li>'+esc(li)+'</li>').join('')+'</ul>':'')+'</section>').join('');
+ const blwImgs='<div class="img-pair" aria-hidden="true">'+['sweet-potato','banana','egg','avocado'].map(id=>'<img src="'+IMG_BASE+id+'.jpg" alt="" loading="lazy" width="256" height="256">').join('')+'</div>';
+ return styles+blwImgs+blocks+'<section class="warn"><p style="font-weight:600;color:var(--danger)">'+esc(F.emergency)+'</p></section>';
 }
 function tasteSheetBody(){
- const F=FT[S.lang]||FT.he, f=FOODS.find(x=>x[0]===sheet.food);
+ const F=FT[S.lang]||FT.he, f=fobj(sheet.food);
  const chips=(name,opts,val)=>'<div class="chips">'+opts.map(o=>'<button type="button" class="chip" data-sh="'+name+'" data-v="'+o[0]+'" aria-pressed="'+(String(val)===String(o[0]))+'">'+esc(o[1])+'</button>').join('')+'</div>';
- return '<p class="card" style="gap:4px"><strong style="font-weight:600">'+esc(F.how)+'</strong><span>'+esc((HINT[f[6]]||{})[S.lang]||'')+'</span></p>'+
-  (f[2]?'<p class="banner">'+esc(F.allergenTip)+'</p>':'')+
+ const rts=sheet.reactionTypes||[];
+ return (f&&f[10]?'<p class="banner">'+esc(F.allergen+': '+alName(f[10])+'. '+F.alTip)+'</p>':'')+
+  '<fieldset><legend>'+esc(F.howServed)+'</legend>'+chips('style',[['mashed','🥣 '+F.mashed],['blw','🤚 '+F.blwT]],sheet.style)+'</fieldset>'+
   '<fieldset><legend>'+esc(F.liked)+'</legend>'+chips('liked',F.likes,sheet.liked)+'</fieldset>'+
-  '<fieldset><legend>'+esc(F.texture)+'</legend>'+chips('texture',F.textures,sheet.texture)+'</fieldset>'+
-  '<label class="row" for="sh-react" style="min-height:44px;gap:12px"><input id="sh-react" type="checkbox" style="width:24px;height:24px;accent-color:var(--danger)"'+(sheet.reaction?' checked':'')+'><span>'+esc(F.reaction)+'</span></label>'+
-  (sheet.reaction?'<p class="warn" role="alert" style="font-weight:600;color:var(--danger)">'+esc(F.emergency)+'</p>':'');
+  '<label class="row" for="sh-react" style="min-height:44px;gap:12px"><input id="sh-react" type="checkbox" style="width:24px;height:24px;accent-color:var(--danger)"'+(sheet.reaction?' checked':'')+'><span>'+esc(F.reactionQ)+'</span></label>'+
+  (sheet.reaction?'<fieldset><legend class="sr">'+esc(F.reactionQ)+'</legend><div class="chips">'+F.reactionTypes.map(o=>'<button type="button" class="chip" data-sh="rtype" data-v="'+o[0]+'" aria-pressed="'+rts.includes(o[0])+'">'+esc(o[1])+'</button>').join('')+'</div></fieldset><p class="small muted">'+esc(F.notDiagnosis)+'</p>'+
+   ((rts.includes('breathing')||rts.includes('swelling'))?'<p class="warn" role="alert" style="font-weight:600;color:var(--danger)">'+esc(F.emergency)+'</p>':'<p class="small" style="color:var(--danger)">'+esc(F.emergency)+'</p>'):'')+
+  '<label class="field" for="sh-note" style="font-weight:400">'+esc(F.notes)+'<input id="sh-note" type="text" autocomplete="off" value="'+esc(sheet.note||'')+'"></label>';
+}
+
+// ---------- home menu ----------
+const HT={
+ he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים ובקבוקים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מאכלים, אלרגנים, מתכונים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['משפחה והגדרות','בן/בת הזוג, תינוקות ושפה'],
+  lastFeed:'הנקה אחרונה',noFeed:'עוד לא תועדה הנקה',tasted:(n)=>n+' מאכלים נטעמו',more:'עוד',ageLine:(n,s)=>n+(s?', '+s:'')},
+ en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers and bottles'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Foods, allergens, recipes and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Family & settings','Partner, babies and language'],
+  lastFeed:'Last feed',noFeed:'No feeds logged yet',tasted:(n)=>n+' foods tasted',more:'More',ageLine:(n,s)=>n+(s?', '+s:'')},
+ ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','أطعمة، مسببات حساسية، وصفات وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['العائلة والإعدادات','الشريك والأطفال واللغة'],
+  lastFeed:'آخر رضعة',noFeed:'لم تُسجَّل أي رضعة بعد',tasted:(n)=>n+' أطعمة تذوقها',more:'المزيد',ageLine:(n,s)=>n+(s?'، '+s:'')}
+};
+function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
+function viewHome(){
+ const L=t(), H=HT[S.lang]||HT.he, b=baby(); if(!b) return viewSetup();
+ const X=DX[S.lang]||DX.he, days=ageWeeks(b);
+ let age=''; if(days!=null){ const m=Math.floor(days/30.44), w=Math.floor((days-m*30.44)/7); age=X.ageIs(m,m<1?Math.floor(days/7):w); }
+ const list=evs(); const lf=list.find(e=>e.type==='feed'); const act=(S.family.active||{})[b.id];
+ const feedSub=act?L.nursingNow:lf?H.lastFeed+' '+L.ago(Math.floor((Date.now()-(lf.t+(lf.mins||0)*60000))/60000)):H.noFeed;
+ const tastedN=Object.keys(tasteStats()).length;
+ const mo=MONTHS[monthIndex(b)];
+ const spNow=days!=null&&SPURTS.find(s=>days>=s[0]-2&&days<=s[1]+2);
+ const chev='<svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+ const tile=(href,ic,tt,sub,cls,extra)=>'<a class="opt'+(cls||'')+'" href="#'+href+'" style="text-decoration:none"><span class="opt-ic">'+ic+'</span><span class="opt-tx"><span class="opt-t">'+esc(tt)+'</span><span class="opt-h">'+esc(sub)+'</span>'+(extra?'<span class="small" style="font-weight:600">'+esc(extra)+'</span>':'')+'</span>'+chev+'</a>';
+ const soon='<div class="opt" style="opacity:.7" aria-disabled="true"><span class="opt-ic">'+IC.comm+'</span><span class="opt-tx"><span class="opt-t">'+esc(H.community[0])+'</span><span class="opt-h">'+esc(H.community[1])+'</span></span><span class="badge">'+esc(L.soon)+'</span></div>';
+ return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(H.hello)+'</h1><p class="muted small">'+esc(H.ageLine(b.name,age))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
+ '<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
+  tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
+  tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
+  tile('dev',IC.dev,H.dev[0],H.dev[1],'',(mo&&days!=null?(S.lang==='he'?mo[1]:X.monthChip(mo[0])):'')+(spNow?(S.lang==='he'?' · אולי קפיצת גדילה':''):''))+
+  tile('feeding',IC.guide,H.guide[0],H.guide[1],'')+
+  soon+
+  '<div class="home-small">'+tile('meds',IC.med,H.meds[0],H.meds[1],' slim')+tile('family',IC.share,H.family[0],H.family[1],' slim')+'</div>'+
+ '</nav>';
 }
 
 // ---------- development milestones (CDC "Learn the Signs. Act Early.", 2022 revision) ----------
@@ -812,28 +1012,85 @@ const DT={
   when:'متى تتوجهين إلى الطبيب أو العيادة',whenList:['الطفل لا يحقق معلمًا أو أكثر من معالم عمره','الطفل يفقد مهارات كانت لديه','لديكِ أي قلق، حتى لو لم يكن في القائمة'],whenNote:'لا تنتظري: الأفضل أن تسألي مبكرًا.',
   source:'مبني على معالم النمو من CDC (تحديث 2022). الترجمة إلى العبرية والعربية بانتظار مراجعة مهنية.',noBorn:'أضيفي تاريخ الولادة في شاشة العائلة كي تتلاءم الصفحة مع عمر الطفل.'}
 };
+// ---------- development by month (Hebrew content; general, well-known information) ----------
+// month cards: [month, title, text]
+const MONTHS=[
+ [1,'החודש הראשון','התינוק ישן הרבה ויונק לעתים קרובות, לרוב 8 עד 12 פעמים ביממה. רואה הכי טוב פנים קרובות, במרחק של כ-20 עד 30 ס״מ, ומגיב לקולות מוכרים. רפלקסים כמו אחיזה בכף היד וחיפוש הפטמה בולטים מאוד.'],
+ [2,'חודש שני','מגיעים החיוכים הראשונים בתגובה לפנים ולקול. זמני הערות מתארכים מעט. זמן בטן קצר, כמה פעמים ביום ותמיד בהשגחה, עוזר לחזק את הצוואר.'],
+ [3,'חודש שלישי','מרים את הראש ביציבות רבה יותר בשכיבה על הבטן, מגלה את הידיים ומשמיע קולות של "שיחה". הרבה תינוקות מתחילים להבחין בין יום ללילה.'],
+ [4,'חודש רביעי','צוחק, מושיט יד לצעצועים ומכניס אותם לפה. רוב התינוקות נשענים על המרפקים, וחלקם מתחילים להתהפך. אצל רבים דפוסי השינה משתנים בגיל הזה, וזה זמני.'],
+ [5,'חודש חמישי','מתהפך, מעביר חפצים מיד ליד ומגלה את כפות הרגליים. מתעניין מאוד במה שקורה סביבו, כולל באוכל שלכם.'],
+ [6,'חצי שנה','רוב התינוקות מוכנים להתחיל טעימות סביב גיל חצי שנה. יושבים עם תמיכה ואחר כך לבד לרגעים, מזהים אנשים מוכרים ועושים "פררר" בשפתיים.'],
+ [7,'חודש שביעי','יושבים יציב יותר, ומתחילים לזחול או להתגלגל כדי להתקדם. משמיעים הברות כמו "בה" ו"מה". זה זמן טוב לבדוק בטיחות בבית בגובה הרצפה.'],
+ [8,'חודש שמיני','זוחלים או מתקדמים בדרך שלהם. הרבה תינוקות נבהלים מזרים או מתקשים להיפרד מכם. זה שלב התפתחותי רגיל שנקרא חרדת זרים.'],
+ [9,'חודש תשיעי','יושבים בלי תמיכה, מחפשים חפץ שהוסתר, מגיבים לשם ומרימים ידיים כדי שירימו אותם. רבים נעמדים בעזרת אחיזה.'],
+ [10,'חודש עשירי','נעמדים ומתחילים ללכת לאורך רהיטים, מרימים דברים קטנים בין האגודל לאצבע, ומבינים מילים פשוטות כמו "לא" ו"ביי".'],
+ [11,'חודש אחד עשר','מנופפים לשלום, מחקים תנועות וקולות, ונהנים ממשחקי "קוקו" וממחיאות כפיים. חלקם כבר עושים צעדים ראשונים.'],
+ [12,'שנה!','רבים אומרים "אמא" או "אבא", הולכים לאורך רהיטים או לבד, ומתחילים לשתות מכוס. מגיל שנה אפשר לתת דבש, וחלב פרה יכול להיות משקה עיקרי.'],
+ [15,'שנה ורבע','הולכים לבד, אומרים מילה או שתיים, מצביעים כדי לבקש משהו ומראים חיבה בחיבוקים ובנשיקות.'],
+ [18,'שנה וחצי','הולכים בביטחון, אומרים כמה מילים, מבצעים בקשה פשוטה ומחקים מטלות בית. הרצון לעצמאות גדל, ואיתו גם התסכולים.'],
+ [24,'שנתיים','רצים, בועטים בכדור ומחברים שתי מילים יחד. שמים לב לרגשות של אחרים ומתחילים לשחק משחקי דמיון.']
+];
+// growth spurts / frequent-feeding days: [from day, to day, label]
+const SPURTS=[[7,10,'בסביבות היום ה-7 עד ה-10'],[14,21,'שבועות 2 עד 3'],[28,42,'שבועות 4 עד 6'],[84,98,'בסביבות גיל 3 חודשים'],[115,130,'בסביבות גיל 4 חודשים'],[175,195,'בסביבות גיל חצי שנה'],[265,285,'בסביבות גיל 9 חודשים']];
+// "Wonder Weeks" leaps (counted from the due date): [week, name]
+const LEAPS=[[5,'שינויים בתחושות'],[8,'דפוסים'],[12,'מעברים חלקים'],[19,'אירועים'],[26,'יחסים'],[37,'קטגוריות'],[46,'רצפים'],[55,'תוכניות'],[64,'עקרונות'],[75,'מערכות']];
+const DX={
+ he:{months:'לפי חודשים',ageIs:(m,w)=>'בן/בת '+(m<1?w+' שבועות':m+' חודשים'+(w?' ו-'+w+' שבועות':'')),monthChip:(m)=>m===1?'חודש 1':m===12?'שנה':m===24?'שנתיים':m===18?'שנה וחצי':m===15?'15 חודשים':'חודש '+m,
+  nowTag:'עכשיו',spurtTitle:'קפיצת גדילה',spurtNow:'אולי קפיצת גדילה עכשיו',spurtNext:(x)=>'קפיצת הגדילה הבאה שכיחה '+x,
+  spurtText:'בקפיצת גדילה תינוקות רבים רוצים לינוק הרבה יותר מהרגיל ("ימי הנקה תכופה"), הם עצבניים יותר והשינה משתבשת. זה נמשך בדרך כלל יומיים עד שלושה, לפעמים כשבוע. הנקה לפי דרישה עוזרת לגוף לייצר יותר חלב. זה לא סימן שאין מספיק חלב.',spurtList:'מתי זה שכיח',spurtNote:'כל תינוק בקצב שלו, והתאריכים משוערים.',
+  leapTitle:'קפיצות התפתחותיות ("שבועות הפלא")',leapNow:(n,w)=>'לפי הספר, סביב שבוע '+w+': קפיצה '+n,leapNext:(n,w)=>'הקפיצה הבאה לפי הספר: שבוע '+w+', '+n,
+  leapText:'הרעיון מגיע מהספר "שבועות הפלא" (The Wonder Weeks): תקופות שבהן התינוק בכייני ונצמד יותר, ואחריהן מופיעה מיומנות חדשה. הספר סופר את השבועות מתאריך הלידה המשוער. חשוב לדעת: מחקרים לא מצאו שהקפיצות מגיעות בזמנים קבועים, וארגוני רפואת ילדים לא ממליצים עליהן ככלי מעקב. אם זה עוזר לך להבין תקופה קשה, מעולה. אם לא, זה לא מדד.',
+  checklist:(a)=>'אבני דרך עד '+a,langNote:'',sources:'מקורות: אבני הדרך של ה-CDC (עדכון 2022); עיתוי קפיצות גדילה לפי KellyMom ומשאבי הנקה מקובלים. התוכן כללי ואינו מחליף מעקב בטיפת חלב.'},
+ en:{months:'By month',ageIs:(m,w)=>m<1?w+' weeks old':m+' months'+(w?' and '+w+' weeks':'')+' old',monthChip:(m)=>m===12?'1 year':m===24?'2 years':m===18?'18 months':'Month '+m,
+  nowTag:'Now',spurtTitle:'Growth spurt',spurtNow:'Maybe a growth spurt right now',spurtNext:(x)=>'The next common growth spurt: '+x,spurtText:'',spurtList:'When it is common',spurtNote:'Every baby has their own pace; dates are approximate.',
+  leapTitle:'Developmental leaps ("Wonder Weeks")',leapNow:(n,w)=>'Per the book, around week '+w+': leap '+n,leapNext:(n,w)=>'Next leap per the book: week '+w+', '+n,leapText:'',
+  checklist:(a)=>'Milestones by '+a,langNote:'The monthly descriptions, growth spurts and leaps are in Hebrew for now. The milestone checklist below is available in English.',sources:'Sources: CDC milestones (2022); growth spurt timing per KellyMom and common breastfeeding resources. General information, not a substitute for your baby clinic.'},
+ ar:{months:'حسب الأشهر',ageIs:(m,w)=>m<1?'عمره '+w+' أسابيع':'عمره '+m+' أشهر'+(w?' و'+w+' أسابيع':''),monthChip:(m)=>m===12?'سنة':m===24?'سنتان':m===18?'سنة ونصف':'الشهر '+m,
+  nowTag:'الآن',spurtTitle:'طفرة نمو',spurtNow:'ربما طفرة نمو الآن',spurtNext:(x)=>'طفرة النمو الشائعة التالية: '+x,spurtText:'',spurtList:'متى تكون شائعة',spurtNote:'لكل طفل إيقاعه، والتواريخ تقريبية.',
+  leapTitle:'القفزات النمائية ("أسابيع العجائب")',leapNow:(n,w)=>'حسب الكتاب، حول الأسبوع '+w+': القفزة '+n,leapNext:(n,w)=>'القفزة التالية حسب الكتاب: الأسبوع '+w+'، '+n,leapText:'',
+  checklist:(a)=>'معالم النمو حتى '+a,langNote:'أوصاف الأشهر وطفرات النمو والقفزات بالعبرية حاليًا. قائمة معالم النمو أدناه متوفرة بالعربية.',sources:'المصادر: معالم النمو من CDC (2022)؛ توقيت طفرات النمو حسب KellyMom ومصادر رضاعة شائعة. معلومات عامة لا تغني عن متابعة العيادة.'}
+};
 function ageMonths(b){ const d=ageWeeks(b); return d==null?null:d/30.44; }
-function devStage(b){ const m=ageMonths(b); if(m==null) return 0; const i=DEV.findIndex(s=>s[0]>=m-0.25); return i<0?DEV.length-1:i; }
+function monthIndex(b){ const m=ageMonths(b); if(m==null) return 0; const mm=Math.max(1,Math.ceil(m)); const i=MONTHS.findIndex(x=>x[0]>=mm); return i<0?MONTHS.length-1:i; }
+function devStageFor(month){ const i=DEV.findIndex(s=>s[0]>=month); return i<0?DEV.length-1:i; }
 function viewDev(){
- const L=t(), D=DT[S.lang]||DT.he, b=baby(); if(!b) return viewSetup();
- const si=S.devAge==null?devStage(b):S.devAge, st=DEV[si], li=S.lang==='en'?2:S.lang==='ar'?3:1;
+ const L=t(), D=DT[S.lang]||DT.he, X=DX[S.lang]||DX.he, H=DX.he, b=baby(); if(!b) return viewSetup();
+ const days=ageWeeks(b), autoMi=monthIndex(b), mi=S.devAge==null?autoMi:S.devAge, mo=MONTHS[mi];
+ const si=devStageFor(mo[0]), st=DEV[si], li=S.lang==='en'?2:S.lang==='ar'?3:1;
  const seen=((S.family.milestones||{})[b.id])||{};
  const keyOf=(i)=>st[0]+'-'+i;
  const n=st[1].length, k=st[1].filter((x,i)=>seen[keyOf(i)]).length;
+ let ageLine=''; if(days!=null){ const m=Math.floor(days/30.44), w=Math.floor((days-m*30.44)/7); ageLine=X.ageIs(m,m<1?Math.floor(days/7):w); }
+ // month window in days for the selected card
+ const prevM=mi>0?MONTHS[mi-1][0]:0, from=prevM*30.44, to=mo[0]*30.44;
+ const isNow=mi===autoMi&&days!=null;
+ const spIn=SPURTS.filter(s=>s[1]>=from&&s[0]<=to);
+ const spNow=days!=null&&SPURTS.find(s=>days>=s[0]-2&&days<=s[1]+2);
+ const spNext=days!=null&&SPURTS.find(s=>s[0]>days);
+ const lpIn=LEAPS.filter(l=>l[0]*7>=from&&l[0]*7<=to);
+ const wk=days!=null?days/7:null; const lpNow=wk!=null&&LEAPS.find(l=>Math.abs(wk-l[0])<=1); const lpNext=wk!=null&&LEAPS.find(l=>l[0]>wk+1);
+ const chips='<div class="seg-scroll" role="group" aria-label="'+esc(X.months)+'">'+MONTHS.map((m,i)=>'<button type="button" class="chip" style="flex:none" data-act="devage" data-v="'+i+'" aria-pressed="'+(i===mi)+'">'+esc(X.monthChip(m[0]))+(i===autoMi&&days!=null?' <span class="small" aria-hidden="true">●</span><span class="sr">'+esc(X.nowTag)+'</span>':'')+'</button>').join('')+'</div>';
+ const monthCard='<section class="dark-card" lang="he" dir="rtl">'+(isNow?'<span class="badge">'+esc(H.nowTag+(ageLine?' · '+DX.he.ageIs(Math.floor(days/30.44),Math.floor(days/30.44)<1?Math.floor(days/7):Math.floor((days-Math.floor(days/30.44)*30.44)/7)):''))+'</span>':'')+'<h2 style="font-size:1.375rem">'+esc(mo[1])+'</h2><p style="font-size:1.0625rem;line-height:1.7">'+esc(mo[2])+'</p></section>';
+ const spurtCard=(spIn.length||(isNow&&(spNow||spNext)))?'<section class="card" lang="he" dir="rtl"><div class="row" style="gap:10px"><span class="mono warm" aria-hidden="true">↗</span><h2>'+esc(isNow&&spNow?H.spurtNow:H.spurtTitle)+'</h2></div>'+
+  (spIn.length?'<p style="font-weight:600">'+esc(spIn.map(s=>s[2]).join(' · '))+'</p>':'')+(isNow&&!spNow&&spNext?'<p class="small muted">'+esc(H.spurtNext(spNext[2]))+'</p>':'')+
+  '<p style="line-height:1.7">'+esc(H.spurtText)+'</p><details><summary class="link" style="cursor:pointer">'+esc(H.spurtList)+'</summary><ul class="bul">'+SPURTS.map(s=>'<li>'+esc(s[2])+'</li>').join('')+'</ul><p class="small muted">'+esc(H.spurtNote)+'</p></details></section>':'';
+ const leapCard=(lpIn.length||(isNow&&(lpNow||lpNext)))?'<section class="card" lang="he" dir="rtl"><div class="row" style="gap:10px"><span class="mono" aria-hidden="true">✦</span><h2>'+esc(H.leapTitle)+'</h2></div>'+
+  (lpIn.length?'<p style="font-weight:600">'+esc(lpIn.map(l=>'שבוע '+l[0]+': '+l[1]).join(' · '))+'</p>':'')+(isNow&&lpNow?'<p class="small">'+esc(H.leapNow(lpNow[1],lpNow[0]))+'</p>':isNow&&lpNext?'<p class="small muted">'+esc(H.leapNext(lpNext[1],lpNext[0]))+'</p>':'')+
+  '<details><summary class="link" style="cursor:pointer">מה זה ומה צריך לדעת</summary><p class="small" style="line-height:1.7">'+esc(H.leapText)+'</p><ul class="bul small">'+LEAPS.map(l=>'<li>שבוע '+l[0]+': '+esc(l[1])+'</li>').join('')+'</ul></details></section>':'';
  const groups=['s','l','c','m'].map(dm=>{
-  const items=st[1].map((x,i)=>[x,i]).filter(p=>p[0][0]===dm);
-  return '<section class="section" style="gap:4px"><h2>'+esc(D.domains[dm])+'</h2><ul class="list">'+items.map(p=>{
+  const items=st[1].map((x,i)=>[x,i]).filter(p=>p[0][0]===dm); if(!items.length) return '';
+  return '<section class="section" style="gap:4px"><h3 style="margin:0;font-size:.9375rem">'+esc(D.domains[dm])+'</h3><ul class="list">'+items.map(p=>{
    const id='ms-'+keyOf(p[1]); const on=!!seen[keyOf(p[1])];
    return '<li style="gap:12px"><input type="checkbox" id="'+id+'" data-ms="'+keyOf(p[1])+'"'+(on?' checked':'')+' style="width:24px;height:24px;flex:none;accent-color:var(--sage)"><label for="'+id+'" class="grow" style="min-height:28px">'+esc(p[0][li])+'</label></li>';
   }).join('')+'</ul></section>';
  }).join('');
- return '<header class="section" style="gap:16px"><div class="section" style="gap:2px"><h1>'+esc(D.title)+'</h1><p class="muted small">'+esc(b.name+', '+D.progress(k,n))+'</p></div>'+babySwitch()+'</header>'+
- (b.born?'':'<p class="banner">'+esc(D.noBorn)+'</p>')+
- '<div class="chips" role="group" aria-label="'+esc(D.title)+'" style="flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px">'+DEV.map((s,i)=>'<button type="button" class="chip" style="flex:none" data-act="devage" data-v="'+i+'" aria-pressed="'+(i===si)+'">'+esc(D.age(s[0]))+'</button>').join('')+'</div>'+
- '<p class="prose" style="font-size:1rem">'+esc(D.intro(b.name,D.age(st[0])))+'</p>'+groups+
- '<p class="small muted">'+esc(D.pace)+'</p>'+
+ return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(D.title)+'</h1><p class="muted small">'+esc(b.name+(ageLine?', '+ageLine:''))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
+ (b.born?'':'<p class="banner">'+esc(D.noBorn)+'</p>')+(X.langNote?'<p class="banner">'+esc(X.langNote)+'</p>':'')+
+ chips+monthCard+spurtCard+leapCard+
+ '<section class="section" style="gap:10px"><div class="between"><h2>'+esc(X.checklist(D.age(st[0])))+'</h2><span class="small muted">'+esc(D.progress(k,n))+'</span></div><p class="small muted">'+esc(D.pace)+'</p>'+groups+'</section>'+
  '<section class="warn"><h2>'+esc(D.when)+'</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6">'+D.whenList.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p style="font-weight:600">'+esc(D.whenNote)+'</p></section>'+
- '<p class="note">'+esc(D.source)+'</p>';
+ '<p class="note">'+esc(X.sources)+'</p>';
 }
 
 // ---------- render ----------
@@ -848,14 +1105,15 @@ function draw(){
  const v=document.getElementById('view');
  // keep typing safe: don't redraw the family form while a field there is focused
  const ae=document.activeElement;
- if(ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio'].includes(ae.type)){ } else {
+ const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
+ if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
   const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle();
-   case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); default:return viewToday(); } };
+   case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
-  if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
+  if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; if(keepQ){ const q=document.getElementById('food-q'); if(q){ q.focus({preventScroll:true}); try{ q.setSelectionRange(keepQ[0],keepQ[1]); }catch(e){} } } const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
  }
- const tb=document.getElementById('topbar'); const th='<a class="brand" href="#today" aria-label="'+esc(L.appName+', '+L.home)+'">'+LOGO+'<span>'+esc(L.appName)+'</span></a>'+((S.fid&&(S.family.babies||[]).length)?'<button type="button" class="share-btn" data-act="share">'+IC.share+esc(L.share)+'</button>':''); if(tb.innerHTML!==th) tb.innerHTML=th;
+ const tb=document.getElementById('topbar'); const th='<a class="brand" href="#home" aria-label="'+esc(L.appName+', '+L.home)+'">'+LOGO+'<span>'+esc(L.appName)+'</span></a>'+((S.fid&&(S.family.babies||[]).length)?'<button type="button" class="share-btn" data-act="share">'+IC.share+esc(L.share)+'</button>':''); if(tb.innerHTML!==th) tb.innerHTML=th;
  const nav=document.getElementById('tabs'); nav.setAttribute('aria-label',L.nav); nav.dir=L.dir; nav.lang=S.lang; const nh=S.fid?tabs():''; nav.hidden=!S.fid; if(nh!==lastNav){ nav.innerHTML=nh; lastNav=nh; }
  resolveNames();
 }
@@ -894,11 +1152,12 @@ document.getElementById('sheet-root').addEventListener('click',e=>{
  if(k==='mins') sheet.mins=Math.max(1,Math.min(180,sheet.mins+Number(v)));
  else if(k==='ml') sheet.ml=Math.max(10,Math.min(400,sheet.ml+Number(v)));
  else if(k==='when'){ sheet.when=Number(v); sheet.exact=''; }
+ else if(k==='rtype'){ const r=sheet.reactionTypes||(sheet.reactionTypes=[]); const i=r.indexOf(v); if(i<0) r.push(v); else r.splice(i,1); }
  else sheet[k]=v;
  const keep=k; drawSheet(); const again=document.querySelector('#sheet-root [data-sh="'+keep+'"]'+(v?'[data-v="'+v+'"]':'')); if(again) again.focus();
 });
 document.getElementById('sheet-root').addEventListener('change',e=>{ if(e.target.id==='sh-react'&&sheet){ sheet.reaction=e.target.checked; drawSheet(); const c=document.getElementById('sh-react'); if(c) c.focus(); } });
-document.getElementById('sheet-root').addEventListener('input',e=>{ if(e.target.id==='sh-time'&&sheet){ sheet.exact=e.target.value; sheet.when=-1; } });
+document.getElementById('sheet-root').addEventListener('input',e=>{ if(e.target.id==='sh-time'&&sheet){ sheet.exact=e.target.value; sheet.when=-1; } if(e.target.id==='sh-note'&&sheet){ sheet.note=e.target.value; } });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&sheet) closeSheet(); });
 function saveSheet(){
  const L=t(), b=baby(); if(!b) return;
@@ -908,7 +1167,7 @@ function saveSheet(){
   else tm=Date.now()-(sheet.when||15)*60000;
  }
  const ev={baby:b.id,type:sheet.type,t:tm,past:sheet.mode==='past'};
- if(sheet.mode==='taste'){ ev.food=sheet.food; ev.liked=sheet.liked; ev.texture=sheet.texture; ev.reaction=!!sheet.reaction; ev.past=false; }
+ if(sheet.mode==='taste'){ ev.food=sheet.food; ev.liked=sheet.liked; ev.style=sheet.style; ev.reaction=!!sheet.reaction; ev.reactionTypes=sheet.reaction?(sheet.reactionTypes||[]):[]; if(sheet.note) ev.note=sheet.note.trim(); ev.past=false; }
  if(sheet.type==='feed'){ev.side=sheet.side;ev.mins=sheet.mins;}
  if(sheet.type==='sleep'){ev.mins=sheet.mins;}
  if(sheet.type==='bottle'||sheet.type==='pump'){ev.ml=sheet.ml;}
@@ -926,6 +1185,7 @@ document.addEventListener('click',e=>{
  if(a==='logout'){ Store.signOut(); return; }
  if(a==='share'){ openSheet({mode:'share',type:'share'}); return; }
  if(a==='devage'){ S.devAge=Number(el.dataset.v); render(); return; }
+ if(a==='fsub'){ S.foodSub=el.dataset.v; S.confirmDel=null; render(); window.scrollTo(0,0); return; }
  if(a==='lang'){ S.lang=el.dataset.v; ls.set('gp-lang',S.lang); render(); return; }
  if(a==='theme'){ S.theme=el.dataset.v; ls.set('gp-theme2',S.theme); render(); return; }
  if(a==='addbaby'){ const bs=(S.family.babies||[]).slice(); bs.push({id:'b'+uid(),name:L.babyName+' '+(bs.length+1)}); Store.fam({babies:bs}); render(); return; }
@@ -935,9 +1195,14 @@ document.addEventListener('click',e=>{
  if(a==='switch'){ const cur=S.family.active[b.id]; if(cur) Store.fam({active:{[b.id]:Object.assign({},cur,{side:el.dataset.side,switched:true})}}); render(); return; }
  if(a==='finish'){ const cur=S.family.active[b.id]; if(!cur) return; const mins=Math.max(1,Math.round((Date.now()-cur.start)/60000));
   Store.addEvent({baby:b.id,type:'feed',t:cur.start,mins,side:cur.switched?'B':cur.side,last:cur.side}); Store.fam({active:{[b.id]:null}}); render(); say(S.mode==='db'?L.savedBoth:L.saved); return; }
- if(a==='taste'){ openSheet({mode:'taste',type:'taste',food:el.dataset.food,liked:'yes',texture:'mash',reaction:false}); return; }
+ if(a==='taste'){ const pf=(S.family.prefs||{}).feedingStyle; openSheet({mode:'taste',type:'taste',food:el.dataset.food,liked:'yes',style:S.foodStyle||(pf==='blw'?'blw':'mashed'),reaction:false,reactionTypes:[],note:''}); return; }
+ if(a==='food'){ S.openFood=S.openFood===el.dataset.food?null:el.dataset.food; render(); return; }
+ if(a==='fstyle'){ S.foodStyle=el.dataset.v; render(); return; }
+ if(a==='rstage'){ S.recStage=el.dataset.v; render(); return; }
+ if(a==='rtex'){ S.recTex=el.dataset.v; render(); return; }
+ if(a==='feedstyle'){ Store.fam({prefs:{feedingStyle:el.dataset.v}}); S.foodStyle=null; say(L.saved); return; }
  if(a==='fcat'){ S.foodCat=el.dataset.v; render(); return; }
- if(a==='recipe'){ const i=Number(el.dataset.i); S.openRecipe=S.openRecipe===i?-1:i; render(); return; }
+ if(a==='recipe'){ const i=el.dataset.i; S.openRecipe=S.openRecipe===i?null:i; render(); return; }
  if(a==='past'){ openSheet({mode:'past',type:'feed',when:15}); return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
  if(a==='sleep'){ const s=(S.family.sleep||{})[b.id];
@@ -990,6 +1255,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('change',e=>{
  const el=e.target;
  if(el.id==='setup-twins'){ S.setupTwins=el.checked; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.getElementById(el.checked?'setup-name2':'setup-twins'); if(n) n.focus(); })); return; }
+ if(el.dataset.allergen){ const b=baby(); if(b){ Store.fam({allergens:{[b.id]:{[el.dataset.allergen]:{[el.dataset.k]:el.checked}}}}); say(t().saved); } return; }
  if(el.dataset.ms){ const b=baby(); if(b){ Store.fam({milestones:{[b.id]:{[el.dataset.ms]:el.checked?Date.now():null}}}); say(t().saved); } return; }
  if(el.dataset.babyName!==undefined||el.dataset.babyBorn!==undefined){
   const id=el.dataset.babyName||el.dataset.babyBorn;
@@ -997,11 +1263,11 @@ document.addEventListener('change',e=>{
   Store.fam({babies:bs}); say(t().saved);
  }
 });
-document.addEventListener('input',e=>{ const el=e.target; if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
+document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['today','feeding','article','meds','family','community','foods','dev'];
-function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'today'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
+const VIEWS=['home','today','feeding','article','meds','family','community','foods','dev'];
+function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
 Store.init();
