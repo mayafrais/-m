@@ -692,7 +692,7 @@ const FOODS=[
  ['peanut-butter','fats','חמאת בוטנים','Peanut butter','زبدة فول سوداني','למהול ולערבב, ממרח דק מאוד','ממרח דק מאוד. לא גוש!',[],0,0,'peanuts'],
  ['almond-butter','fats','חמאת שקדים','Almond butter','زبدة لوز','למהול ולערבב, ממרח דק','ממרח דק על מזון. לא גוש!',[],0,0,'tree-nuts'],
  ['honey','after-one','דבש','Honey','عسل','רק אחרי גיל שנה!','רק אחרי גיל שנה!',['רק אחרי שנה'],0,1,''],
- ['milk','after-one','חלב פרה','Cow’s milk','حليب بقر','חלב פרה לשתייה רק אחרי גיל שנה. לפני כן אפשר להשתמש במעט חלב בבישול, למשל בדייסה','חלב פרה לשתייה רק אחרי גיל שנה',['רק אחרי שנה'],0,1,'milk']
+ ['milk','after-one','חלב פרה','Cow’s milk','حليب بقر','לא נותנים חלב פרה לשתייה לפני גיל שנה. מעט חלב בבישול, למשל בדייסה, זה בסדר','לא נותנים חלב פרה לשתייה לפני גיל שנה',['רק אחרי שנה'],0,1,'milk']
 ];
 const LEGACY_FOOD={sweetpotato:'sweet-potato',blueberry:'blueberries',oats:'oatmeal',lentils:'legumes',chickpeas:'legumes',beans:'legumes',peanut:'peanut-butter',sesame:'tahini',nuts:'almond-butter',wheat:'pasta',soy:'tofu'};
 // [id, name, description, stage b/a, texture m/b/c, allergens, ingredients, steps, mashed, blw]
@@ -800,7 +800,7 @@ const FINFO=[
  ['tips','עקרונות חשובים',[],['מאכל חדש עדיף בשעות היום ולא בערב, כדי שאם תהיה תגובה, רופא יהיה זמין','אין צורך בתיבול: זה טעם ראשון שאינו חלב אם או תמ״ל, והוא חדש ומרגש גם ככה','יריקה, פרצופים ולכלוך הם חלק מהתהליך, לגמרי נורמלי','אין מה למהר: יש לו את כל החיים לאכול','חלב אם או תמ״ל נשארים מקור התזונה המרכזי בשנה הראשונה']],
  ['safety','בטיחות והיגיינה',[],['בהתחלה תמיד מרככים: בישול, אידוי או אפייה','חותכים בהתאם לשלב. ענבים ועגבניות שרי תמיד לרבעים לאורך','לא נותנים אגוזים שלמים, פופקורן, או גזר ותפוח קשים','משגיחים בכל רגע ולא משאירים תינוק לבד עם אוכל','שוטפים ידיים, פירות וירקות']],
  ['balance','תזונה מאוזנת בקטנה',['אין צורך לספור, לשקול או להילחץ.'],['🍗 חלבון: עוף, בשר, דגים, ביצים, טופו, קטניות','🥕 פחמימות: ירקות, פירות, דגנים','🥑 שומנים טובים: אבוקדו, שמן זית, טחינה']],
- ['afterone','אחרי גיל שנה',[],['🍯 דבש: רק אחרי גיל שנה','🥛 חלב פרה לשתייה (בכוס או בבקבוק, במקום תמ״ל): רק אחרי גיל שנה. מוצרי חלב כמו יוגורט וגבינה אפשר כבר מחצי שנה','🧂 מלח וסוכר: כמה שפחות, גם אחר כך']],
+ ['afterone','אחרי גיל שנה',[],['🍯 דבש: רק אחרי גיל שנה','🥛 חלב פרה: לא נותנים לשתייה לפני גיל שנה. מוצרי חלב כמו יוגורט וגבינה אפשר כבר מחצי שנה','🧂 מלח וסוכר: כמה שפחות, גם אחר כך']],
  ['calm','לסיום, בלי לחץ',['טעימות הן לא מרוץ. לא חייבים להספיק הכול, ולא חייבים "לאכול יפה". מספיק להיות שם, להציע, לאפשר, ולסמוך על התינוק שלכם.']]
 ];
 const fobj=(id)=>{ id=LEGACY_FOOD[id]||id; return FOODS.find(x=>x[0]===id)||null; };
@@ -870,7 +870,7 @@ function allergensView(){
   return '<li class="card" style="gap:6px;list-style:none"><div class="row" style="gap:12px"><span class="al-dot" aria-hidden="true" style="background:'+color+'">'+a[1]+'</span><span class="grow section" style="gap:0"><span style="font-weight:600">'+esc(a[lix()])+'</span><span class="small muted">'+esc(state==='bad'?F.alBad:state==='ok'?F.alOk:F.alNot)+'</span></span></div>'+
    cb('exposed',F.exposed,s.exposed,s.logged)+cb('reaction',F.hadReaction,s.reaction,s.logReact)+cb('avoid',F.avoid,s.avoid,false)+
    ((s.logged||s.logReact)?'<p class="small muted">'+esc(F.fromLog)+'</p>':'')+'</li>'; }).join('');
- return '<section class="section" style="gap:8px"><p>'+esc(F.alIntro)+'</p><p class="banner">'+esc(F.alTip)+'</p><p class="small muted">💡 '+esc(F.alTip2)+'</p></section>'+
+ return '<section class="section" style="gap:8px"><p>'+esc(F.alIntro)+'</p>'+(S.lang==='he'?'<p class="banner" style="font-weight:700">💊 '+esc(FSAFE.meds)+'</p>':'')+'<p class="banner">'+esc(F.alTip)+'</p><p class="small muted">💡 '+esc(F.alTip2)+'</p></section>'+
   '<ul class="section" style="margin:0;padding:0;gap:12px">'+cards+'</ul>'+
   '<section class="warn"><p style="font-weight:600;color:var(--danger)">'+telify(F.emergency)+'</p></section>';
 }
@@ -898,10 +898,10 @@ function tasteLog(){
   return '<li style="align-items:flex-start"><span class="time" style="min-width:56px">'+esc(day(e.t))+'<br>'+hhmm(e.t)+'</span><span class="grow section" style="gap:2px"><span style="font-weight:600">'+esc(fname(e.food))+'</span><span class="small muted">'+esc([e.style==='blw'?F.blwT:e.style==='mashed'?F.mashed:'',lk?lk[1]:''].filter(Boolean).join(' · '))+'</span>'+(e.reaction?'<span class="small" style="color:var(--danger);font-weight:600">⚠️ '+esc(F.reactionEv+(rt?': '+rt:''))+'</span>':'')+(e.note?'<span class="small">'+esc(e.note)+'</span>':'')+'<span class="small muted">'+esc(whoLabel(e.by))+'</span></span>'+
    (c?'<span class="confirm"><button type="button" class="yes" data-act="delyes" data-id="'+esc(e.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="delno">'+esc(L.no)+'</button></span>':'<button type="button" class="icon-btn" data-act="delask" data-id="'+esc(e.id)+'" aria-label="'+esc(L.del+': '+fname(e.food))+'">'+IC.trash+'</button>')+'</li>'; }).join('')+'</ul>';
 }
-const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נותנים עד גיל שנה, גם לא בבישול או במאפה.'],['🥛','חלב פרה לשתייה: רק אחרי גיל שנה.'],['🍇','ענבים, עגבניות שרי ואוכמניות: תמיד חוצים לרבעים לאורך או מועכים. אגוזים שלמים, פופקורן וממתקים קשים: לא נותנים.'],['👀','תמיד בהשגחה, כשהתינוק יושב זקוף. לא משאירים לבד עם אוכל, גם לא לרגע.'],['🫁','שיעול והשתנקות הם חלק מהלמידה. חנק שקט, בלי שיעול ובלי קול, הוא מצב חירום: מתקשרים מיד ל-101.']],
+const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נותנים עד גיל שנה, גם לא בבישול או במאפה.'],['🥛','חלב פרה: לא נותנים לשתייה לפני גיל שנה.'],['🍇','ענבים, עגבניות שרי ואוכמניות: תמיד חוצים לרבעים לאורך או מועכים. אגוזים שלמים, פופקורן וממתקים קשים: לא נותנים.'],['👀','תמיד בהשגחה, כשהתינוק יושב זקוף. לא משאירים לבד עם אוכל, גם לא לרגע.'],['🫁','שיעול והשתנקות הם חלק מהלמידה. חנק שקט, בלי שיעול ובלי קול, הוא מצב חירום: מתקשרים מיד ל-101.']],
  cpr:'מומלץ מאוד לעבור קורס החייאת תינוקות ועזרה ראשונה לפני שמתחילים טעימות. קורסים כאלה מועברים למשל במד״א.',
- meds:'כדאי לשאול מראש את רופא/ת הילדים איזו תרופה לתגובה אלרגית קלה כדאי שתהיה בבית, ובאיזה מינון לפי המשקל של התינוק.',call:'חירום: מד״א 101'};
-function safetyBox(){ const X=FSAFE; return '<section class="safety" lang="he" dir="rtl"><h2>⚠️ '+esc(X.title)+'</h2><ul>'+X.items.map(i=>'<li><span aria-hidden="true">'+i[0]+'</span><span>'+esc(i[1])+'</span></li>').join('')+'</ul><p>'+esc(X.cpr)+'</p><p>'+esc(X.meds)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></section>'; }
+ meds:'לפני שמתחילים טעימות: דאגו שכבר תהיה בבית תרופה נגד תגובה אלרגית קלה. שאלו מראש את רופא/ת הילדים איזו תרופה ובאיזה מינון לפי המשקל של התינוק.',call:'חירום: מד״א 101'};
+function safetyBox(){ const X=FSAFE; return '<section class="safety" lang="he" dir="rtl"><h2>⚠️ '+esc(X.title)+'</h2><ul>'+X.items.map(i=>'<li><span aria-hidden="true">'+i[0]+'</span><span>'+esc(i[1])+'</span></li>').join('')+'</ul><p style="font-weight:700">💊 '+esc(X.meds)+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></section>'; }
 function sosPill(){ return '<a class="sos-pill" href="tel:101" aria-label="חירום: התקשרות למד״א 101">📞 101</a>'; }
 function infoView(){
  const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
@@ -1037,7 +1037,7 @@ const DEV=[
 const DT={
  he:{title:'התפתחות',domains:{s:'חברתי ורגשי',l:'שפה ותקשורת',c:'למידה וחשיבה',m:'תנועה'},age:(m)=>m<24?'גיל '+m+' חודשים':'גיל שנתיים',
   intro:(n,a)=>'מה רוב התינוקות עושים עד '+a+'. סמני מה כבר ראית אצל '+n+'.',seen:'ראיתי',progress:(k,n)=>k+' מתוך '+n+' סומנו',
-  pace:'כל ילד מתפתח בקצב שלו. הרשימה מראה מה רוב הילדים עושים עד הגיל הזה, היא לא מבחן.',
+  pace:'המידע כאן הוא המלצה כללית, לא מבחן. כל תינוק מתפתח בקצב שלו, וכל עוד הוא נראה בסדר וממשיך להתקדם, אין סיבה לחשוש.',
   when:'מתי כדאי להתייעץ',whenList:['התינוק מאבד מיומנות שכבר הייתה לו','משהו מטריד אותך, גם אם הוא לא מופיע ברשימה'],whenNote:'לא סימנת חלק מאבני הדרך? זה בדרך כלל בסדר גמור. כל תינוק בקצב שלו, ואין צורך לרוץ לרופא בגלל זה. אם תרצי, אפשר פשוט להזכיר את זה בביקור השגרתי הבא בטיפת חלב.',
   source:'מבוסס על אבני הדרך של ה-CDC (עדכון 2022). התרגום לעברית ולערבית ממתין לבדיקה מקצועית.',noBorn:'כדי שהעמוד יתאים את עצמו לגיל, הוסיפי תאריך לידה במסך המשפחה.'},
  en:{title:'Development',domains:{s:'Social and emotional',l:'Language and communication',c:'Learning and thinking',m:'Movement'},age:(m)=>m<24?m+' months':'2 years',
@@ -1065,7 +1065,7 @@ const MONTHS=[
  [9,'חודש תשיעי','יושבים בלי תמיכה, מחפשים חפץ שהוסתר, מגיבים לשם ומרימים ידיים כדי שירימו אותם. רבים נעמדים בעזרת אחיזה.'],
  [10,'חודש עשירי','נעמדים ומתחילים ללכת לאורך רהיטים, מרימים דברים קטנים בין האגודל לאצבע, ומבינים מילים פשוטות כמו "לא" ו"ביי".'],
  [11,'חודש אחד עשר','מנופפים לשלום, מחקים תנועות וקולות, ונהנים ממשחקי "קוקו" וממחיאות כפיים. חלקם כבר עושים צעדים ראשונים.'],
- [12,'שנה!','רבים אומרים "אמא" או "אבא", הולכים לאורך רהיטים או לבד, ומתחילים לשתות מכוס. מגיל שנה אפשר לתת דבש, ואפשר לתת חלב פרה לשתייה, במקום תמ״ל. מים ממשיכים לשתות כרגיל.'],
+ [12,'שנה!','רבים אומרים "אמא" או "אבא", הולכים לאורך רהיטים או לבד, ומתחילים לשתות מכוס. מגיל שנה אפשר לתת דבש.'],
  [15,'שנה ורבע','הולכים לבד, אומרים מילה או שתיים, מצביעים כדי לבקש משהו ומראים חיבה בחיבוקים ובנשיקות.'],
  [18,'שנה וחצי','הולכים בביטחון, אומרים כמה מילים, מבצעים בקשה פשוטה ומחקים מטלות בית. הרצון לעצמאות גדל, ואיתו גם התסכולים.'],
  [24,'שנתיים','רצים, בועטים בכדור ומחברים שתי מילים יחד. שמים לב לרגשות של אחרים ומתחילים לשחק משחקי דמיון.']
