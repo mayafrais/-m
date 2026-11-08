@@ -196,6 +196,17 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 [tabindex="-1"]:focus{outline:none}
 .ntabs a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--ink)}
 .ntabs a.chip[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.rfacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.rfacts div{display:flex;flex-direction:column;gap:2px;background:rgba(255,255,255,.08);border-radius:14px;padding:10px}
+.rfacts .muted{color:inherit;opacity:.8}
+.rfacts strong{font-size:.875rem;line-height:1.35}
+.rtime{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rtime li{display:grid;grid-template-columns:96px 28px 1fr;align-items:center;gap:8px;background:var(--surface);border-radius:14px;padding:10px 12px;line-height:1.45}
+.rtime .rt{font-variant-numeric:tabular-nums;font-weight:600;font-size:.875rem;text-align:end}
+.rtime li.k-sleep,.rtime li.k-night{background:var(--mist)}
+.ri{font-size:1.2rem;text-align:center}
+.bedtime{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:b}
+.bedtime li{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border-radius:14px;padding:12px}
 </style>
 </head>
 <body>
@@ -647,7 +658,7 @@ function viewSimple(title,text){ return '<header class="section"><h1>'+esc(title
 
 function tabs(){
  const L=t(), v=S.view, H=HT[S.lang]||HT.he;
- const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'||v==='latch'||v==='pump'))||(k==='home'&&v==='family'))?' aria-current="page"':'';
+ const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'||v==='latch'||v==='pump'))||(k==='home'&&v==='family')||(k==='dev'&&v==='routine'))?' aria-current="page"':'';
  return '<div class="in"><a href="#home"'+cur('home')+'>'+IC.home+esc(L.home)+'</a><a href="#today"'+cur('today')+'>'+IC.today+esc(L.feeding)+'</a><a href="#foods"'+cur('foods')+'>'+IC.foods+esc(L.foods)+'</a><a href="#dev"'+cur('dev')+'>'+IC.dev+esc(L.dev)+'</a><a href="#community"'+cur('community')+'>'+IC.comm+esc(L.community)+'</a></div>';
 }
 
@@ -951,6 +962,7 @@ function viewHome(){
  '<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
   tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
+  tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, שנ״צ וטקס ערב':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
   tile('dev',IC.dev,H.dev[0],H.dev[1],'',(mo&&days!=null?(S.lang==='he'?mo[1]:X.monthChip(mo[0])):'')+(spNow?(S.lang==='he'?' · אולי קפיצת גדילה':''):''))+
   soon+
   '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+
@@ -1129,7 +1141,7 @@ function viewDev(){
    return '<li style="gap:12px"><input type="checkbox" id="'+id+'" data-ms="'+keyOf(p[1])+'"'+(on?' checked':'')+' style="width:24px;height:24px;flex:none;accent-color:var(--sage)"><label for="'+id+'" class="grow" style="min-height:28px">'+esc(p[0][li])+'</label></li>';
   }).join('')+'</ul></section>';
  }).join('');
- return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(D.title)+'</h1><p class="muted small">'+esc(b.name+(ageLine?', '+ageLine:''))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
+ return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(D.title)+'</h1><p class="muted small">'+esc(b.name+(ageLine?', '+ageLine:''))+'</p></div>'+statusPill()+'</div>'+babySwitch()+devTabs()+'</header>'+
  (b.born?'':'<p class="banner">'+esc(D.noBorn)+'</p>')+(X.langNote?'<p class="banner">'+esc(X.langNote)+'</p>':'')+
  chips+'<p class="small muted" lang="he" dir="rtl">אפשר לבחור כל חודש, גם חודשים שעוד לא הגעתם אליהם, כדי לדעת מה צפוי.</p>'+backNow+monthCard+
  '<section class="section" style="gap:10px"><div class="between"><h2>'+esc(X.checklist(D.age(st[0])))+'</h2><span class="small muted">'+esc(D.progress(k,n))+'</span></div><p class="small muted">'+esc(D.pace)+'</p>'+groups+'</section>'+spurtCard+
@@ -1165,8 +1177,8 @@ const PUMP={
  how:['לפני שאיבה שוטפים ידיים במים וסבון, ומוודאים שהציוד נקי ויבש','אפשר לשאוב ידנית (במגע יד), במשאבה ידנית או במשאבה חשמלית. כל דרך יכולה להתאים, לפי הצורך והנוחות','לפני השאיבה עוזר להירגע: מקום שקט, משהו חם על השד, עיסוי עדין, או להסתכל על תמונה של התינוק','אחרי כל שימוש מפרקים את חלקי המשאבה שבאים במגע עם החלב, שוטפים במים חמים וסבון, ומייבשים באוויר. פועלים לפי הוראות היצרן','אם השאיבה כואבת, כדאי לבדוק את גודל המשפך ואת עוצמת השאיבה'],
  table:[['טמפרטורת החדר (16°C עד 29°C)','עדיף עד 3 עד 4 שעות','עד 6 שעות, רק אם החדר לא חם מ-29°C'],['תיק קירור עם קרחום','','עד 24 שעות, כשהקרחום צמוד לבקבוק'],['מקרר (על המדף האחורי, לא בדלת)','עדיף עד 3 ימים','עד 8 ימים, ב-4°C ומטה'],['תא הקפאה בתוך המקרר (כמו מיני־בר)','','עד שבועיים'],['מקפיא עם דלת נפרדת','3 עד 4 חודשים','עד 12 חודשים'],['מקפיא עמוק (18°C- ומטה)','6 חודשים','עד 12 חודשים'],['חלב שהופשר במקרר','','עד 24 שעות, במקרר']],
  tableHead:['איפה','מומלץ','מקסימום'],
- store:['כלים נקיים ויבשים מזכוכית או מפלסטיק עם מכסה. בבית ולתינוק בריא לא צריך לעקר','שקיות אחסון מיוחדות לחלב אם מתאימות אם יש עליהן תו תקן ישראלי','כותבים על כל כלי את תאריך השאיבה, ואם הופשר גם את תאריך ההפשרה. למעון מוסיפים את שם התינוק','בהקפאה משאירים מעט אוויר לפני הסגירה, כי החלב מתרחב','אם התינוק ישתה את החלב בתוך כשלושה ימים, עדיף לשמור במקרר ולהשתמש בו לפני חלב קפוא','חלב שלא נוצל מהמקרר אפשר להקפיא בתוך 24 שעות'],
- thaw:['הפרדה של השומן למעלה היא תקינה. מערבלים בעדינות לפני שנותנים','מפשירים במקרר, או מוציאים מהמקפיא כשעה לפני ומחממים בכלי עם מים חמים (לא רותחים)','אפשר לתת חלב קר או בטמפרטורת החדר. חימום בדרך כלל לא הכרחי','לא מחממים חלב אם במיקרוגל ולא במים רותחים','לא מקפיאים שוב חלב שהופשר'],
+ store:['כלים נקיים ויבשים מזכוכית או מפלסטיק עם מכסה. בבית ולתינוק בריא לא צריך לעקר','שקיות אחסון מיוחדות לחלב אם מתאימות אם יש עליהן תו תקן ישראלי','כותבים על כל כלי את תאריך השאיבה, ואם הופשר גם את תאריך ההפשרה. למעון מוסיפים את שם התינוק','בהקפאה משאירים מעט אוויר לפני הסגירה, כי החלב מתרחב','מערבבים חלב משאיבות שונות רק כשהוא באותה טמפרטורה: קודם מקררים את החלב הטרי, ורק אז מוסיפים לחלב שכבר במקרר','אם התינוק ישתה את החלב בתוך כשלושה ימים, עדיף לשמור במקרר ולהשתמש בו לפני חלב קפוא','חלב שלא נוצל מהמקרר אפשר להקפיא בתוך 24 שעות'],
+ thaw:['הפרדה של השומן למעלה היא תקינה. מערבלים בעדינות לפני שנותנים','מפשירים במקרר, או מוציאים מהמקפיא כשעה לפני ומחממים בכלי עם מים חמים (לא רותחים)','אפשר לתת חלב קר או בטמפרטורת החדר. חימום בדרך כלל לא הכרחי','לא מחממים חלב אם במיקרוגל ולא במים רותחים','לפני שנותנים, בודקים את החום בטפטוף על פנים שורש כף היד','לא מקפיאים שוב חלב שהופשר'],
  left:'חלב שנשאר בבקבוק שהתינוק כבר שתה ממנו, מסיימים בתוך שעה, ואת השאר שופכים. כדי לא לבזבז, מוזגים כמויות קטנות ומוסיפים לפי הצורך.',
  go:'בדרך או למעון: תיק קירור עם קרחום צמוד לבקבוק, עד 24 שעות, ובהגעה מעבירים למקרר. במעון החלב נשמר על מדף (לא בדלת) ב-4°C ומטה.',
  source:'מבוסס על ההנחיות של משרד הבריאות באתר "הורות והורים" (אחסון, הפשרה והובלה של חלב אם). התוכן כללי. בכל שאלה פונים ליועצת הנקה או לטיפת חלב.'
@@ -1214,6 +1226,65 @@ const IC_HEART='<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 2
 function shareInfo(kind){ const X=SF[S.lang]||SF.he; const k=X.msg[kind]?kind:'app'; const url=APP_URL+'/'+(k==='app'?'':'#'+k); return {text:X.msg[k],url,full:X.msg[k]+'\n'+url}; }
 function shareLink(kind){ const X=SF[S.lang]||SF.he; return '<button type="button" class="link small share-friends" data-act="sharefriends" data-v="'+kind+'">'+IC_HEART+' '+esc(X.small)+'</button>'; }
 async function shareFriends(kind){ openSheet({mode:'friends',type:'friends',kind}); }
+// ---------- daily routine & sleep (Hebrew content; examples, not rules) ----------
+// age groups: [id, fromMonth, toMonth, chip, title, total sleep, naps, wake window, intro, schedule rows [time,text,kind], notes[]]
+const ROUTINES=[
+ ['r0',0,3,'0–3 חודשים','הלידה עד 3 חודשים','משתנה מאוד: בדרך כלל 14 עד 17 שעות','4 עד 6 שנ״צ קצרות, לא קבועות','45 עד 90 דקות ער/ה בין שינה לשינה',
+  'בגיל הזה עדיין אין סדר יום קבוע, וזה תקין לגמרי. התינוק ישן, אוכל ושוב ישן, ביום ובלילה. במקום שעון, עוקבים אחרי סימני עייפות.',
+  [['בוקר','מתעוררים, הנקה או בקבוק, החתלה','feed'],['','זמן ערות קצר: פנים מול פנים, דיבור, זמן בטן קצר','play'],['','סימני עייפות (פיהוק, שפשוף עיניים, מבט מושפל) ← שינה','sleep'],['','חוזר חלילה: אוכל ← ערות קצרה ← שינה','feed'],['ערב','טקס קצר: אמבטיה או רחצה, פיג׳מה, הנקה, שיר ערש','routine'],['לילה','התעוררויות להאכלה כל 2 עד 4 שעות הן נורמליות','night']],
+  ['כדאי להבדיל בין יום ללילה: ביום אור ורעשי בית רגילים, בלילה אור עמום ושקט.','אפשר כבר להתחיל טקס ערב קצר וקבוע. הוא יהפוך לסימן לשינה.']],
+ ['r1',3,6,'3–6 חודשים','3 עד 6 חודשים','כ-14 עד 15 שעות, מהן כ-10 בלילה','3 שנ״צ (לפעמים 4 בהתחלה)','1.5 עד 2.5 שעות ער/ה',
+  'סביב 4 חודשים השינה מתחילה להתארגן, ואפשר לבנות סדר יום גמיש. ברוב הימים יהיו 3 שנ״צ, וכל אחת עד כשעתיים.',
+  [['07:00','השכמה והנקה או בקבוק','feed'],['08:45–09:45','שנת בוקר','sleep'],['10:00','הנקה ומשחק על השטיח','feed'],['11:45–13:15','שנת צהריים','sleep'],['13:30','הנקה, טיול בחוץ','feed'],['15:15–16:15','שנת אחר הצהריים','sleep'],['17:15–17:45','שנ״צ קצרה ("נמנום ערב"), אם צריך','sleep'],['18:30','טקס ערב: אמבטיה, פיג׳מה, הנקה, ספר ושיר','routine'],['19:00–19:30','שינת לילה','night']],
+  ['השנ״צ הקצרה של סוף היום היא הראשונה שיורדת.','התעוררויות לילה להאכלה עדיין נפוצות מאוד בגיל הזה.']],
+ ['r2',6,9,'6–9 חודשים','6 עד 9 חודשים','כ-14 שעות, מהן כ-11 בלילה','2 שנ״צ (לפעמים עוד שלישית קצרה)','2.5 עד 3 שעות ער/ה',
+  'בגיל הזה מתחילות הטעימות, והארוחות נכנסות לסדר היום. סביב חצי שנה רוב התינוקות עוברים מ-3 שנ״צ ל-2, כל אחת שעה עד שעתיים.',
+  [['07:00','השכמה, הנקה או בקבוק','feed'],['08:00','ארוחת בוקר קטנה (טעימות)','meal'],['09:30–10:30','שנת בוקר','sleep'],['11:00','הנקה, משחק','feed'],['12:00','ארוחת צהריים (טעימות)','meal'],['13:30–15:00','שנת צהריים','sleep'],['15:30','הנקה, טיול','feed'],['16:45–17:15','שנ״צ שלישית קצרה, רק אם עדיין צריך','sleep'],['18:00','ארוחת ערב קלה','meal'],['18:45','טקס ערב: אמבטיה, פיג׳מה, הנקה, ספר ושיר','routine'],['19:15','שינת לילה','night']],
+  ['כשהשנ״צ השלישית יורדת, מקדימים קצת את שעת השינה בלילה.','בקיעת שיניים, מחלה, שלב התפתחותי חדש או חרדת נטישה יכולים להעיר יותר בלילה לתקופה. זה חולף.','אחרי מאכל חדש עדיף לא להשכיב מיד: נותנים זמן לשים לב לתגובה.']],
+ ['r3',9,12,'9–12 חודשים','9 עד 12 חודשים','13.5 עד 14 שעות, מהן כ-11 בלילה','2 שנ״צ','3 עד 4 שעות ער/ה',
+  'שתי שנ״צ ביום: בוקר וצהריים. שלוש ארוחות ביום, וחלב אם או תמ״ל בין לבין.',
+  [['06:30–07:00','השכמה, הנקה או בקבוק','feed'],['07:45','ארוחת בוקר','meal'],['09:30–10:30','שנת בוקר','sleep'],['11:30','ארוחת צהריים','meal'],['12:30','משחק בחוץ, גינה','play'],['14:00–15:30','שנת צהריים','sleep'],['16:00','חטיף קטן והנקה','feed'],['17:30','ארוחת ערב','meal'],['18:30','טקס ערב: אמבטיה, פיג׳מה, צחצוח שיניים, ספר ושיר','routine'],['19:00','שינת לילה','night']],
+  ['הרבה תינוקות מתחילים מעון בגיל הזה. במעון יש סדר יום משלו, ואפשר להתאים את הבית אליו.','מהשן הראשונה מצחצחים שיניים פעמיים ביום, ובערב זה חלק מהטקס.']],
+ ['r4',12,18,'12–18 חודשים','שנה עד שנה וחצי','כ-13.5 שעות, מהן כ-2 ביום','2 שנ״צ, ובהמשך 1','4 עד 5 שעות ער/ה',
+  'בין 15 ל-18 חודשים רוב הפעוטות עוברים לשנ״צ אחת בצהריים. בתקופת המעבר יש ימים עם שתיים וימים עם אחת, וזה תקין.',
+  [['07:00','השכמה','feed'],['07:30','ארוחת בוקר','meal'],['09:30','ארוחת ביניים קטנה','meal'],['11:30','ארוחת צהריים','meal'],['12:15–14:30','שנת צהריים (אחת)','sleep'],['15:00','ארוחת ביניים, משחק בחוץ','play'],['17:30','ארוחת ערב','meal'],['18:45','טקס ערב: אמבטיה, פיג׳מה, צחצוח, 2 ספרים ושיר','routine'],['19:15','שינת לילה','night']],
+  ['בימי מעבר, כשהשנ״צ האחת קצרה, מקדימים את שעת השינה בלילה בחצי שעה.','שגרה קבועה עוזרת לפעוט לדעת מה מחכה לו ולהירגע.']],
+ ['r5',18,25,'שנה וחצי–שנתיים','שנה וחצי עד שנתיים','כ-13 שעות, מהן 1.5 עד 2 ביום','שנ״צ אחת','5 עד 6 שעות ער/ה',
+  'שנ״צ אחת בצהריים, בדרך כלל שעה וחצי עד שעתיים וחצי. רוב הילדים ממשיכים לישון בצהריים עד גיל 3 עד 5.',
+  [['07:00','השכמה','feed'],['07:30','ארוחת בוקר','meal'],['10:00','ארוחת ביניים, גינה','play'],['12:00','ארוחת צהריים','meal'],['12:45–14:45','שנת צהריים','sleep'],['15:15','ארוחת ביניים, משחק','play'],['17:45','ארוחת ערב','meal'],['19:00','טקס ערב: אמבטיה, פיג׳מה, צחצוח, ספרים ושיר','routine'],['19:30–20:00','שינת לילה','night']],
+  ['אם השנ״צ מתארכת ושעת השינה בלילה נדחית מאוד, אפשר להעיר בעדינות אחרי כשעתיים.']]
+];
+const NAPDROP=[['4 ← 3 שנ״צ','בערך בגיל 4 עד 6 חודשים','יורדת השנ״צ הקצרה של סוף אחר הצהריים'],['3 ← 2 שנ״צ','בערך בגיל 6 עד 8 חודשים','יורדת השנ״צ השלישית, המאוחרת'],['2 ← 1 שנ״צ','בערך בגיל 15 עד 18 חודשים','שנת הבוקר נדחית בהדרגה עד שהופכת לשנת צהריים אחת'],['1 ← בלי שנ״צ','בערך בגיל 4 עד 5 שנים','שנת הצהריים מתקצרת ובהדרגה נעלמת. לפעמים מחליפים אותה ב"זמן שקט"']];
+const NAPSIGNS=['מסרב/ת להירדם לשנ״צ, או משחק/ת במיטה במקום לישון','מדלג/ת על השנ״צ ונשאר/ת במצב רוח טוב','השנ״צ מתקצרות מאוד','השכמה מוקדמת מאוד בבוקר, או קושי להירדם בערב'];
+const NAPHOW=['מחכים שהסימנים יחזרו על עצמם כשבוע עד שבועיים, ולא רק יום אחד','מאריכים בהדרגה את זמן הערות, בערך ב-15 דקות בכל פעם','בימים בלי השנ״צ מקדימים את שעת השינה בלילה','זה בסדר לעבור הלוך ושוב בין ימים עם שנ״צ וימים בלעדיה'];
+const BEDTIME=[['🛁','אמבטיה או רחצה קצרה','לא חייבים כל ערב. גם שטיפת פנים וידיים מספיקה'],['🌙','פיג׳מה וחיתול לילה',''],['🍼','הנקה או בקבוק','כדאי לסיים אותם לפני הספר, ולא להירדם בתוכם'],['🪥','צחצוח שיניים','מהשן הראשונה'],['📖','ספר','ספרי קרטון עם תמונות גדולות, חריזה וחזרתיות. אפשר את אותו ספר שוב ושוב: ילדים אוהבים את זה'],['🎵','שיר ערש','אותו שיר בכל ערב הופך לסימן שהגיע זמן לישון'],['💤','אור עמום, נשיקה, לילה טוב','מניחים במיטה רגוע/ה, ואם אפשר, עדיין קצת ער/ה']];
+const BOOKS=['מהלידה: מדברים, שרים ומקריאים. התינוק נהנה לשמוע את הקול שלכם, גם אם עוד לא מבין','4 עד 6 חודשים: ספרי קרטון ובד עם תמונות גדולות וניגודיות. מותר להכניס לפה','6 עד 12 חודשים: ספרים עם חיות וקולות, ספרים עם חלונות, שירים עם תנועות ידיים','שנה ומעלה: מצביעים ושואלים "איפה הכלב?", קוראים את הספר האהוב שוב ושוב, ומתחילים לספר יחד'];
+const SAFESLEEP=['תמיד משכיבים לישון על הגב, בשנ״צ ובלילה','מזרן קשיח ושטוח, בלי כריות, שמיכות פוך, מגיני ראש ובובות במיטה','מומלץ לישון באותו חדר עם ההורים, אבל לא באותה מיטה, לפחות בחצי השנה הראשונה','לא לחמם יותר מדי את החדר ואת התינוק','שעה לפני השינה בלי מסכים. עד גיל שנה וחצי עד שנתיים ממליצים להימנע ממסכים כמעט לגמרי, חוץ משיחות וידאו'];
+const RKIND={feed:'🍼',sleep:'😴',play:'🧸',meal:'🥣',routine:'🛁',night:'🌙'};
+function routineIdx(b){ const m=ageMonths(b); if(m==null) return 0; const i=ROUTINES.findIndex(r=>m>=r[1]&&m<r[2]); return i<0?ROUTINES.length-1:i; }
+function devTabs(){ const he=S.lang==='he', ar=S.lang==='ar'; const items=[['dev',he?'לפי חודשים':ar?'حسب الأشهر':'By month'],['routine',he?'סדר יום ושינה':ar?'الروتين اليومي والنوم':'Daily routine & sleep']];
+ return '<nav class="seg-scroll ntabs" aria-label="'+esc(he?'התפתחות':ar?'النمو':'Development')+'">'+items.map(x=>'<a class="chip" href="#'+x[0]+'"'+(S.view===x[0]?' aria-current="page"':'')+'>'+esc(x[1])+'</a>').join('')+'</nav>'; }
+function viewRoutine(){
+ const b=baby(); if(!b) return viewSetup();
+ const auto=routineIdx(b), i=S.routineAge==null?auto:S.routineAge, r=ROUTINES[i];
+ const chips='<div class="seg-scroll" role="group" aria-label="גיל">'+ROUTINES.map((x,k)=>'<button type="button" class="chip" style="flex:none" data-act="rage" data-v="'+k+'" aria-pressed="'+(k===i)+'">'+esc(x[3])+(k===auto&&b.born?' <span aria-hidden="true">●</span>':'')+'</button>').join('')+'</div>';
+ const facts='<div class="rfacts"><div><span class="small muted">שינה ביממה</span><strong>'+esc(r[5])+'</strong></div><div><span class="small muted">שנ״צ</span><strong>'+esc(r[6])+'</strong></div><div><span class="small muted">זמן ערות</span><strong>'+esc(r[7])+'</strong></div></div>';
+ const rows='<ol class="rtime">'+r[9].map(x=>'<li class="k-'+x[2]+'"><span class="rt" dir="ltr">'+esc(x[0])+'</span><span class="ri" aria-hidden="true">'+RKIND[x[2]]+'</span><span>'+esc(x[1])+'</span></li>').join('')+'</ol>';
+ const L=(arr)=>'<ul class="bul">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+ return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>סדר יום ושינה</h1><p class="muted small">'+esc(b.name)+'</p></div>'+statusPill()+'</div>'+babySwitch()+devTabs()+'</header>'+
+ (S.lang!=='he'?'<p class="banner">'+esc(S.lang==='ar'?'هذا القسم بالعبرية حاليًا. الترجمة قادمة.':'This section is in Hebrew for now. A translation is on the way.')+'</p>':'')+
+ '<div lang="he" dir="rtl" class="section" style="gap:20px">'+chips+
+ '<section class="dark-card"><h2 style="font-size:1.375rem">'+esc(r[4])+'</h2><p style="line-height:1.7">'+esc(r[8])+'</p>'+facts+'</section>'+
+ '<section class="section" style="gap:10px"><h2>דוגמה ליום</h2><p class="small muted">זו רק דוגמה. השעות זזות לפי התינוק שלכם, לפי שעת ההשכמה ולפי המעון.</p>'+rows+L(r[10])+'</section>'+
+ '<section class="card"><h2>מתי מורידים שנ״צ</h2><div class="table-wrap" style="background:transparent"><table class="tbl"><thead><tr><th scope="col">מעבר</th><th scope="col">גיל נפוץ</th><th scope="col">מה משתנה</th></tr></thead><tbody>'+NAPDROP.map(x=>'<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td><td>'+esc(x[2])+'</td></tr>').join('')+'</tbody></table></div>'+
+  '<h3 style="margin:8px 0 0;font-size:1rem">סימנים שהגיע הזמן</h3>'+L(NAPSIGNS)+'<h3 style="margin:8px 0 0;font-size:1rem">איך עושים את המעבר</h3>'+L(NAPHOW)+'</section>'+
+ '<section class="section" style="gap:10px"><h2>טקס ערב</h2><p class="small muted">20 עד 30 דקות, באותו סדר בכל ערב. מחקרים מראים שילדים עם טקס קבוע נרדמים מהר יותר וישנים טוב יותר.</p><ol class="bedtime">'+BEDTIME.map(x=>'<li><span class="ri" aria-hidden="true">'+x[0]+'</span><span class="section" style="gap:2px"><strong>'+esc(x[1])+'</strong>'+(x[2]?'<span class="small muted">'+esc(x[2])+'</span>':'')+'</span></li>').join('')+'</ol></section>'+
+ '<section class="card"><h2>📚 ספרים ושירים</h2>'+L(BOOKS)+'</section>'+
+ '<section class="card"><h2>שינה בטוחה</h2>'+L(SAFESLEEP)+'</section>'+
+ '</div>'+shareLink('dev')+
+ '<p class="note">מבוסס על מקורות ישראליים: מדריך השינה של מכבי שירותי בריאות ודף המידע "שינה בשנה הראשונה" של אנה קוגן (אחות ויועצת הנקה מוסמכת), ובנוסף על המלצות AASM ו-AAP לשינה בטוחה. הדוגמאות כלליות: כל תינוק שונה, ואין צורך להיצמד לשעון.</p>';
+}
+
 // ---------- nursing section tabs ----------
 const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון']],
  en:[['today','Daily log'],['meds','Medicines & vitamins'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage']],
@@ -1235,7 +1306,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'pump':return viewPump();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'pump':return viewPump();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -1317,6 +1388,7 @@ document.addEventListener('click',e=>{
  if(a==='share'){ openSheet({mode:'share',type:'share'}); return; }
  if(a==='sharefriends'){ shareFriends(el.dataset.v||'app'); return; }
  if(a==='devage'){ S.devAge=Number(el.dataset.v); render(); return; }
+ if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
  if(a==='fsub'){ S.foodSub=el.dataset.v; S.confirmDel=null; render(); window.scrollTo(0,0); return; }
  if(a==='lang'){ S.lang=el.dataset.v; ls.set('gp-lang',S.lang); render(); return; }
@@ -1402,7 +1474,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
+const VIEWS=['routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
 function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
