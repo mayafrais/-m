@@ -207,6 +207,9 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 .ri{font-size:1.2rem;text-align:center}
 .bedtime{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:b}
 .bedtime li{display:flex;gap:12px;align-items:flex-start;background:var(--surface);border-radius:14px;padding:12px}
+.install-card{background:var(--surface);border:2px dashed var(--dawn);min-height:72px;align-items:center}
+.check-chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.check-chip input{width:20px;height:20px;accent-color:var(--danger);margin:0}
 </style>
 </head>
 <body>
@@ -432,6 +435,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
  async load_family(){ const {data}=await this.sb.from('families').select('state,invite_code').eq('id',this.fid).maybeSingle(); if(data){ const s=data.state||{}; S.family={babies:s.babies||[],active:s.active||{},sleep:s.sleep||{},milestones:s.milestones||{},allergens:s.allergens||{},prefs:s.prefs||{}}; S.invite=data.invite_code; render(); } },
  async load_events(){ const {data}=await this.sb.from('events').select('id,baby,type,t,data,by_user').eq('family_id',this.fid).order('t',{ascending:false}).limit(400); if(data){ S.events=data.map(r=>Object.assign({},r.data||{},{id:r.id,baby:r.baby,type:r.type,t:Number(r.t),by:r.by_user})); const known=new Set(S.members.map(m=>m.user_id)); if(S.events.some(e=>e.by&&!known.has(e.by))) this.load_members(); render(); } },
  async load_meds(){ const {data}=await this.sb.from('meds').select('id,baby,name,note').eq('family_id',this.fid).order('created_at'); if(data){ S.meds=data; render(); } },
+ async setMyName(n){ if(!this.fid||!S.me) return; await this.sb.from('family_members').update({display_name:n}).eq('family_id',this.fid).eq('user_id',S.me); this.load_members(); },
  async load_members(){ const {data}=await this.sb.from('family_members').select('user_id,display_name').eq('family_id',this.fid); if(data){ S.members=data; render(); } },
  async fam(patch){
   const deep=(a,b)=>{ const r=Object.assign({},a); for(const k in b){ const v=b[k]; r[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&r[k]&&typeof r[k]==='object')?deep(r[k],v):v; } return r; };
@@ -614,19 +618,6 @@ function viewMeds(){
  '<p class="note">'+esc(L.medsHint)+'</p>';
 }
 
-function viewFamily(){
- const L=t();
- const bs=S.family.babies||[];
- const ids=[...new Set([S.me].concat((S.members||[]).map(m=>m.user_id)).filter(Boolean))];
- const mem=ids.length?'<ul class="list">'+ids.map(id=>'<li><span class="mono" aria-hidden="true">'+esc((whoLabel(id)||'?').slice(0,1))+'</span><span class="grow">'+esc(whoLabel(id))+'</span></li>').join('')+'</ul>':'';
- return '<header class="section" style="gap:4px"><a class="link" href="#home">'+esc(L.back)+'</a><h1>'+esc(L.family)+'</h1><p class="muted small">'+esc(L.familyHint)+'</p></header>'+
- '<section class="card"><h2>'+esc(L.babies)+'</h2>'+bs.map((x,i)=>'<div class="section" style="gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)"><label class="field" for="bn-'+i+'">'+esc(L.babyName)+'<input id="bn-'+i+'" type="text" value="'+esc(x.name)+'" data-baby-name="'+esc(x.id)+'"></label><label class="field" for="bb-'+i+'">'+esc(L.born)+'<input id="bb-'+i+'" type="date" value="'+esc(x.born||'')+'" data-baby-born="'+esc(x.id)+'"></label>'+(bs.length>1?'<button type="button" class="link small" data-act="rmbaby" data-id="'+esc(x.id)+'">'+esc(L.removeBaby)+'</button>':'')+'</div>').join('')+
- '<button type="button" class="btn ghost" data-act="addbaby">'+esc(L.addBaby)+'</button></section>'+
- (mem?'<section class="section"><h2>'+esc(L.members)+'</h2>'+mem+'</section>':'')+
- '<section class="card"><h2>'+esc(L.invite)+'</h2><p class="small">'+esc(at().inviteText)+'</p><p class="small muted">'+esc(at().codeLabel)+'</p><p dir="ltr" style="font-size:1.75rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums;text-align:center">'+esc(S.invite||'')+'</p><button type="button" class="btn" data-act="share">'+esc(L.share)+'</button></section>'+'<section class="section"><p class="small muted">'+esc(at().signedAs(S.email||''))+'</p><button type="button" class="btn ghost" data-act="logout">'+esc(at().logout)+'</button></section>'+
- '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+'<section class="section"><h2>'+esc(L.prefs)+'</h2><p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en','ar'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div>'+
- '<p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div></section>';
-}
 
 function viewGuide(){
  const L=t(), b=baby(); if(!b) return viewSetup();
@@ -658,7 +649,7 @@ function viewSimple(title,text){ return '<header class="section"><h1>'+esc(title
 
 function tabs(){
  const L=t(), v=S.view, H=HT[S.lang]||HT.he;
- const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'||v==='latch'||v==='pump'))||(k==='home'&&v==='family')||(k==='dev'&&v==='routine'))?' aria-current="page"':'';
+ const cur=k=>(k===v||(k==='today'&&(v==='meds'||v==='feeding'||v==='article'||v==='latch'||v==='pump'||v==='pacifier'))||(k==='home'&&(v==='family'||v==='install'))||(k==='dev'&&(v==='routine'||v==='calm')))?' aria-current="page"':'';
  return '<div class="in"><a href="#home"'+cur('home')+'>'+IC.home+esc(L.home)+'</a><a href="#today"'+cur('today')+'>'+IC.today+esc(L.feeding)+'</a><a href="#foods"'+cur('foods')+'>'+IC.foods+esc(L.foods)+'</a><a href="#dev"'+cur('dev')+'>'+IC.dev+esc(L.dev)+'</a><a href="#community"'+cur('community')+'>'+IC.comm+esc(L.community)+'</a></div>';
 }
 
@@ -938,11 +929,11 @@ function tasteSheetBody(){
 
 // ---------- home menu ----------
 const HT={
- he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים, בקבוקים, תרופות ומדריכים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מאכלים, אלרגנים, מתכונים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['משפחה והגדרות','בן/בת הזוג, תינוקות ושפה'],
+ he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים, בקבוקים, תרופות ומדריכים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מאכלים, אלרגנים, מתכונים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['הגדרות ומשפחה','הפרופיל שלי, תינוקות, אלרגיות, שפה ושמירה כאפליקציה'],
   lastFeed:'הנקה אחרונה',noFeed:'עוד לא תועדה הנקה',tasted:(n)=>n+' מאכלים נטעמו',more:'עוד',ageLine:(n,s)=>n+(s?', '+s:'')},
- en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers, bottles, medicines and guides'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Foods, allergens, recipes and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Family & settings','Partner, babies and language'],
+ en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers, bottles, medicines and guides'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Foods, allergens, recipes and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Settings & family','My profile, babies, allergies, language and saving as an app'],
   lastFeed:'Last feed',noFeed:'No feeds logged yet',tasted:(n)=>n+' foods tasted',more:'More',ageLine:(n,s)=>n+(s?', '+s:'')},
- ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات والأدوية والأدلة'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','أطعمة، مسببات حساسية، وصفات وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['العائلة والإعدادات','الشريك والأطفال واللغة'],
+ ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات والأدوية والأدلة'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','أطعمة، مسببات حساسية، وصفات وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['الإعدادات والعائلة','ملفي، الأطفال، الحساسية، اللغة والحفظ كتطبيق'],
   lastFeed:'آخر رضعة',noFeed:'لم تُسجَّل أي رضعة بعد',tasted:(n)=>n+' أطعمة تذوقها',more:'المزيد',ageLine:(n,s)=>n+(s?'، '+s:'')}
 };
 function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
@@ -959,14 +950,13 @@ function viewHome(){
  const tile=(href,ic,tt,sub,cls,extra)=>'<a class="opt'+(cls||'')+'" href="#'+href+'" style="text-decoration:none"><span class="opt-ic">'+ic+'</span><span class="opt-tx"><span class="opt-t">'+esc(tt)+'</span><span class="opt-h">'+esc(sub)+'</span>'+(extra?'<span class="small" style="font-weight:600">'+esc(extra)+'</span>':'')+'</span>'+chev+'</a>';
  const soon='<div class="opt" style="opacity:.7" aria-disabled="true"><span class="opt-ic">'+IC.comm+'</span><span class="opt-tx"><span class="opt-t">'+esc(H.community[0])+'</span><span class="opt-h">'+esc(H.community[1])+'</span></span><span class="badge">'+esc(L.soon)+'</span></div>';
  return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(H.hello)+'</h1><p class="muted small">'+esc(H.ageLine(b.name,age))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
- '<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
+ installHomeCard()+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
   tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
-  tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, שנ״צ וטקס ערב':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
+  tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, שנ״צ, טקס ערב והרגעה':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
   tile('dev',IC.dev,H.dev[0],H.dev[1],'',(mo&&days!=null?(S.lang==='he'?mo[1]:X.monthChip(mo[0])):'')+(spNow?(S.lang==='he'?' · אולי קפיצת גדילה':''):''))+
-  soon+
   '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+
-  tile('family',IC.share,H.family[0],H.family[1],'')+
+  tile('family',IC.share,H.family[0],H.family[1],'')+soon+
  '</nav>';
 }
 
@@ -1213,7 +1203,7 @@ function viewPump(){
 // ---------- share with friends ----------
 const SF={
  he:{btn:'שתפו עם חברים',sub:'מכירה מישהי שזה יעזור לה? שלחי לה קישור',title:'שיתוף עם חברים',small:'שתפו עם חברה',
-  msg:{app:'גיליתי אפליקציה חינמית להורים לתינוקות: יומן הנקה משותף לשני ההורים, טעימות ובייבילד, והתפתחות לפי חודשים. שווה לנסות 💕',latch:'מצאתי הסבר ברור על אחיזה נכונה ותנוחות הנקה, באפליקציה "הנקה ואמהות":',pump:'מצאתי טבלה מסודרת של שאיבה ואחסון חלב אם (לפי משרד הבריאות), באפליקציה "הנקה ואמהות":',foods:'מצאתי מדריך נוח לטעימות ובייבילד, עם מאכלים, אלרגנים ומתכונים, באפליקציה "הנקה ואמהות":',dev:'מצאתי מדריך התפתחות לפי חודשים, כולל קפיצות גדילה, באפליקציה "הנקה ואמהות":'},
+  msg:{app:'גיליתי אפליקציה חינמית להורים לתינוקות: יומן הנקה משותף לשני ההורים, טעימות ובייבילד, והתפתחות לפי חודשים. שווה לנסות 💕',latch:'מצאתי הסבר ברור על אחיזה נכונה ותנוחות הנקה, באפליקציה "הנקה ואמהות":',pump:'מצאתי טבלה מסודרת של שאיבה ואחסון חלב אם (לפי משרד הבריאות), באפליקציה "הנקה ואמהות":',foods:'מצאתי מדריך נוח לטעימות ובייבילד, עם מאכלים, אלרגנים ומתכונים, באפליקציה "הנקה ואמהות":',dev:'מצאתי מדריך התפתחות לפי חודשים, כולל קפיצות גדילה, באפליקציה "הנקה ואמהות":',pacifier:'מצאתי הסבר ברור על מוצץ בתקופת ההנקה, באפליקציה "הנקה ואמהות":'},
   preview:'כך תיראה ההודעה',more:'שיתוף בדרך אחרת',note:'הקישור מוביל להרשמה לאפליקציה. מי שמקבלת אותו פותחת יומן משלה, והנתונים שלכם לא משותפים איתה.'},
  en:{btn:'Share with friends',sub:'Know someone this would help? Send them a link',title:'Share with friends',small:'Share with a friend',
   msg:{app:'I found a free app for parents of babies: a feeding log shared by both parents, first foods and baby-led weaning, and development by month. Worth a try 💕',latch:'A clear guide to latching and breastfeeding positions, in the Nursing & Motherhood app:',pump:'A clear table for pumping and storing breast milk, in the Nursing & Motherhood app:',foods:'A handy guide to first foods and baby-led weaning, in the Nursing & Motherhood app:',dev:'A month-by-month development guide, including growth spurts, in the Nursing & Motherhood app:'},
@@ -1229,11 +1219,11 @@ async function shareFriends(kind){ openSheet({mode:'friends',type:'friends',kind
 // ---------- daily routine & sleep (Hebrew content; examples, not rules) ----------
 // age groups: [id, fromMonth, toMonth, chip, title, total sleep, naps, wake window, intro, schedule rows [time,text,kind], notes[]]
 const ROUTINES=[
- ['r0',0,3,'0–3 חודשים','הלידה עד 3 חודשים','משתנה מאוד: בדרך כלל 14 עד 17 שעות','4 עד 6 שנ״צ קצרות, לא קבועות','45 עד 90 דקות ער/ה בין שינה לשינה',
+ ['r0',0,3,'0–3 חודשים','הלידה עד 3 חודשים','משתנה מאוד: בדרך כלל 14 עד 17 שעות','3 עד 5 שנ״צ, לא קבועות','45 עד 60 דקות ער/ה בין שינה לשינה',
   'בגיל הזה עדיין אין סדר יום קבוע, וזה תקין לגמרי. התינוק ישן, אוכל ושוב ישן, ביום ובלילה. במקום שעון, עוקבים אחרי סימני עייפות.',
   [['בוקר','מתעוררים, הנקה או בקבוק, החתלה','feed'],['','זמן ערות קצר: פנים מול פנים, דיבור, זמן בטן קצר','play'],['','סימני עייפות (פיהוק, שפשוף עיניים, מבט מושפל) ← שינה','sleep'],['','חוזר חלילה: אוכל ← ערות קצרה ← שינה','feed'],['ערב','טקס קצר: אמבטיה או רחצה, פיג׳מה, הנקה, שיר ערש','routine'],['לילה','התעוררויות להאכלה כל 2 עד 4 שעות הן נורמליות','night']],
-  ['כדאי להבדיל בין יום ללילה: ביום אור ורעשי בית רגילים, בלילה אור עמום ושקט.','אפשר כבר להתחיל טקס ערב קצר וקבוע. הוא יהפוך לסימן לשינה.']],
- ['r1',3,6,'3–6 חודשים','3 עד 6 חודשים','כ-14 עד 15 שעות, מהן כ-10 בלילה','3 שנ״צ (לפעמים 4 בהתחלה)','1.5 עד 2.5 שעות ער/ה',
+  ['כדאי להבדיל בין יום ללילה: בזמן הערות ביום אור ורעשי בית רגילים, בלילה אור עמום ושקט. לשינה עצמה, גם ביום, חדר חשוך עוזר לישון יותר זמן.','אפשר כבר להתחיל טקס ערב קצר וקבוע. הוא יהפוך לסימן לשינה.']],
+ ['r1',3,6,'3–6 חודשים','3 עד 6 חודשים','כ-14 עד 15 שעות, מהן כ-10 בלילה','3 שנ״צ (לפעמים 4 בהתחלה)','1.5 עד 2 שעות ער/ה',
   'סביב 4 חודשים השינה מתחילה להתארגן, ואפשר לבנות סדר יום גמיש. ברוב הימים יהיו 3 שנ״צ, וכל אחת עד כשעתיים.',
   [['07:00','השכמה והנקה או בקבוק','feed'],['08:45–09:45','שנת בוקר','sleep'],['10:00','הנקה ומשחק על השטיח','feed'],['11:45–13:15','שנת צהריים','sleep'],['13:30','הנקה, טיול בחוץ','feed'],['15:15–16:15','שנת אחר הצהריים','sleep'],['17:15–17:45','שנ״צ קצרה ("נמנום ערב"), אם צריך','sleep'],['18:30','טקס ערב: אמבטיה, פיג׳מה, הנקה, ספר ושיר','routine'],['19:00–19:30','שינת לילה','night']],
   ['השנ״צ הקצרה של סוף היום היא הראשונה שיורדת.','התעוררויות לילה להאכלה עדיין נפוצות מאוד בגיל הזה.']],
@@ -1262,7 +1252,7 @@ const BOOKS=['מהלידה: מדברים, שרים ומקריאים. התינו�
 const SAFESLEEP=['תמיד משכיבים לישון על הגב, בשנ״צ ובלילה','מזרן קשיח ושטוח, בלי כריות, שמיכות פוך, מגיני ראש ובובות במיטה','מומלץ לישון באותו חדר עם ההורים, אבל לא באותה מיטה, לפחות בחצי השנה הראשונה','לא לחמם יותר מדי את החדר ואת התינוק','שעה לפני השינה בלי מסכים. עד גיל שנה וחצי עד שנתיים ממליצים להימנע ממסכים כמעט לגמרי, חוץ משיחות וידאו'];
 const RKIND={feed:'🍼',sleep:'😴',play:'🧸',meal:'🥣',routine:'🛁',night:'🌙'};
 function routineIdx(b){ const m=ageMonths(b); if(m==null) return 0; const i=ROUTINES.findIndex(r=>m>=r[1]&&m<r[2]); return i<0?ROUTINES.length-1:i; }
-function devTabs(){ const he=S.lang==='he', ar=S.lang==='ar'; const items=[['dev',he?'לפי חודשים':ar?'حسب الأشهر':'By month'],['routine',he?'סדר יום ושינה':ar?'الروتين اليومي والنوم':'Daily routine & sleep']];
+function devTabs(){ const he=S.lang==='he', ar=S.lang==='ar'; const items=[['dev',he?'לפי חודשים':ar?'حسب الأشهر':'By month'],['routine',he?'סדר יום ושינה':ar?'الروتين اليومي والنوم':'Daily routine & sleep'],['calm',he?'הרגעת תינוק':ar?'تهدئة الرضيع':'Calming your baby']];
  return '<nav class="seg-scroll ntabs" aria-label="'+esc(he?'התפתחות':ar?'النمو':'Development')+'">'+items.map(x=>'<a class="chip" href="#'+x[0]+'"'+(S.view===x[0]?' aria-current="page"':'')+'>'+esc(x[1])+'</a>').join('')+'</nav>'; }
 function viewRoutine(){
  const b=baby(); if(!b) return viewSetup();
@@ -1285,11 +1275,124 @@ function viewRoutine(){
  '<p class="note">מבוסס על מקורות ישראליים: מדריך השינה של מכבי שירותי בריאות ודף המידע "שינה בשנה הראשונה" של אנה קוגן (אחות ויועצת הנקה מוסמכת), ובנוסף על המלצות AASM ו-AAP לשינה בטוחה. הדוגמאות כלליות: כל תינוק שונה, ואין צורך להיצמד לשעון.</p>';
 }
 
+// ---------- calming techniques & pacifier (Hebrew) ----------
+const CALM={
+ lead:'בכי הוא הדרך של התינוק לתקשר. בשבועות הראשונים הבכי מגיע לשיא בסביבות גיל 6 עד 8 שבועות, ובדרך כלל נרגע עד גיל 3 עד 4 חודשים. לפעמים פשוט לא מוצאים סיבה, וזה לא אומר שעשיתם משהו לא נכון.',
+ check:['רעב? רוב הבכי בשבועות הראשונים הוא רעב. מציעים הנקה או בקבוק','חיתול מלא או רטוב','חם או קר מדי: בודקים בעורף או בחזה, לא בידיים ובכפות הרגליים','צריך גרעפס','עייפות: מחפשים סימני עייפות מוקדמים, כמו פיהוק, שפשוף עיניים או מבט מושפל, לפני שהבכי מתחיל'],
+ tech:[
+  ['🌯','עטיפה','עוטפים בחיתול בד או בשמיכה דקה, כשהידיים צמודות לגוף. העטיפה מזכירה לתינוק את הרחם.','משאירים מקום לירכיים ולרגליים לזוז ולהתכופף. תמיד משכיבים על הגב. מפסיקים לעטוף כשהתינוק מתחיל לנסות להתהפך, בדרך כלל סביב חודשיים.'],
+  ['🤲','החזקה על הצד או על הבטן','מחזיקים את התינוק על הצד או על הבטן, על הזרוע או על הכתף. התנוחה הזו מרגיעה רבים מהתינוקות.','רק בזמן שמחזיקים אותו וערים. לישון משכיבים תמיד על הגב.'],
+  ['🤫','שששש','משמיעים "שששש" ארוך וחזק יחסית ליד האוזן, או רעש לבן. הקול מזכיר את הרעש שהתינוק שמע ברחם.','מכשיר רעש לבן לא מניחים צמוד למיטה, ולא מגבירים יותר מעוצמה של מקלחת.'],
+  ['🎐','נדנוד','תנועה קטנה, מהירה וקצבית: ריקוד קל עם התינוק על הידיים, הליכה עם מנשא או נדנוד בעגלה.','תנועה עדינה בלבד, והראש תמיד נתמך. אף פעם לא מנערים תינוק.'],
+  ['🍼','מציצה','הנקה, מוצץ או אצבע נקייה. מציצה מרגיעה מאוד.','בחודש הראשון להנקה עדיף להמתין עם מוצץ. ההסבר בלשונית "מוצץ בהנקה".']],
+ more:['מגע עור לעור על החזה','יציאה החוצה לאוויר, טיול קצר עם העגלה או המנשא','אמבטיה חמימה','החלפת ידיים: לפעמים התינוק נרגע אצל ההורה השני'],
+ you:'אם הבכי לא נגמר ואת מרגישה שאת מאבדת סבלנות, זה קורה להרבה הורים. מניחים את התינוק בבטחה על הגב במיטה, יוצאים מהחדר לכמה דקות, נושמים, ומבקשים עזרה מבן או בת הזוג או ממישהו קרוב. אף פעם לא מנערים תינוק.',
+ doctor:['חום של 38°C ומעלה בתינוק מתחת לגיל 3 חודשים','בכי שונה מהרגיל: צווחני, חלש מאוד, או שלא נרגע בכלל במשך שעות','התינוק לא אוכל, מקיא שוב ושוב, או ישנוני ורפוי באופן חריג','כל דבר שמרגיש לך לא תקין'],
+ source:'מבוסס על שיטת "5 ה-S" של ד״ר הארווי קארפ, על המלצות איגוד רופאי הילדים האמריקאי (AAP) לשינה בטוחה, ועל מידע מקובל להורים. כדאי לקרוא גם את הפוסט של אנה קוגן על טכניקות הרגעה באתר Nurse With Love.'
+};
+const PACI={
+ lead:'מוצץ יכול לעזור להרגיע תינוק, וכשנותנים אותו בזמן השינה הוא גם מוריד את הסיכון למוות בעריסה. בתקופת ההנקה חשוב לדעת מתי ואיך להשתמש בו, כדי שלא יבוא על חשבון ההנקה.',
+ when:'מומלץ להמתין עם מוצץ עד שההנקה מתבססת: התינוק נצמד היטב, עולה במשקל, ויש מספיק חיתולים רטובים. בדרך כלל זה קורה סביב גיל 3 עד 4 שבועות.',
+ how:['מוצץ לא בא במקום הנקה. כשהתינוק מראה סימני רעב, כמו ליקוק שפתיים, הכנסת ידיים לפה או חיפוש השד, קודם מניקים','מציעים מוצץ אחרי הנקה, או כשהתינוק שבע ורק צריך להירגע','בשינה אפשר להציע מוצץ. אם הוא נופל אחרי שהתינוק נרדם, לא צריך להחזיר אותו','אם התינוק לא רוצה מוצץ, לא מכריחים'],
+ signs:['פחות מ-6 חיתולים רטובים ביממה, אחרי היום החמישי','התינוק ישנוני מאוד ומדלג על הנקות','עלייה במשקל איטית מהמצופה','השדיים מרגישים מלאים ומתוחים, כי התינוק יונק פחות'],
+ signsNote:'אם את מזהה אחד מהסימנים האלה, כדאי לצמצם את המוצץ ולהתייעץ עם יועצת הנקה או טיפת חלב.',
+ safe:['מוצץ מחלק אחד, בגודל שמתאים לגיל','לא קושרים מוצץ בחוט או בשרשרת סביב הצוואר או ליד העריסה','לא טובלים בדבש, בסוכר או בשום דבר מתוק','בודקים לפני כל שימוש: אם יש סדק או קרע, מחליפים','שוטפים במים וסבון. בחודשים הראשונים אפשר גם להרתיח או לעקר'],
+ wean:'אין לחץ להיגמל מוקדם. מומלץ להתחיל להפחית בהדרגה בשנה השנייה, ולהיפרד מהמוצץ עד גיל 3 בערך, כדי לא להשפיע על התפתחות השיניים.',
+ source:'מבוסס על המלצות איגוד רופאי הילדים האמריקאי (AAP) לשינה בטוחה ולהנקה, ועל מידע מקובל להורים. כדאי לקרוא גם את הפוסט של אנה קוגן על מוצץ בתקופת ההנקה באתר Nurse With Love.'
+};
+function ul(arr){ return '<ul class="bul">'+arr.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>'; }
+function hebOnly(){ return S.lang!=='he'?'<p class="banner">'+esc(S.lang==='ar'?'هذا القسم بالعبرية حاليًا. الترجمة قادمة.':'This section is in Hebrew for now. A translation is on the way.')+'</p>':''; }
+function viewCalm(){
+ const X=CALM, b=baby(); if(!b) return viewSetup();
+ return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>הרגעת תינוק</h1><p class="muted small">'+esc(b.name)+'</p></div>'+statusPill()+'</div>'+devTabs()+'</header>'+hebOnly()+
+ '<div lang="he" dir="rtl" class="section" style="gap:20px"><p class="prose">'+esc(X.lead)+'</p>'+
+ '<section class="card"><h2>קודם בודקים</h2>'+ul(X.check)+'</section>'+
+ '<section class="section" style="gap:12px"><h2 style="font-size:1.25rem">חמש טכניקות שעוזרות</h2><p class="small muted">אפשר לשלב כמה יחד: למשל עטיפה, החזקה על הצד, "שששש" ונדנוד, ואז מציצה.</p>'+
+  X.tech.map((x,i)=>'<article class="card" style="gap:6px"><div class="row" style="gap:10px"><span class="ri" aria-hidden="true">'+x[0]+'</span><h3 style="margin:0;font-size:1.0625rem">'+(i+1)+'. '+esc(x[1])+'</h3></div><p style="line-height:1.7">'+esc(x[2])+'</p><p class="small" style="font-weight:700;color:var(--danger)">⚠️ '+esc(x[3])+'</p></article>').join('')+'</section>'+
+ '<section class="card"><h2>עוד דברים שעוזרים</h2>'+ul(X.more)+'</section>'+
+ '<section class="dark-card"><h2 style="color:var(--dawn)">ואם זה כבר יותר מדי</h2><p style="line-height:1.7">'+esc(X.you)+'</p></section>'+
+ '<section class="warn"><h2>מתי פונים לרופא</h2>'+ul(X.doctor)+'<p style="font-weight:600">במצב חירום: <a href="tel:101" style="color:inherit;font-weight:700">מד״א 101</a></p></section></div>'+
+ shareLink('dev')+'<p class="note">'+esc(X.source)+'</p>';
+}
+function viewPacifier(){
+ const X=PACI;
+ return '<header class="section" style="gap:10px"><span class="badge" style="align-self:flex-start">'+esc(t().draft)+'</span><h1 style="font-size:1.75rem" lang="he" dir="rtl">מוצץ בתקופת ההנקה</h1></header>'+hebOnly()+
+ '<div lang="he" dir="rtl" class="section" style="gap:20px"><p class="prose">'+esc(X.lead)+'</p>'+
+ '<section class="dark-card"><h2 style="color:var(--dawn)">מתי מתחילים</h2><p style="line-height:1.7">'+esc(X.when)+'</p></section>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">איך משתמשים נכון</h2>'+ul(X.how)+'</section>'+
+ '<section class="warn"><h2>סימנים שהתינוק לא יונק מספיק</h2>'+ul(X.signs)+'<p style="font-weight:600">'+esc(X.signsNote)+'</p></section>'+
+ '<section class="card"><h2>בטיחות והיגיינה</h2>'+ul(X.safe)+'</section>'+
+ '<section class="card"><h2>מתי נפרדים מהמוצץ</h2><p style="line-height:1.7">'+esc(X.wean)+'</p></section></div>'+
+ shareLink('pacifier')+'<p class="note">'+esc(X.source)+'</p>';
+}
+// ---------- settings: profile, tasting preferences, install as app ----------
+const ST={
+ he:{title:'הגדרות ומשפחה',me:'הפרופיל שלי',myName:'השם שלי ביומן',myNameHint:'כך יופיע ליד מה שאת/ה רושם/ת (למשל: אמא, אבא)',babiesT:'התינוקות',foodPrefs:'העדפות טעימות',style:'סגנון הגשה מועדף',allergy:'אלרגיות: מתכונים עם הרכיבים האלה לא יופיעו',allergyFor:(n)=>'עבור '+n,familyT:'משפחה ושיתוף',display:'תצוגה',install:'שמירה כאפליקציה במסך הבית',installSub:'פותחים בלחיצה אחת, כמו אפליקציה רגילה',
+  instTitle:'שמירה כאפליקציה',instLead:'אפשר לשמור את "הנקה ואמהות" במסך הבית של הטלפון. היא תיפתח במסך מלא, עם האייקון שלה, בלי שורת כתובת, ובלי להוריד שום דבר מחנות האפליקציות.',
+  already:'האפליקציה כבר שמורה במסך הבית שלך 🎉',installBtn:'התקנה עכשיו',
+  iphone:'אייפון (ספארי)',iSteps:['פותחים את האפליקציה בדפדפן ספארי. בכרום באייפון זה עובד רק בגרסאות חדשות, ולכן עדיף ספארי','לוחצים על כפתור השיתוף: ריבוע עם חץ למעלה, בתחתית המסך (באייפד: למעלה)','גוללים למטה ובוחרים "הוספה למסך הבית"','לוחצים "הוסף" בפינה העליונה','האייקון הוורוד מופיע במסך הבית. מעכשיו פותחים משם'],
+  galaxy:'גלקסי ואנדרואיד (כרום)',gSteps:['פותחים את האפליקציה בדפדפן כרום','לוחצים על שלוש הנקודות ⋮ בפינה העליונה','בוחרים "הוספה למסך הבית" או "התקנת אפליקציה"','מאשרים "התקנה"','האייקון מופיע במסך הבית ובמגירת האפליקציות'],
+  samsung:'בדפדפן של סמסונג (Samsung Internet)',sSteps:['לוחצים על התפריט ☰ בתחתית המסך','בוחרים "הוסף דף אל" ואז "מסך הבית"'],
+  homeCard:'לשמור במסך הבית?',homeCardSub:'כך האפליקציה תמיד בהישג יד. איך עושים',dismiss:'לא עכשיו'},
+ en:{title:'Settings & family',me:'My profile',myName:'My name in the log',myNameHint:'Shown next to what you log (e.g. Mom, Dad)',babiesT:'Babies',foodPrefs:'First-food preferences',style:'Preferred serving style',allergy:'Allergies: recipes with these won’t be shown',allergyFor:(n)=>'For '+n,familyT:'Family & sharing',display:'Display',install:'Save as an app on your home screen',installSub:'Opens with one tap, like a regular app',
+  instTitle:'Save as an app',instLead:'You can save the app to your phone’s home screen. It opens full screen with its own icon, no address bar, and nothing to download from an app store.',
+  already:'The app is already saved to your home screen 🎉',installBtn:'Install now',
+  iphone:'iPhone (Safari)',iSteps:['Open the app in Safari (Chrome on iPhone works only in recent versions, so Safari is best)','Tap the Share button: a square with an arrow, at the bottom (on iPad, at the top)','Scroll down and choose “Add to Home Screen”','Tap “Add” in the top corner','The pink icon appears on your home screen. Open the app from there'],
+  galaxy:'Galaxy & Android (Chrome)',gSteps:['Open the app in Chrome','Tap the three dots ⋮ in the top corner','Choose “Add to Home screen” or “Install app”','Confirm “Install”','The icon appears on your home screen and in the app drawer'],
+  samsung:'In Samsung Internet',sSteps:['Tap the ☰ menu at the bottom','Choose “Add page to”, then “Home screen”'],
+  homeCard:'Save to your home screen?',homeCardSub:'Keep the app one tap away. Here’s how',dismiss:'Not now'},
+ ar:{title:'الإعدادات والعائلة',me:'ملفي',myName:'اسمي في السجل',myNameHint:'يظهر بجانب ما تسجّلينه (مثلًا: ماما، بابا)',babiesT:'الأطفال',foodPrefs:'تفضيلات أول الأطعمة',style:'طريقة التقديم المفضلة',allergy:'الحساسية: لن تظهر وصفات تحتوي على هذه',allergyFor:(n)=>'لـ'+n,familyT:'العائلة والمشاركة',display:'العرض',install:'الحفظ كتطبيق في الشاشة الرئيسية',installSub:'يُفتح بلمسة واحدة مثل أي تطبيق',
+  instTitle:'الحفظ كتطبيق',instLead:'يمكن حفظ التطبيق في الشاشة الرئيسية للهاتف. يُفتح بشاشة كاملة وبأيقونته، دون شريط عنوان ودون تنزيل من متجر التطبيقات.',
+  already:'التطبيق محفوظ في شاشتك الرئيسية 🎉',installBtn:'التثبيت الآن',
+  iphone:'آيفون (سفاري)',iSteps:['افتحي التطبيق في سفاري','اضغطي زر المشاركة: مربع مع سهم للأعلى في أسفل الشاشة','مرّري للأسفل واختاري «إضافة إلى الشاشة الرئيسية»','اضغطي «إضافة» في الزاوية العلوية','تظهر الأيقونة الوردية في الشاشة الرئيسية'],
+  galaxy:'جالاكسي وأندرويد (كروم)',gSteps:['افتحي التطبيق في كروم','اضغطي النقاط الثلاث ⋮ في الزاوية العلوية','اختاري «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق»','أكّدي «تثبيت»','تظهر الأيقونة في الشاشة الرئيسية'],
+  samsung:'في متصفح سامسونج',sSteps:['اضغطي القائمة ☰ في الأسفل','اختاري «إضافة الصفحة إلى» ثم «الشاشة الرئيسية»'],
+  homeCard:'الحفظ في الشاشة الرئيسية؟',homeCardSub:'ليبقى التطبيق في متناول يدك. إليكِ الطريقة',dismiss:'ليس الآن'}
+};
+const isStandalone=()=>{ try{ return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true; }catch(e){ return false; } };
+const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let installEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; try{ render(); }catch(_){} });
+window.addEventListener('appinstalled',()=>{ installEvt=null; try{ render(); }catch(_){} });
+function installHomeCard(){
+ const X=ST[S.lang]||ST.he; if(isStandalone()||ls.get('gp-install-dismissed',false)) return '';
+ return '<div class="opt install-card"><span class="opt-ic" aria-hidden="true">📲</span><a class="opt-tx" href="#install" style="text-decoration:none;color:inherit"><span class="opt-t">'+esc(X.homeCard)+'</span><span class="opt-h">'+esc(X.homeCardSub)+'</span></a><button type="button" class="link small" data-act="installdismiss">'+esc(X.dismiss)+'</button></div>';
+}
+function viewInstall(){
+ const X=ST[S.lang]||ST.he, ios=isIOS();
+ const block=(title,steps,extra)=>'<section class="card"><h2>'+esc(title)+'</h2><ol class="bul">'+steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+(extra||'')+'</section>';
+ const iosB=block(X.iphone,X.iSteps), andB=block(X.galaxy,X.gSteps,'<h3 style="margin:8px 0 0;font-size:1rem">'+esc(X.samsung)+'</h3><ol class="bul">'+X.sSteps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>');
+ return '<header class="section" style="gap:4px"><a class="link" href="#family">'+esc(t().back)+'</a><h1>'+esc(X.instTitle)+'</h1></header>'+
+  '<p class="prose">'+esc(X.instLead)+'</p>'+
+  (isStandalone()?'<p class="banner">'+esc(X.already)+'</p>':'')+
+  (installEvt&&!isStandalone()?'<button type="button" class="btn block" data-act="installnow">📲 '+esc(X.installBtn)+'</button>':'')+
+  (ios?iosB+andB:andB+iosB);
+}
+function viewFamily(){
+ const L=t(), X=ST[S.lang]||ST.he, F=FT[S.lang]||FT.he;
+ const bs=S.family.babies||[], b=baby();
+ const ids=[...new Set([S.me].concat((S.members||[]).map(m=>m.user_id)).filter(Boolean))];
+ const mem=ids.length?'<ul class="list">'+ids.map(id=>'<li><span class="mono" aria-hidden="true">'+esc((whoLabel(id)||'?').slice(0,1))+'</span><span class="grow">'+esc(whoLabel(id))+'</span></li>').join('')+'</ul>':'';
+ const myName=((S.members||[]).find(m=>m.user_id===S.me)||{}).display_name||'';
+ const pref=(S.family.prefs||{}).feedingStyle||'';
+ const as=b?allergenState():{};
+ const sec=(title,body,cls)=>'<section class="'+(cls||'card')+'"><h2>'+esc(title)+'</h2>'+body+'</section>';
+ return '<header class="section" style="gap:4px"><a class="link" href="#home">'+esc(L.back)+'</a><h1>'+esc(X.title)+'</h1></header>'+
+ sec(X.me,'<label class="field" for="my-name">'+esc(X.myName)+'<input id="my-name" type="text" maxlength="40" autocomplete="off" value="'+esc(myName)+'" data-my-name="1"></label><p class="small muted">'+esc(X.myNameHint)+'</p><p class="small muted">'+esc(at().signedAs(S.email||''))+'</p><button type="button" class="btn ghost" data-act="logout">'+esc(at().logout)+'</button>')+
+ sec(X.babiesT,bs.map((x,i)=>'<div class="section" style="gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)"><label class="field" for="bn-'+i+'">'+esc(L.babyName)+'<input id="bn-'+i+'" type="text" value="'+esc(x.name)+'" data-baby-name="'+esc(x.id)+'"></label><label class="field" for="bb-'+i+'">'+esc(L.born)+'<input id="bb-'+i+'" type="date" value="'+esc(x.born||'')+'" data-baby-born="'+esc(x.id)+'"></label>'+(bs.length>1?'<button type="button" class="link small" data-act="rmbaby" data-id="'+esc(x.id)+'">'+esc(L.removeBaby)+'</button>':'')+'</div>').join('')+'<button type="button" class="btn ghost" data-act="addbaby">'+esc(L.addBaby)+'</button>')+
+ sec(X.foodPrefs,'<p class="small" style="font-weight:600">'+esc(X.style)+'</p><div class="chips" role="group" aria-label="'+esc(X.style)+'">'+F.styles.map(s=>'<button type="button" class="chip" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'">'+esc(s[1])+'</button>').join('')+'</div>'+
+  (b?'<p class="small" style="font-weight:600;margin-top:8px">'+esc(X.allergy)+'</p>'+(bs.length>1?babySwitch():'<p class="small muted">'+esc(X.allergyFor(b.name))+'</p>')+'<div class="chips" role="group" aria-label="'+esc(X.allergy)+'">'+ALLERGENS.map(a=>'<label class="chip check-chip"><input type="checkbox" data-allergen="'+a[0]+'" data-k="avoid"'+((as[a[0]]||{}).avoid?' checked':'')+'><span aria-hidden="true">'+a[1]+'</span> '+esc(a[lix()])+'</label>').join('')+'</div>':''))+
+ '<a class="opt" href="#install" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📲</span><span class="opt-tx"><span class="opt-t">'+esc(X.install)+'</span><span class="opt-h">'+esc(isStandalone()?X.already:X.installSub)+'</span></span></a>'+
+ sec(X.familyT,(mem?'<p class="small" style="font-weight:600">'+esc(L.members)+'</p>'+mem:'')+'<p class="small">'+esc(at().inviteText)+'</p><p class="small muted">'+esc(at().codeLabel)+'</p><p dir="ltr" style="font-size:1.75rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums;text-align:center">'+esc(S.invite||'')+'</p><button type="button" class="btn" data-act="share">'+esc(L.share)+'</button>')+
+ sec(X.display,'<p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en','ar'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div><p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>')+
+ '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>';
+}
+
 // ---------- nursing section tabs ----------
-const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון']],
- en:[['today','Daily log'],['meds','Medicines & vitamins'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage']],
- ar:[['today','المتابعة اليومية'],['meds','الأدوية والفيتامينات'],['feeding','حسب المرحلة'],['latch','الالتقام والوضعيات'],['article','هل يأكل ما يكفي؟'],['pump','الشفط والتخزين']]};
-const NURSING_VIEWS=['today','meds','feeding','latch','article','pump'];
+const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון'],['pacifier','מוצץ בהנקה']],
+ en:[['today','Daily log'],['meds','Medicines & vitamins'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage'],['pacifier','Pacifier & breastfeeding']],
+ ar:[['today','المتابعة اليومية'],['meds','الأدوية والفيتامينات'],['feeding','حسب المرحلة'],['latch','الالتقام والوضعيات'],['article','هل يأكل ما يكفي؟'],['pump','الشفط والتخزين'],['pacifier','اللهاية والرضاعة']]};
+const NURSING_VIEWS=['today','meds','feeding','latch','article','pump','pacifier'];
 function nursingTabs(){ const list=NT[S.lang]||NT.he; return '<nav class="seg-scroll ntabs" aria-label="'+esc(t().feeding)+'">'+list.map(x=>'<a class="chip" href="#'+x[0]+'"'+(S.view===x[0]?' aria-current="page"':'')+'>'+esc(x[1])+'</a>').join('')+'</nav>'; }
 function withNursingTabs(html){ if(!NURSING_VIEWS.includes(S.view)) return html; const i=html.indexOf('</header>'); return i<0?nursingTabs()+html:html.slice(0,i+9)+nursingTabs()+html.slice(i+9); }
 // ---------- render ----------
@@ -1306,7 +1409,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'pump':return viewPump();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -1388,6 +1491,8 @@ document.addEventListener('click',e=>{
  if(a==='share'){ openSheet({mode:'share',type:'share'}); return; }
  if(a==='sharefriends'){ shareFriends(el.dataset.v||'app'); return; }
  if(a==='devage'){ S.devAge=Number(el.dataset.v); render(); return; }
+ if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
+ if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
  if(a==='fsub'){ S.foodSub=el.dataset.v; S.confirmDel=null; render(); window.scrollTo(0,0); return; }
@@ -1463,6 +1568,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('change',e=>{
  const el=e.target;
  if(el.id==='setup-twins'){ S.setupTwins=el.checked; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.getElementById(el.checked?'setup-name2':'setup-twins'); if(n) n.focus(); })); return; }
+ if(el.dataset.myName){ const v=el.value.trim(); if(v){ Store.setMyName(v.slice(0,40)); say(t().saved); } return; }
  if(el.dataset.allergen){ const b=baby(); if(b){ Store.fam({allergens:{[b.id]:{[el.dataset.allergen]:{[el.dataset.k]:el.checked}}}}); say(t().saved); } return; }
  if(el.dataset.ms){ const b=baby(); if(b){ Store.fam({milestones:{[b.id]:{[el.dataset.ms]:el.checked?Date.now():null}}}); say(t().saved); } return; }
  if(el.dataset.babyName!==undefined||el.dataset.babyBorn!==undefined){
@@ -1474,7 +1580,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
+const VIEWS=['install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
 function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
