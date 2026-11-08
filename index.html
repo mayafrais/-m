@@ -797,6 +797,8 @@ const lix=()=>S.lang==='en'?3:S.lang==='ar'?4:2;
 const catName=(c)=>{ const x=FCATS.find(y=>y[0]===c); return x?x[lix()]:c; };
 const alName=(a)=>{ const x=ALLERGENS.find(y=>y[0]===a); return x?x[lix()]:a; };
 const hasImg=(id)=>FOOD_IMG.includes(id);
+const FOOD_LOCAL={pasta:'/img/foods/pasta.jpg'};
+const fimg=(id)=>FOOD_LOCAL[id]||(IMG_BASE+id+'.jpg');
 function tasteStats(){
  const m={}; evs().filter(e=>e.type==='taste').forEach(e=>{ const id=LEGACY_FOOD[e.food]||e.food; const s=m[id]||(m[id]={n:0,liked:null,reaction:false,last:0}); s.n++; if(e.reaction) s.reaction=true; if(e.t>s.last){s.last=e.t;s.liked=e.liked;} });
  return m;
@@ -830,11 +832,11 @@ function foodsList(st){
  const rows=list.map(f=>{
   const s=st[f[0]], open=S.openFood===f[0];
   const meta=s?F.tastedTimes(s.n)+(s.reaction?' · '+F.alBad:''):F.notYet;
-  const thumb=hasImg(f[0])?'<img class="thumb" src="'+IMG_BASE+f[0]+'.jpg" alt="" loading="lazy" width="56" height="56">':'<span class="thumb emoji" aria-hidden="true">'+(FCATS.find(c=>c[0]===f[1])||['','🍽️'])[1]+'</span>';
+  const thumb=hasImg(f[0])?'<img class="thumb" src="'+fimg(f[0])+'" alt="" loading="lazy" width="56" height="56">':'<span class="thumb emoji" aria-hidden="true">'+(FCATS.find(c=>c[0]===f[1])||['','🍽️'])[1]+'</span>';
   const style=S.foodStyle||((S.family.prefs||{}).feedingStyle==='blw'?'blw':'mashed');
   return '<li class="food'+(open?' open':'')+'"><button type="button" class="food-head" data-act="food" data-food="'+f[0]+'" aria-expanded="'+open+'">'+thumb+'<span class="grow section" style="gap:2px"><span class="row" style="gap:6px;font-weight:600">'+esc(fname(f[0]))+(s?'<span class="done" aria-hidden="true">'+IC.check+'</span>':'')+'</span><span class="small muted">'+esc(meta)+'</span></span><svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
    (open?'<div class="food-body">'+tagRow(f)+
-    (hasImg(f[0])?'<img class="food-img" src="'+IMG_BASE+f[0]+'.jpg" alt="'+esc(fname(f[0])+': '+F.mashed+' / '+F.blwT)+'" loading="lazy" width="512" height="512">':'')+
+    (hasImg(f[0])?'<img class="food-img" src="'+fimg(f[0])+'" alt="'+esc(fname(f[0])+': '+F.mashed+' / '+F.blwT)+'" loading="lazy" width="512" height="512">':'')+
     '<div class="seg" role="group" style="grid-template-columns:1fr 1fr"><button type="button" data-act="fstyle" data-v="mashed" aria-pressed="'+(style==='mashed')+'">🥣 '+esc(F.mashed)+'</button><button type="button" data-act="fstyle" data-v="blw" aria-pressed="'+(style==='blw')+'">🤚 '+esc(F.blwT)+'</button></div>'+
     '<p lang="he" dir="rtl" style="line-height:1.7">'+esc(style==='blw'?f[6]:f[5])+'</p>'+
     (style==='blw'&&!f[9]?'<p class="banner">⚠️ '+esc(F.blwWarn)+'</p>':'')+
@@ -884,7 +886,7 @@ function infoView(){
  const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
  const styles='<section class="card"><h2>'+esc(F.style)+'</h2><div class="section" style="gap:8px">'+F.styles.map(s=>'<button type="button" class="opt'+(pref===s[0]?' primary':'')+'" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'" style="min-height:72px"><span class="opt-tx"><span class="opt-t">'+esc(s[1])+'</span><span class="opt-h">'+esc(s[2])+'</span></span>'+(pref===s[0]?IC.check:'')+'</button>').join('')+'</div><p class="small muted">'+esc(F.styleNote)+'</p></section>';
  const blocks=FINFO.map(x=>'<section class="section prose" lang="he" dir="rtl"><h2 style="font-size:1.25rem">'+esc(x[1])+'</h2>'+x[2].map(p=>'<p>'+esc(p)+'</p>').join('')+(x[3]?'<ul>'+x[3].map(li=>'<li>'+esc(li)+'</li>').join('')+'</ul>':'')+'</section>').join('');
- const blwImgs='<div class="img-pair" aria-hidden="true">'+['sweet-potato','banana','egg','avocado'].map(id=>'<img src="'+IMG_BASE+id+'.jpg" alt="" loading="lazy" width="256" height="256">').join('')+'</div>';
+ const blwImgs='<div class="img-pair" aria-hidden="true">'+['sweet-potato','banana','egg','avocado'].map(id=>'<img src="'+fimg(id)+'" alt="" loading="lazy" width="256" height="256">').join('')+'</div>';
  return styles+blwImgs+blocks+shareLink('foods')+'<section class="warn"><p style="font-weight:600;color:var(--danger)">'+esc(F.emergency)+'</p></section>';
 }
 function tasteSheetBody(){
@@ -1114,9 +1116,9 @@ function viewDev(){
 }
 
 // Development illustrations: images live in Supabase storage content/dev/dev-<key>.jpg; list the keys that exist.
-const DEV_IMG=[0,1,2,3,4,5,6,7,8,'3m','5m','8m','11m','15m'];
+const DEV_IMG=[0,1,2,3,4,5,6,7,8,'3m','5m','7m','8m','11m','15m'];
 // which illustration per month card (month number -> ILL key)
-const ILL_FOR={1:0,2:1,3:'3m',4:2,5:'5m',6:3,8:'8m',9:4,10:5,11:'11m',12:6,15:'15m',18:7,24:8};
+const ILL_FOR={1:0,2:1,3:'3m',4:2,5:'5m',6:3,7:'7m',8:'8m',9:4,10:5,11:'11m',12:6,15:'15m',18:7,24:8};
 
 // ---------- nursing articles: latch & positions, pumping & storage (Hebrew; draft for lactation-consultant review) ----------
 const POS_IMG=[1,2,3,4,5];
