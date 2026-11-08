@@ -1071,7 +1071,10 @@ function viewDev(){
  const lpIn=LEAPS.filter(l=>l[0]*7>=from&&l[0]*7<=to);
  const wk=days!=null?days/7:null; const lpNow=wk!=null&&LEAPS.find(l=>Math.abs(wk-l[0])<=1); const lpNext=wk!=null&&LEAPS.find(l=>l[0]>wk+1);
  const chips='<div class="seg-scroll" role="group" aria-label="'+esc(X.months)+'">'+MONTHS.map((m,i)=>'<button type="button" class="chip" style="flex:none" data-act="devage" data-v="'+i+'" aria-pressed="'+(i===mi)+'">'+esc(X.monthChip(m[0]))+(i===autoMi&&days!=null?' <span class="small" aria-hidden="true">●</span><span class="sr">'+esc(X.nowTag)+'</span>':'')+'</button>').join('')+'</div>';
- const monthCard='<section class="dark-card" lang="he" dir="rtl">'+(isNow?'<span class="badge">'+esc(H.nowTag+(ageLine?' · '+DX.he.ageIs(Math.floor(days/30.44),Math.floor(days/30.44)<1?Math.floor(days/7):Math.floor((days-Math.floor(days/30.44)*30.44)/7)):''))+'</span>':'')+'<h2 style="font-size:1.375rem">'+esc(mo[1])+'</h2><p style="font-size:1.0625rem;line-height:1.7">'+esc(mo[2])+'</p></section>';
+ const ahead=days!=null&&mi>autoMi, behind=days!=null&&mi<autoMi;
+ const peek=ahead?'<span class="badge">מבט קדימה: עוד '+Math.max(1,Math.round(MONTHS[mi][0]-days/30.44))+' חודשים בערך</span>':behind?'<span class="badge" style="background:var(--mist);color:var(--ink2)">חודש שכבר עבר</span>':'';
+ const backNow=(ahead||behind)?'<button type="button" class="link" data-act="devnow">חזרה לגיל הנוכחי</button>':'';
+ const monthCard='<section class="dark-card" lang="he" dir="rtl">'+peek+(isNow?'<span class="badge">'+esc(H.nowTag+(ageLine?' · '+DX.he.ageIs(Math.floor(days/30.44),Math.floor(days/30.44)<1?Math.floor(days/7):Math.floor((days-Math.floor(days/30.44)*30.44)/7)):''))+'</span>':'')+'<h2 style="font-size:1.375rem">'+esc(mo[1])+'</h2><p style="font-size:1.0625rem;line-height:1.7">'+esc(mo[2])+'</p></section>';
  const spurtCard=(spIn.length||(isNow&&(spNow||spNext)))?'<section class="card" lang="he" dir="rtl"><div class="row" style="gap:10px"><span class="mono warm" aria-hidden="true">↗</span><h2>'+esc(isNow&&spNow?H.spurtNow:H.spurtTitle)+'</h2></div>'+
   (spIn.length?'<p style="font-weight:600">'+esc(spIn.map(s=>s[2]).join(' · '))+'</p>':'')+(isNow&&!spNow&&spNext?'<p class="small muted">'+esc(H.spurtNext(spNext[2]))+'</p>':'')+
   '<p style="line-height:1.7">'+esc(H.spurtText)+'</p><details><summary class="link" style="cursor:pointer">'+esc(H.spurtList)+'</summary><ul class="bul">'+SPURTS.map(s=>'<li>'+esc(s[2])+'</li>').join('')+'</ul><p class="small muted">'+esc(H.spurtNote)+'</p></details></section>':'';
@@ -1087,7 +1090,7 @@ function viewDev(){
  }).join('');
  return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(D.title)+'</h1><p class="muted small">'+esc(b.name+(ageLine?', '+ageLine:''))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
  (b.born?'':'<p class="banner">'+esc(D.noBorn)+'</p>')+(X.langNote?'<p class="banner">'+esc(X.langNote)+'</p>':'')+
- chips+monthCard+spurtCard+leapCard+
+ chips+'<p class="small muted" lang="he" dir="rtl">אפשר לבחור כל חודש, גם חודשים שעוד לא הגעתם אליהם, כדי לדעת מה צפוי.</p>'+backNow+monthCard+spurtCard+leapCard+
  '<section class="section" style="gap:10px"><div class="between"><h2>'+esc(X.checklist(D.age(st[0])))+'</h2><span class="small muted">'+esc(D.progress(k,n))+'</span></div><p class="small muted">'+esc(D.pace)+'</p>'+groups+'</section>'+
  '<section class="warn"><h2>'+esc(D.when)+'</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6">'+D.whenList.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><p style="font-weight:600">'+esc(D.whenNote)+'</p></section>'+
  '<p class="note">'+esc(X.sources)+'</p>';
@@ -1185,6 +1188,7 @@ document.addEventListener('click',e=>{
  if(a==='logout'){ Store.signOut(); return; }
  if(a==='share'){ openSheet({mode:'share',type:'share'}); return; }
  if(a==='devage'){ S.devAge=Number(el.dataset.v); render(); return; }
+ if(a==='devnow'){ S.devAge=null; render(); return; }
  if(a==='fsub'){ S.foodSub=el.dataset.v; S.confirmDel=null; render(); window.scrollTo(0,0); return; }
  if(a==='lang'){ S.lang=el.dataset.v; ls.set('gp-lang',S.lang); render(); return; }
  if(a==='theme'){ S.theme=el.dataset.v; ls.set('gp-theme2',S.theme); render(); return; }
