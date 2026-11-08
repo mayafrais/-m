@@ -194,6 +194,8 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 .btn.sos{background:var(--danger);color:var(--on-danger);display:flex;align-items:center;justify-content:center;text-decoration:none}
 .sos-pill{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--danger);color:var(--on-danger);font-weight:700;font-size:.875rem;text-decoration:none}
 [tabindex="-1"]:focus{outline:none}
+.ntabs a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--ink)}
+.ntabs a.chip[aria-current="page"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 </style>
 </head>
 <body>
@@ -595,7 +597,7 @@ function viewMeds(){
    (g?'<button type="button" class="btn ghost block" data-act="medundo" data-id="'+esc(g.id)+'">'+esc(L.undo)+'</button>':'<button type="button" class="btn block" data-act="medgive" data-id="'+esc(m.id)+'">'+esc(L.givenNow)+'</button>')+
    (c?'<span class="confirm"><button type="button" class="yes" data-act="medyes" data-id="'+esc(m.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="medno">'+esc(L.no)+'</button></span>':'<button type="button" class="link small" data-act="medask" data-id="'+esc(m.id)+'">'+esc(L.del)+'</button>')+'</li>';
  }).join(''):'<p class="empty">'+esc(L.noMeds)+'</p>';
- return '<header class="section" style="gap:4px"><a class="link" href="#today">'+esc(L.back)+'</a><h1>'+esc(L.meds)+'</h1><p class="muted small">'+esc(b.name)+'</p></header>'+
+ return '<header class="section" style="gap:4px"><h1>'+esc(L.meds)+'</h1><p class="muted small">'+esc(b.name)+'</p></header>'+
  (meds.length?'<ul class="section" style="margin:0;padding:0">'+items+'</ul>':items)+
  '<form class="card" data-form="med"><h2>'+esc(L.addMed)+'</h2><label class="field" for="med-name">'+esc(L.medName)+'<input id="med-name" type="text" required autocomplete="off" value="'+dv('med-name')+'"></label><label class="field" for="med-note">'+esc(L.medNote)+'<input id="med-note" type="text" autocomplete="off" value="'+dv('med-note')+'"></label><button class="btn ghost" type="submit">'+esc(L.add)+'</button></form>'+
  '<p class="note">'+esc(L.medsHint)+'</p>';
@@ -619,7 +621,7 @@ function viewGuide(){
  const L=t(), b=baby(); if(!b) return viewSetup();
  const days=ageWeeks(b), si=stageIndex(days);
  const wk=days==null?'':L.weeks(Math.floor(days/7)+1);
- return '<header class="section" style="gap:2px"><a class="link" href="#today">'+esc(L.back)+'</a><h1>'+esc((HT[S.lang]||HT.he).guide[0])+'</h1><p class="muted small">'+esc(L.guideFor(b.name,wk))+'</p></header>'+
+ return '<header class="section" style="gap:2px"><h1>'+esc((HT[S.lang]||HT.he).guide[0])+'</h1><p class="muted small">'+esc(L.guideFor(b.name,wk))+'</p></header>'+
  '<section class="dark-card" aria-labelledby="stage-h"><span class="badge">'+esc(L.draft)+'</span><h2 id="stage-h" style="font-size:1.25rem">'+esc(L.stageTitle)+'</h2>'+
  '<ol class="stages">'+L.stages.map((s,i)=>'<li'+(i===si?' aria-current="step"':'')+'><span></span>'+esc(s)+'</li>').join('')+'</ol>'+
  '<p style="font-size:1rem;line-height:1.65">'+esc(L.stageText[si])+'</p></section>'+
@@ -635,7 +637,7 @@ function viewArticle(){
  const from=Date.now()-864e5, day=evs().filter(e=>e.t>=from);
  const wet=day.filter(e=>e.type==='diaper'&&(e.kind==='wet'||e.kind==='both')).length;
  const feeds=day.filter(e=>e.type==='feed').length;
- return '<header class="section" style="gap:10px"><a class="link" href="#feeding">'+esc(L.feeding)+'</a><span class="badge">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem">'+esc(L.artTitle)+'</h1></header>'+
+ return '<header class="section" style="gap:10px"><span class="badge" style="align-self:flex-start">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem">'+esc(L.artTitle)+'</h1></header>'+
  '<p class="prose">'+esc(L.artLead)+'</p>'+
  '<section class="dark-card"><h2 style="color:var(--dawn)">'+esc(L.artYour(b.name))+'</h2><ul class="section" style="list-style:none;margin:0;padding:0;gap:8px"><li class="row">'+IC.check+esc(L.artWet(wet))+'</li><li class="row">'+IC.check+esc(L.artFeeds(feeds))+'</li></ul></section>'+
  '<section class="section prose"><h2 style="font-size:1.25rem">'+esc(L.artSigns)+'</h2><ul>'+L.artList.map(x=>'<li><strong style="font-weight:600">'+esc(x[0])+'</strong> '+esc(x[1])+'</li>').join('')+'</ul></section>'+
@@ -925,11 +927,11 @@ function tasteSheetBody(){
 
 // ---------- home menu ----------
 const HT={
- he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים ובקבוקים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מאכלים, אלרגנים, מתכונים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['משפחה והגדרות','בן/בת הזוג, תינוקות ושפה'],
+ he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים, בקבוקים, תרופות ומדריכים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מאכלים, אלרגנים, מתכונים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['משפחה והגדרות','בן/בת הזוג, תינוקות ושפה'],
   lastFeed:'הנקה אחרונה',noFeed:'עוד לא תועדה הנקה',tasted:(n)=>n+' מאכלים נטעמו',more:'עוד',ageLine:(n,s)=>n+(s?', '+s:'')},
- en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers and bottles'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Foods, allergens, recipes and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Family & settings','Partner, babies and language'],
+ en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers, bottles, medicines and guides'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Foods, allergens, recipes and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Family & settings','Partner, babies and language'],
   lastFeed:'Last feed',noFeed:'No feeds logged yet',tasted:(n)=>n+' foods tasted',more:'More',ageLine:(n,s)=>n+(s?', '+s:'')},
- ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','أطعمة، مسببات حساسية، وصفات وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['العائلة والإعدادات','الشريك والأطفال واللغة'],
+ ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات والأدوية والأدلة'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','أطعمة، مسببات حساسية، وصفات وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['العائلة والإعدادات','الشريك والأطفال واللغة'],
   lastFeed:'آخر رضعة',noFeed:'لم تُسجَّل أي رضعة بعد',tasted:(n)=>n+' أطعمة تذوقها',more:'المزيد',ageLine:(n,s)=>n+(s?'، '+s:'')}
 };
 function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
@@ -950,10 +952,9 @@ function viewHome(){
   tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
   tile('dev',IC.dev,H.dev[0],H.dev[1],'',(mo&&days!=null?(S.lang==='he'?mo[1]:X.monthChip(mo[0])):'')+(spNow?(S.lang==='he'?' · אולי קפיצת גדילה':''):''))+
-  tile('feeding',IC.guide,H.guide[0],H.guide[1],'')+
   soon+
   '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+
-  '<div class="home-small">'+tile('meds',IC.med,H.meds[0],H.meds[1],' slim')+tile('family',IC.share,H.family[0],H.family[1],' slim')+'</div>'+
+  tile('family',IC.share,H.family[0],H.family[1],'')+
  '</nav>';
 }
 
@@ -1170,7 +1171,7 @@ const PUMP={
  go:'בדרך או למעון: תיק קירור עם קרחום צמוד לבקבוק, עד 24 שעות, ובהגעה מעבירים למקרר. במעון החלב נשמר על מדף (לא בדלת) ב-4°C ומטה.',
  source:'מבוסס על ההנחיות של משרד הבריאות באתר "הורות והורים" (אחסון, הפשרה והובלה של חלב אם). התוכן כללי. בכל שאלה פונים ליועצת הנקה או לטיפת חלב.'
 };
-function artHead(title,back){ const L=t(); return '<header class="section" style="gap:10px"><a class="link" href="#'+(back||'feeding')+'">'+esc((HT[S.lang]||HT.he).guide[0])+'</a><span class="badge">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem" lang="he" dir="rtl">'+esc(title)+'</h1></header>'+(S.lang==='en'?'<p class="banner">This article is in Hebrew for now. English is on the way.</p>':S.lang==='ar'?'<p class="banner">هذا المقال بالعبرية حاليًا. الترجمة إلى العربية قادمة.</p>':''); }
+function artHead(title,back){ const L=t(); return '<header class="section" style="gap:10px"><span class="badge" style="align-self:flex-start">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem" lang="he" dir="rtl">'+esc(title)+'</h1></header>'+(S.lang==='en'?'<p class="banner">This article is in Hebrew for now. English is on the way.</p>':S.lang==='ar'?'<p class="banner">هذا المقال بالعبرية حاليًا. الترجمة إلى العربية قادمة.</p>':''); }
 function viewLatch(){
  const X=LATCH;
  return artHead('אחיזה נכונה ותנוחות הנקה')+
@@ -1213,6 +1214,13 @@ const IC_HEART='<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 2
 function shareInfo(kind){ const X=SF[S.lang]||SF.he; const k=X.msg[kind]?kind:'app'; const url=APP_URL+'/'+(k==='app'?'':'#'+k); return {text:X.msg[k],url,full:X.msg[k]+'\n'+url}; }
 function shareLink(kind){ const X=SF[S.lang]||SF.he; return '<button type="button" class="link small share-friends" data-act="sharefriends" data-v="'+kind+'">'+IC_HEART+' '+esc(X.small)+'</button>'; }
 async function shareFriends(kind){ openSheet({mode:'friends',type:'friends',kind}); }
+// ---------- nursing section tabs ----------
+const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון']],
+ en:[['today','Daily log'],['meds','Medicines & vitamins'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage']],
+ ar:[['today','المتابعة اليومية'],['meds','الأدوية والفيتامينات'],['feeding','حسب المرحلة'],['latch','الالتقام والوضعيات'],['article','هل يأكل ما يكفي؟'],['pump','الشفط والتخزين']]};
+const NURSING_VIEWS=['today','meds','feeding','latch','article','pump'];
+function nursingTabs(){ const list=NT[S.lang]||NT.he; return '<nav class="seg-scroll ntabs" aria-label="'+esc(t().feeding)+'">'+list.map(x=>'<a class="chip" href="#'+x[0]+'"'+(S.view===x[0]?' aria-current="page"':'')+'>'+esc(x[1])+'</a>').join('')+'</nav>'; }
+function withNursingTabs(html){ if(!NURSING_VIEWS.includes(S.view)) return html; const i=html.indexOf('</header>'); return i<0?nursingTabs()+html:html.slice(0,i+9)+nursingTabs()+html.slice(i+9); }
 // ---------- render ----------
 let raf=0, lastKey='', lastNav='';
 const dv=id=>S.renderDrafts?esc(S.draft[id]||''):'';
@@ -1227,8 +1235,8 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'pump':return viewPump();
-   case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } };
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'pump':return viewPump();
+   case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
   if(key!==lastKey){ S.renderDrafts=true; const html=build(); S.renderDrafts=false; v.innerHTML=html; lastKey=key; if(keepQ){ const q=document.getElementById('food-q'); if(q){ q.focus({preventScroll:true}); try{ q.setSelectionRange(keepQ[0],keepQ[1]); }catch(e){} } } const pc=v.querySelector('[data-act=devage][aria-pressed="true"]'); if(pc&&pc.parentElement){ const r=pc.parentElement; r.scrollLeft=pc.offsetLeft-(r.clientWidth-pc.clientWidth)/2; } }
