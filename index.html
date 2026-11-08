@@ -159,6 +159,7 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .food-body h3{margin:4px 0 0;font-size:.9375rem}
 .thumb{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;background:var(--mist)}
 .thumb.emoji{display:flex;align-items:center;justify-content:center;font-size:1.6rem}
+.thumb.letter{font-size:1.375rem;font-weight:600;color:var(--dusk)}
 .food-img{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:16px;background:var(--mist)}
 .done{color:var(--sage);display:inline-flex}
 .al-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:none;box-shadow:inset 0 0 0 3px var(--surface)}
@@ -801,6 +802,8 @@ const catName=(c)=>{ const x=FCATS.find(y=>y[0]===c); return x?x[lix()]:c; };
 const alName=(a)=>{ const x=ALLERGENS.find(y=>y[0]===a); return x?x[lix()]:a; };
 const hasImg=(id)=>FOOD_IMG.includes(id);
 const FOOD_LOCAL={pasta:'/img/foods/pasta.jpg'};
+// exact emoji per food (only where a matching emoji exists; otherwise the food's first letter)
+const FOOD_EMOJI={eggplant:'🍆',tomato:'🍅',pepper:'🫑',broccoli:'🥦',melon:'🍈',watermelon:'🍉',blueberries:'🫐',strawberry:'🍓',kiwi:'🥝',peach:'🍑',fish:'🐟',legumes:'🫘',milk:'🥛'};
 const fimg=(id)=>FOOD_LOCAL[id]||(IMG_BASE+id+'.jpg');
 function tasteStats(){
  const m={}; evs().filter(e=>e.type==='taste').forEach(e=>{ const id=LEGACY_FOOD[e.food]||e.food; const s=m[id]||(m[id]={n:0,liked:null,reaction:false,last:0}); s.n++; if(e.reaction) s.reaction=true; if(e.t>s.last){s.last=e.t;s.liked=e.liked;} });
@@ -835,7 +838,7 @@ function foodsList(st){
  const rows=list.map(f=>{
   const s=st[f[0]], open=S.openFood===f[0];
   const meta=s?F.tastedTimes(s.n)+(s.reaction?' · '+F.alBad:''):F.notYet;
-  const thumb=hasImg(f[0])?'<img class="thumb" src="'+fimg(f[0])+'" alt="" loading="lazy" width="56" height="56">':'<span class="thumb emoji" aria-hidden="true">'+(FCATS.find(c=>c[0]===f[1])||['','🍽️'])[1]+'</span>';
+  const thumb=hasImg(f[0])?'<img class="thumb" src="'+fimg(f[0])+'" alt="" loading="lazy" width="56" height="56">':(FOOD_EMOJI[f[0]]?'<span class="thumb emoji" aria-hidden="true">'+FOOD_EMOJI[f[0]]+'</span>':'<span class="thumb emoji letter" aria-hidden="true">'+esc(fname(f[0]).slice(0,1))+'</span>');
   const style=S.foodStyle||((S.family.prefs||{}).feedingStyle==='blw'?'blw':'mashed');
   return '<li class="food'+(open?' open':'')+'"><button type="button" class="food-head" data-act="food" data-food="'+f[0]+'" aria-expanded="'+open+'">'+thumb+'<span class="grow section" style="gap:2px"><span class="row" style="gap:6px;font-weight:600">'+esc(fname(f[0]))+(s?'<span class="done" aria-hidden="true">'+IC.check+'</span>':'')+'</span><span class="small muted">'+esc(meta)+'</span></span><svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
    (open?'<div class="food-body">'+tagRow(f)+
