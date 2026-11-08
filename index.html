@@ -148,6 +148,8 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .tag{font-size:.75rem;font-weight:500;padding:3px 10px;border-radius:999px;background:var(--mist);color:var(--ink2)}
 .tag.warm{background:var(--dawn-soft);color:var(--dawn-text)}
 .tag.ok{background:var(--sage-soft);color:var(--sage)}
+:root:not([data-theme="dark"]) .tag.ok{color:#256449}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag.ok{color:var(--sage)}}
 .foods{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .food{background:var(--surface);border-radius:20px;overflow:hidden}
 .food-head{display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:10px 14px;border:0;background:transparent;color:var(--ink);text-align:start}
@@ -179,6 +181,7 @@ input[type=search]{width:100%;min-height:48px;border-radius:14px;border:1px soli
 .tbl tbody th{font-weight:600}
 .tbl tr:last-child th,.tbl tr:last-child td{border-bottom:0}
 .opt.friends{background:var(--dawn-soft);color:var(--dawn-text);min-height:72px}
+.opt.friends .opt-h{opacity:1}
 .opt.friends .opt-ic{background:var(--surface);color:var(--dawn-text)}
 .share-friends{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:44px}
 .pos-img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:16px;background:var(--mist)}
@@ -357,15 +360,15 @@ const SB_URL='https://wdwfpjprdffkbvthtcuy.supabase.co';
 const SB_KEY='sb_publishable_Z_gT_Mjz2-BecNNOVXmY9A_0bCRPD8w';
 const AT={
  he:{signup:'הרשמה',login:'כניסה',email:'אימייל',password:'סיסמה',pwHint:'לפחות 6 תווים',authLead:'יומן משותף להנקה, שינה, תרופות וטעימות, לשני ההורים.',toLogin:'כבר רשומה? כניסה',toSignup:'אין לך חשבון? הרשמה',checkEmail:'שלחנו מייל אישור. אחרי האישור חוזרים לכאן ונכנסים.',authErr:'לא הצלחנו להיכנס. בדקי את האימייל והסיסמה ונסי שוב.',weakPw:'הסיסמה צריכה לכלול לפחות 6 תווים.',exists:'האימייל הזה כבר רשום. הקלידי את הסיסמה שלך כדי להיכנס.',
-  onbTitle:'איך מתחילים?',newFamily:'יצירת יומן חדש',newFamilyHint:'לאמא או לאבא שמתחילים ראשונים',joinFamily:'הצטרפות ליומן קיים',joinFamilyHint:'קיבלת קוד מבן או בת הזוג',yourName:'איך לקרוא לך ביומן? (למשל: אמא)',code:'קוד הצטרפות (6 ספרות)',join:'הצטרפות',badCode:'הקוד לא נמצא. בדקי שהוקלדו כל 6 הספרות.',
+  onbTitle:'איך מתחילים?',newFamily:'יצירת יומן חדש',newFamilyHint:'לאמא או לאבא שמתחילים ראשונים',joinFamily:'הצטרפות ליומן קיים',joinFamilyHint:'קיבלת קוד מבן או בת הזוג',yourName:'איך לקרוא לך ביומן? (למשל: אמא)',code:'קוד הצטרפות (6 ספרות)',join:'הצטרפות',badCode:'הקוד לא נמצא. בדקי שהוקלדו כל 6 הספרות.',tooMany:'היו יותר מדי ניסיונות. נסי שוב בעוד שעה, או בקשי מבן או בת הזוג לשלוח את הקוד שוב.',
   codeLabel:'קוד ההצטרפות שלכם',logout:'יציאה מהחשבון',working:'רגע…',shareCode:(c)=>'קוד הצטרפות: '+c,
   inviteText:'שלחי לבן או בת הזוג את הקישור ואת הקוד. אחרי ההרשמה בוחרים "הצטרפות ליומן קיים" ומקלידים את הקוד.',signedAs:(e)=>'מחובר/ת בתור '+e,notSaved:'לא נשמר, נסי שוב'},
  en:{signup:'Sign up',login:'Log in',email:'Email',password:'Password',pwHint:'At least 6 characters',authLead:'A shared log for feeds, sleep, medicines and first foods, for both parents.',toLogin:'Already have an account? Log in',toSignup:'No account yet? Sign up',checkEmail:'We sent a confirmation email. Confirm it, then come back and log in.',authErr:'We couldn’t log you in. Check your email and password and try again.',weakPw:'The password needs at least 6 characters.',exists:'This email is already registered. Enter your password to log in.',
-  onbTitle:'How do you want to start?',newFamily:'Start a new log',newFamilyHint:'For the parent who starts first',joinFamily:'Join an existing log',joinFamilyHint:'You got a code from your partner',yourName:'What should we call you in the log? (e.g. Mom)',code:'Join code (6 digits)',join:'Join',badCode:'That code wasn’t found. Check all 6 digits.',
+  onbTitle:'How do you want to start?',newFamily:'Start a new log',newFamilyHint:'For the parent who starts first',joinFamily:'Join an existing log',joinFamilyHint:'You got a code from your partner',yourName:'What should we call you in the log? (e.g. Mom)',code:'Join code (6 digits)',join:'Join',badCode:'That code wasn’t found. Check all 6 digits.',tooMany:'Too many attempts. Try again in an hour, or ask your partner to resend the code.',
   codeLabel:'Your join code',logout:'Log out',working:'One moment…',shareCode:(c)=>'Join code: '+c,
   inviteText:'Send your partner the link and the code. After signing up they choose "Join an existing log" and type the code.',signedAs:(e)=>'Signed in as '+e,notSaved:'Not saved, try again'},
  ar:{signup:'تسجيل',login:'دخول',email:'البريد الإلكتروني',password:'كلمة المرور',pwHint:'6 أحرف على الأقل',authLead:'سجل مشترك للرضاعة والنوم والأدوية وأول الأطعمة، للوالدين معًا.',toLogin:'لديكِ حساب؟ دخول',toSignup:'ليس لديكِ حساب؟ تسجيل',checkEmail:'أرسلنا رسالة تأكيد. بعد التأكيد عودي إلى هنا وادخلي.',authErr:'تعذّر الدخول. تحققي من البريد وكلمة المرور وحاولي مجددًا.',weakPw:'يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل.',exists:'هذا البريد مسجّل مسبقًا. أدخلي كلمة المرور للدخول.',
-  onbTitle:'كيف تبدئين؟',newFamily:'إنشاء سجل جديد',newFamilyHint:'للأم أو الأب الذي يبدأ أولًا',joinFamily:'الانضمام إلى سجل قائم',joinFamilyHint:'وصلك رمز من الشريك',yourName:'ماذا نسميك في السجل؟ (مثلًا: ماما)',code:'رمز الانضمام (6 أرقام)',join:'انضمام',badCode:'لم يُعثر على الرمز. تحققي من الأرقام الستة.',
+  onbTitle:'كيف تبدئين؟',newFamily:'إنشاء سجل جديد',newFamilyHint:'للأم أو الأب الذي يبدأ أولًا',joinFamily:'الانضمام إلى سجل قائم',joinFamilyHint:'وصلك رمز من الشريك',yourName:'ماذا نسميك في السجل؟ (مثلًا: ماما)',code:'رمز الانضمام (6 أرقام)',join:'انضمام',badCode:'لم يُعثر على الرمز. تحققي من الأرقام الستة.',tooMany:'محاولات كثيرة جدًا. حاولي بعد ساعة، أو اطلبي من الشريك إرسال الرمز مجددًا.',
   codeLabel:'رمز الانضمام الخاص بكم',logout:'تسجيل الخروج',working:'لحظة…',shareCode:(c)=>'رمز الانضمام: '+c,
   inviteText:'أرسلي للشريك الرابط والرمز. بعد التسجيل يختار «الانضمام إلى سجل قائم» ويكتب الرمز.',signedAs:(e)=>'متصل باسم '+e,notSaved:'لم يُحفظ، حاولي مجددًا'}
 };
@@ -581,7 +584,7 @@ function viewMeds(){
    (c?'<span class="confirm"><button type="button" class="yes" data-act="medyes" data-id="'+esc(m.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="medno">'+esc(L.no)+'</button></span>':'<button type="button" class="link small" data-act="medask" data-id="'+esc(m.id)+'">'+esc(L.del)+'</button>')+'</li>';
  }).join(''):'<p class="empty">'+esc(L.noMeds)+'</p>';
  return '<header class="section" style="gap:4px"><a class="link" href="#today">'+esc(L.back)+'</a><h1>'+esc(L.meds)+'</h1><p class="muted small">'+esc(b.name)+'</p></header>'+
- '<ul class="section" style="margin:0;padding:0">'+items+'</ul>'+
+ (meds.length?'<ul class="section" style="margin:0;padding:0">'+items+'</ul>':items)+
  '<form class="card" data-form="med"><h2>'+esc(L.addMed)+'</h2><label class="field" for="med-name">'+esc(L.medName)+'<input id="med-name" type="text" required autocomplete="off" value="'+dv('med-name')+'"></label><label class="field" for="med-note">'+esc(L.medNote)+'<input id="med-note" type="text" autocomplete="off" value="'+dv('med-note')+'"></label><button class="btn ghost" type="submit">'+esc(L.add)+'</button></form>'+
  '<p class="note">'+esc(L.medsHint)+'</p>';
 }
@@ -611,7 +614,7 @@ function viewGuide(){
  '<section class="section" style="gap:0"><h2 style="margin-bottom:4px">'+esc(L.topics)+'</h2>'+L.topicList.filter((x,i)=>i!==4||(S.family.babies||[]).length>1).map(x=>{
   const inner='<span class="mono'+(x[4]?' warm':'')+'" aria-hidden="true">'+esc(x[0])+'</span><span class="grow section" style="gap:2px"><span style="font-weight:500">'+esc(x[1])+'</span><span class="small muted">'+esc(x[2])+'</span></span>';
   const href=x[3]||(L.topicList.indexOf(x)===1?'latch':L.topicList.indexOf(x)===3?'pump':''); if(href&&!x[3]){ const warm=inner.replace('class="mono"','class="mono warm"'); return '<a class="topic" href="#'+href+'">'+warm+'</a>'; }
-  return x[3]?'<a class="topic" href="#'+x[3]+'">'+inner+'</a>':'<div class="topic" style="opacity:.75">'+inner+'<span class="small muted">'+esc(L.soon)+'</span></div>';
+  return x[3]?'<a class="topic" href="#'+x[3]+'">'+inner+'</a>':'<div class="topic">'+inner+'<span class="badge" style="background:var(--mist);color:var(--ink2)">'+esc(L.soon)+'</span></div>';
  }).join('')+'</section><p class="note">'+esc(L.guideNote)+'</p>';
 }
 
@@ -805,7 +808,7 @@ function allergenState(){
  return out;
 }
 function foodsSub(){ const F=FT[S.lang]||FT.he; const cur=S.foodSub||'info';
- return '<div class="seg-scroll" role="tablist" aria-label="'+esc(F.title)+'">'+['info','foods','allergens','recipes','log'].map(k=>'<button type="button" role="tab" class="chip" data-act="fsub" data-v="'+k+'" aria-selected="'+(cur===k)+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
+ return '<div class="seg-scroll" role="group" aria-label="'+esc(F.title)+'">'+['info','foods','allergens','recipes','log'].map(k=>'<button type="button" class="chip" data-act="fsub" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
 function tagRow(f){ const F=FT[S.lang]||FT.he; const t=[];
  if(f[10]) t.push('<span class="tag warm">'+esc(F.allergen+': '+alName(f[10]))+'</span>');
  if(f[8]) t.push('<span class="tag">'+esc(F.soft)+'</span>');
@@ -1113,9 +1116,10 @@ function viewDev(){
 // Development illustrations: images live in Supabase storage content/dev/dev-<key>.jpg; list the keys that exist.
 const DEV_IMG=[0,1,2,3,4,5,6,7,8];
 // which illustration per month card (month number -> ILL key)
-const ILL_FOR={1:0,2:1,3:1,4:2,5:2,6:3,7:3,8:4,9:4,10:5,11:5,12:6,15:6,18:7,24:8};
+const ILL_FOR={1:0,2:1,4:2,6:3,9:4,10:5,12:6,18:7,24:8};
 
 // ---------- nursing articles: latch & positions, pumping & storage (Hebrew; draft for lactation-consultant review) ----------
+const POS_IMG=[1,2,4,5];
 const LATCH={
  lead:'אחיזה טובה היא הבסיס להנקה נוחה. בהנקה טובה התינוק לוקח לפה לא רק את הפטמה אלא גם חלק גדול מהעטרה (האזור הכהה סביב הפטמה), וכך הוא יונק ביעילות וזה לא כואב לך.',
  steps:['מתיישבים בנוחות: גב נתמך, כתפיים רפויות, וכרית מתחת לתינוק או מתחת למרפק אם צריך.','בטן אל בטן: התינוק פונה אלייך בכל הגוף. האוזן, הכתף והירך שלו בקו ישר, כך שלא צריך לסובב את הראש כדי לינוק.','אף מול פטמה: בהתחלה האף של התינוק נמצא מול הפטמה, והראש מוטה קצת לאחור.','מחכים לפה פתוח לרווחה, כמו פיהוק. אפשר ללטף בעדינות את השפה העליונה עם הפטמה כדי לעודד אותו לפתוח.','מקרבים את התינוק לשד, ולא את השד לתינוק. הסנטר נוגע בשד ראשון, ואז התינוק נצמד עם פה מלא.'],
@@ -1152,7 +1156,7 @@ function viewLatch(){
  '<section class="section prose"><h2 style="font-size:1.25rem">איך מצמידים לשד</h2><ol class="bul">'+X.steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol></section>'+
  '<section class="dark-card"><h2 style="color:var(--dawn)">סימנים לאחיזה טובה</h2><ul class="section" style="list-style:none;margin:0;padding:0;gap:8px">'+X.good.map(s=>'<li class="row" style="align-items:flex-start">'+IC.check+'<span>'+esc(s)+'</span></li>').join('')+'</ul></section>'+
  '<section class="card"><h2>איך משחררים מהשד</h2><p style="line-height:1.7">'+esc(X.release)+'</p></section>'+
- '<section class="section" style="gap:12px"><h2 style="font-size:1.25rem">תנוחות הנקה</h2>'+X.positions.map((p,i)=>'<article class="card" style="gap:8px"><img class="pos-img" src="/img/pos/pos-'+(i+1)+'.jpg" alt="'+esc('איור: '+p[0])+'" loading="lazy" width="800" height="800"><div class="row" style="gap:10px"><span class="mono" aria-hidden="true">'+(i+1)+'</span><h3 style="margin:0;font-size:1.0625rem">'+esc(p[0])+'</h3></div><p style="line-height:1.7">'+esc(p[1])+'</p><p class="small" style="color:var(--sage);font-weight:600">'+esc(p[2])+'</p></article>').join('')+'<p class="small muted">אין תנוחה אחת נכונה. כדאי לנסות כמה ולבחור את מה שנוח לך ולתינוק, ולהחליף ביניהן במהלך היום.</p></section>'+
+ '<section class="section" style="gap:12px"><h2 style="font-size:1.25rem">תנוחות הנקה</h2>'+X.positions.map((p,i)=>'<article class="card" style="gap:8px">'+(POS_IMG.includes(i+1)?'<img class="pos-img" src="/img/pos/pos-'+(i+1)+'.jpg" alt="'+esc('איור: '+p[0])+'" loading="lazy" width="800" height="800">':'')+'<div class="row" style="gap:10px"><span class="mono" aria-hidden="true">'+(i+1)+'</span><h3 style="margin:0;font-size:1.0625rem">'+esc(p[0])+'</h3></div><p style="line-height:1.7">'+esc(p[1])+'</p><p class="small" style="color:var(--sage);font-weight:600">'+esc(p[2])+'</p></article>').join('')+'<p class="small muted">אין תנוחה אחת נכונה. כדאי לנסות כמה ולבחור את מה שנוח לך ולתינוק, ולהחליף ביניהן במהלך היום.</p></section>'+
  '<section class="warn"><h2>מתי פונים לעזרה</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6">'+X.help.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul><p style="font-weight:600">'+esc(X.helpNote)+'</p></section></div>'+
  shareLink('latch')+'<p class="note">'+esc(t().guideNote)+'</p>';
 }
@@ -1333,7 +1337,7 @@ document.addEventListener('submit',e=>{
   const A=at(), code=document.getElementById('join-code').value.replace(/\D/g,''), name=document.getElementById('join-name').value.trim();
   if(code.length!==6){ S.authMsg=A.badCode; render(); return; }
   S.busy=true; S.authMsg=''; render();
-  Store.joinFamily(code,name).then(()=>{ S.busy=false; S.draft={}; S.onb=''; render(); },()=>{ S.busy=false; S.authMsg=A.badCode; render(); });
+  Store.joinFamily(code,name).then(()=>{ S.busy=false; S.draft={}; S.onb=''; render(); },(err)=>{ S.busy=false; S.authMsg=/too many/i.test((err&&err.message)||'')?A.tooMany:A.badCode; render(); });
   return;
  }
  if(f.dataset.form==='setup'){
