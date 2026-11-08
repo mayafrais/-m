@@ -967,8 +967,8 @@ function viewHome(){
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
   tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, שנ״צ, טקס ערב והרגעה':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
   tile('dev',IC.dev,H.dev[0],H.dev[1],'',(mo&&days!=null?(S.lang==='he'?mo[1]:X.monthChip(mo[0])):'')+(spNow?(S.lang==='he'?' · אולי קפיצת גדילה':''):''))+
-  '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+
-  tile('family',IC.share,H.family[0],H.family[1],'')+soon+
+  tile('family',IC.share,H.family[0],H.family[1],'')+
+  '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+soon+
  '</nav>';
 }
 
