@@ -229,6 +229,21 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .modal-back{position:fixed;inset:0;background:rgba(20,10,20,.45);z-index:60;display:flex;align-items:flex-end;justify-content:center;padding:12px}
 .modal{max-width:560px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.25)}
 @media(min-width:600px){.modal-back{align-items:center}}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kpi{background:var(--surface);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.kpi b{font-size:1.75rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.8125rem;color:var(--ink2)}
+.bars{display:flex;align-items:flex-end;gap:3px;height:120px;direction:ltr;padding-top:8px}
+.bars i{flex:1;min-width:0;background:var(--dusk);border-radius:4px 4px 0 0}
+.bars i.z{background:var(--line)}
+.bars-ax{display:flex;justify-content:space-between;direction:ltr;font-size:.75rem;color:var(--ink2)}
+.hbar{display:grid;grid-template-columns:7.5em minmax(0,1fr) 2.5em;gap:8px;align-items:center;font-size:.875rem}
+.hbar .tr{height:12px;border-radius:6px;background:var(--mist);overflow:hidden}.hbar .tr i{display:block;height:100%;background:var(--dawn);border-radius:6px}
+.hbar b{text-align:left;font-variant-numeric:tabular-nums}
+.utable{width:100%;border-collapse:collapse;font-size:.8125rem}
+.utable th,.utable td{text-align:right;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+.utable th{color:var(--ink2);font-weight:600}
+.uwrap{overflow-x:auto}
 </style>
 </head>
 <body>
@@ -1384,6 +1399,50 @@ function installHomeCard(){
  const X=ST[S.lang]||ST.he; if(isStandalone()||ls.get('gp-install-dismissed',false)) return '';
  return '<div class="opt install-card"><span class="opt-ic" aria-hidden="true">📲</span><a class="opt-tx" href="#install" style="text-decoration:none;color:inherit"><span class="opt-t">'+esc(X.homeCard)+'</span><span class="opt-h">'+esc(X.homeCardSub)+'</span></a><button type="button" class="link small" data-act="installdismiss">'+esc(X.dismiss)+'</button></div>';
 }
+
+// ---------- admin dashboard (owner only; data from admin_stats RPC, which checks the email server-side) ----------
+const ADMIN_EMAIL='mayafrais@gmail.com';
+const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
+async function loadAdmin(){
+ if(!isAdmin()||S.adminLoading) return; S.adminLoading=true; S.adminErr=''; render();
+ try{ const {data,error}=await Store.sb.rpc('admin_stats'); if(error) throw error; S.admin=data; }
+ catch(e){ S.adminErr='לא הצלחתי לטעון את הנתונים. נסי שוב בעוד רגע.'; }
+ S.adminLoading=false; render();
+}
+function viewAdmin(){
+ if(!isAdmin()) return '<p class="empty">המסך הזה זמין רק למנהלת האפליקציה.</p><a class="link" href="#home">'+esc(t().back)+'</a>';
+ if(!S.admin&&!S.adminLoading&&!S.adminErr) setTimeout(loadAdmin,0);
+ const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL');
+ const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+ const head='<header class="section" style="gap:4px"><a class="link" href="#family">'+esc(t().back)+'</a><div class="between"><h1>לוח נתונים</h1><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div>'+
+  (A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+'. רק את רואה את המסך הזה.</p>':'')+'</header>';
+ if(S.adminErr) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
+ if(!A) return head+'<p class="empty" role="status">טוען נתונים...</p>';
+ const T=A.totals||{}, AC=A.active||{};
+ const kpi=(n,l)=>'<div class="kpi"><b>'+nf(n)+'</b><span>'+esc(l)+'</span></div>';
+ const days=(arr,n)=>{ const m={}; (arr||[]).forEach(x=>m[x.d]=x.n); const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'}); out.push([k,m[k]||0]); } return out; };
+ const bars=(arr,n,label)=>{ const ds=days(arr,n), mx=Math.max(1,...ds.map(x=>x[1])), sum=ds.reduce((a,x)=>a+x[1],0);
+  return '<div class="bars" role="img" aria-label="'+esc(label+': '+sum+' ב-'+n+' ימים')+'">'+ds.map(([d,v])=>'<i class="'+(v?'':'z')+'" style="height:'+(v?Math.max(6,Math.round(v/mx*100)):3)+'%" title="'+esc(d.slice(8)+'/'+d.slice(5,7)+': '+v)+'"></i>').join('')+'</div>'+
+  '<div class="bars-ax"><span>'+esc(ds[0][0].slice(8)+'/'+ds[0][0].slice(5,7))+'</span><span>סה״כ '+nf(sum)+'</span><span>היום</span></div>'; };
+ const TYPES={feed:'הנקות',bottle:'בקבוקים',pump:'שאיבות',diaper:'חיתולים',sleep:'שינה',med:'תרופות',taste:'טעימות'};
+ const hb=(obj,lab)=>{ const ent=Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]); if(!ent.length) return '<p class="small muted">אין עדיין נתונים.</p>'; const mx=Math.max(...ent.map(e=>e[1]));
+  return '<div class="section" style="gap:8px">'+ent.map(([k,v])=>'<div class="hbar"><span>'+esc(lab(k))+'</span><span class="tr"><i style="width:'+Math.round(v/mx*100)+'%"></i></span><b>'+nf(v)+'</b></div>').join('')+'</div>'; };
+ const ages={}; ['0-3','3-6','6-9','9-12','12+'].forEach(k=>{ if((A.baby_ages||{})[k]) ages[k]=A.baby_ages[k]; });
+ const foods={}; (A.top_foods||[]).forEach(f=>foods[f.food]=f.n);
+ const users=(A.users||[]);
+ return head+
+ '<div class="kpis">'+kpi(T.users,'נרשמו')+kpi(T.families,'משפחות')+kpi(T.shared_families,'משפחות עם שני הורים')+kpi(T.babies,'תינוקות')+kpi(AC.today,'פעילים היום')+kpi(AC.d7,'פעילים ב-7 ימים')+kpi(AC.d30,'פעילים ב-30 ימים')+kpi(T.events,'רישומים בסך הכול')+'</div>'+
+ '<p class="small muted">"פעילים" = משתמשים שתיעדו משהו. '+nf(AC.signed_in_7d)+' משתמשים התחברו ב-7 הימים האחרונים.</p>'+
+ '<section class="card"><h2>הרשמות ב-30 הימים האחרונים</h2>'+bars(A.signups_by_day,30,'הרשמות')+'</section>'+
+ '<section class="card"><h2>רישומים ב-14 הימים האחרונים</h2>'+bars(A.events_by_day,14,'רישומים')+'</section>'+
+ '<section class="card"><h2>במה משתמשים (7 ימים)</h2>'+hb(A.events_by_type_7d,k=>TYPES[k]||k)+'<p class="small muted">מאז ההתחלה: '+esc(Object.entries(A.events_by_type||{}).map(([k,v])=>(TYPES[k]||k)+' '+v).join(' · ')||'—')+'</p></section>'+
+ '<section class="card"><h2>המאכלים שטועמים הכי הרבה</h2>'+hb(foods,k=>fname(k))+'</section>'+
+ '<section class="card"><h2>גיל התינוקות (בחודשים)</h2>'+hb(ages,k=>k+' חודשים')+'</section>'+
+ '<section class="card"><h2>משתמשים ('+nf(users.length)+')</h2><div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">נרשמו</th><th scope="col">כניסה אחרונה</th><th scope="col">פעילות אחרונה</th><th scope="col">רישומים</th><th scope="col">במשפחה</th></tr></thead><tbody>'+
+  users.map(u=>'<tr><td>'+esc(u.name||'—')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(dt(u.last_sign_in))+'</td><td>'+esc(dt(u.last_event))+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td></tr>').join('')+
+ '</tbody></table></div></section>'+
+ '<p class="note">משתמשות שעובדות בלי חשבון (שמירה בטלפון בלבד) לא נספרות כאן.</p>';
+}
 function viewInstall(){
  const X=ST[S.lang]||ST.he, ios=isIOS();
  const block=(title,steps,extra)=>'<section class="card"><h2>'+esc(title)+'</h2><ol class="bul">'+steps.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ol>'+(extra||'')+'</section>';
@@ -1409,6 +1468,7 @@ function viewFamily(){
  sec(X.foodPrefs,'<p class="small" style="font-weight:600">'+esc(X.style)+'</p><div class="chips" role="group" aria-label="'+esc(X.style)+'">'+F.styles.map(s=>'<button type="button" class="chip" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'">'+esc(s[1])+'</button>').join('')+'</div>'+
   (b?'<p class="small" style="font-weight:600;margin-top:8px">'+esc(X.allergy)+'</p>'+(bs.length>1?babySwitch():'<p class="small muted">'+esc(X.allergyFor(b.name))+'</p>')+'<div class="chips" role="group" aria-label="'+esc(X.allergy)+'">'+ALLERGENS.map(a=>'<label class="chip check-chip"><input type="checkbox" data-allergen="'+a[0]+'" data-k="avoid"'+((as[a[0]]||{}).avoid?' checked':'')+'><span aria-hidden="true">'+a[1]+'</span> '+esc(a[lix()])+'</label>').join('')+'</div>':''))+
  '<a class="opt" href="#install" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📲</span><span class="opt-tx"><span class="opt-t">'+esc(X.install)+'</span><span class="opt-h">'+esc(isStandalone()?X.already:X.installSub)+'</span></span></a>'+
+ (isAdmin()?'<a class="opt" href="#admin" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📊</span><span class="opt-tx"><span class="opt-t">לוח נתונים</span><span class="opt-h">כמה נרשמו, כמה פעילים ובמה משתמשים. רק את רואה</span></span></a>':'')+
  sec(X.familyT,(mem?'<p class="small" style="font-weight:600">'+esc(L.members)+'</p>'+mem:'')+'<p class="small">'+esc(at().inviteText)+'</p><p class="small muted">'+esc(at().codeLabel)+'</p><p dir="ltr" style="font-size:1.75rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums;text-align:center">'+esc(S.invite||'')+'</p><button type="button" class="btn" data-act="share">'+esc(L.share)+'</button>')+
  sec(X.display,'<p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en','ar'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div><p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>')+
  '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>';
@@ -1453,7 +1513,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -1539,6 +1599,7 @@ document.addEventListener('click',e=>{
  if(a==='safetytoggle'){ e.preventDefault(); S.safetyOpen=!S.safetyOpen; render(); return; }
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
+ if(a==='adminrefresh'){ loadAdmin(); return; }
  if(a==='hday'){ S.histDay=Number(el.dataset.v); S.confirmDel=null; render(); return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
@@ -1627,7 +1688,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
+const VIEWS=['admin','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
 function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
