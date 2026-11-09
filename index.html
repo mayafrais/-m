@@ -1403,16 +1403,16 @@ function installHomeCard(){
 // ---------- admin dashboard (owner only; data from admin_stats RPC, which checks the email server-side) ----------
 const ADMIN_EMAIL='mayafrais@gmail.com';
 const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
-async function loadAdmin(){
- if(!isAdmin()||S.adminLoading) return; S.adminLoading=true; S.adminErr=''; if(!S.admin) render();
+async function loadAdmin(force){
+ if(!isAdmin()||S.adminLoading) return; if(!force&&S.adminAt&&Date.now()-S.adminAt<15000) return; S.adminLoading=true; S.adminErr=''; if(!S.admin) render();
  try{ const {data,error}=await Store.sb.rpc('admin_stats'); if(error) throw error; S.admin=data; }
  catch(e){ S.adminErr='לא הצלחתי לטעון את הנתונים. נסי שוב בעוד רגע.'; }
- S.adminLoading=false; render();
+ S.adminLoading=false; S.adminAt=Date.now(); render();
 }
 function viewAdmin(){
  if(!isAdmin()) return '<p class="empty">המסך הזה זמין רק למנהלת האפליקציה.</p><a class="link" href="#home">'+esc(t().back)+'</a>';
- if(!S.admin&&!S.adminLoading&&!S.adminErr) setTimeout(loadAdmin,0);
- if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden) loadAdmin(); else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
+ if(!S.adminLoading&&(!S.adminAt||Date.now()-S.adminAt>15000)) setTimeout(loadAdmin,0);
+ if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden) loadAdmin(true); else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
  const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL');
  const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
  const head='<header class="section" style="gap:4px"><a class="link" href="#family">'+esc(t().back)+'</a><div class="between"><h1>לוח נתונים</h1><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div>'+
@@ -1600,7 +1600,7 @@ document.addEventListener('click',e=>{
  if(a==='safetytoggle'){ e.preventDefault(); S.safetyOpen=!S.safetyOpen; render(); return; }
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
- if(a==='adminrefresh'){ loadAdmin(); return; }
+ if(a==='adminrefresh'){ loadAdmin(true); return; }
  if(a==='hday'){ S.histDay=Number(el.dataset.v); S.confirmDel=null; render(); return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
