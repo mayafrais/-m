@@ -255,7 +255,7 @@ const T = {
   sideFrom:{L:'משמאל',R:'מימין',B:'משני הצדדים'},
   quick:'תיעוד מהיר',bottle:'בקבוק',pump:'שאיבה',diaper:'חיתול',sleep:'שינה',med:'תרופה',sleeping:'ישן/ה',
   last24:'24 השעות האחרונות',totals:(f,d)=>f+' הנקות, '+d+' חיתולים',legendFeed:'הנקה',legendSleep:'שינה',ribbonAria:(f,s)=>f+' הנקות ו-'+s+' תקופות שינה ב-24 השעות האחרונות',
-  recent:'היום',nothingToday:'עוד אין רישומים היום.',del:'מחיקה',delQ:'למחוק?',yes:'מחיקה',no:'ביטול',
+  recent:'היסטוריה',nothingToday:'עוד אין רישומים היום.',nothingDay:'אין רישומים ביום הזה.',hrs:'ש׳',dayNames:['היום','אתמול','שלשום'],histAria:'בחירת יום',daySum:(f,m,b,d,sl)=>[(f===1?'הנקה אחת':f+' הנקות')+(m?' ('+m+' דק׳)':''),b?(b===1?'בקבוק אחד':b+' בקבוקים'):'',d===1?'חיתול אחד':d+' חיתולים',sl?'שינה '+sl:''].filter(Boolean).join(' · '),del:'מחיקה',delQ:'למחוק?',yes:'מחיקה',no:'ביטול',
   ev:{feed:'הנקה',bottle:'בקבוק',pump:'שאיבה',diaper:'חיתול',sleep:'שינה',med:'תרופה'},
   kinds:{wet:'רטוב',dirty:'מלוכלך',both:'רטוב ומלוכלך'},min:'דק׳',ml:'מ״ל',you:'את/ה',partner:'בן/בת הזוג',
   synced:'מסונכרן',local:'שמור רק במכשיר הזה',connecting:'מתחבר…',
@@ -294,7 +294,7 @@ const T = {
   sideFrom:{L:'left side',R:'right side',B:'both sides'},
   quick:'Quick log',bottle:'Bottle',pump:'Pump',diaper:'Diaper',sleep:'Sleep',med:'Medicine',sleeping:'Sleeping',
   last24:'Last 24 hours',totals:(f,d)=>f+' feeds, '+d+' diapers',legendFeed:'Feed',legendSleep:'Sleep',ribbonAria:(f,s)=>f+' feeds and '+s+' sleep stretches in the last 24 hours',
-  recent:'Today',nothingToday:'Nothing logged today yet.',del:'Delete',delQ:'Delete?',yes:'Delete',no:'Cancel',
+  recent:'History',nothingToday:'Nothing logged today yet.',nothingDay:'Nothing logged on this day.',dayNames:['Today','Yesterday','2 days ago'],histAria:'Choose a day',daySum:(f,m,b,d,sl)=>[f+(f===1?' feed':' feeds')+(m?' ('+m+' min)':''),b?b+(b===1?' bottle':' bottles'):'',d+(d===1?' diaper':' diapers'),sl?'sleep '+sl:''].filter(Boolean).join(' · '),del:'Delete',delQ:'Delete?',yes:'Delete',no:'Cancel',
   ev:{feed:'Feed',bottle:'Bottle',pump:'Pump',diaper:'Diaper',sleep:'Sleep',med:'Medicine'},
   kinds:{wet:'Wet',dirty:'Dirty',both:'Wet and dirty'},min:'min',ml:'ml',you:'You',partner:'Partner',
   synced:'Synced',local:'Saved on this device only',connecting:'Connecting…',
@@ -333,7 +333,7 @@ const T = {
   sideFrom:{L:'من اليسار',R:'من اليمين',B:'من الجهتين'},
   quick:'تسجيل سريع',bottle:'زجاجة',pump:'شفط',diaper:'حفاض',sleep:'نوم',med:'دواء',sleeping:'نائم',
   last24:'آخر 24 ساعة',totals:(f,d)=>f+' رضعات، '+d+' حفاضات',legendFeed:'رضعة',legendSleep:'نوم',ribbonAria:(f,s)=>f+' رضعات و'+s+' فترات نوم في آخر 24 ساعة',
-  recent:'اليوم',nothingToday:'لا توجد تسجيلات اليوم بعد.',del:'حذف',delQ:'حذف؟',yes:'حذف',no:'إلغاء',
+  recent:'السجل',nothingToday:'لا توجد تسجيلات اليوم بعد.',nothingDay:'لا توجد تسجيلات في هذا اليوم.',hrs:'س',dayNames:['اليوم','أمس','قبل يومين'],histAria:'اختيار يوم',daySum:(f,m,b,d,sl)=>[f+' رضعات'+(m?' ('+m+' دقيقة)':''),b?b+' زجاجات':'',d+' حفاضات',sl?'نوم '+sl:''].filter(Boolean).join(' · '),del:'حذف',delQ:'حذف؟',yes:'حذف',no:'إلغاء',
   ev:{feed:'رضعة',bottle:'زجاجة',pump:'شفط',diaper:'حفاض',sleep:'نوم',med:'دواء'},
   kinds:{wet:'مبلل',dirty:'متسخ',both:'مبلل ومتسخ'},min:'د',ml:'مل',you:'أنتِ',partner:'الشريك',
   synced:'متزامن',local:'محفوظ على هذا الجهاز فقط',connecting:'جارٍ الاتصال…',
@@ -374,6 +374,7 @@ const pad=n=>(n<10?'0':'')+n;
 const hhmm=ms=>{const d=new Date(ms);return pad(d.getHours())+':'+pad(d.getMinutes());};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const startOfDay=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime();};
+const dayStart=n=>{const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-n);return d.getTime();};
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
 const PENDING_JOIN=(()=>{ try{ const q=new URLSearchParams(location.search).get('join'); if(q&&/^\d{6}$/.test(q)){ ls.set('gp-join',q); history.replaceState(null,'',location.pathname+location.hash); } }catch(e){} return null; })();
 const pendingJoin=()=>{ const v=ls.get('gp-join',''); return /^\d{6}$/.test(v)?v:''; };
@@ -452,7 +453,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
  soon(what){ clearTimeout(this.timer[what]); this.timer[what]=setTimeout(()=>this['load_'+what](),150); },
  async refetchAll(){ await Promise.all([this.load_family(),this.load_events(),this.load_meds(),this.load_members()]); },
  async load_family(){ const {data}=await this.sb.from('families').select('state,invite_code').eq('id',this.fid).maybeSingle(); if(data){ const s=data.state||{}; S.family={babies:s.babies||[],active:s.active||{},sleep:s.sleep||{},milestones:s.milestones||{},allergens:s.allergens||{},prefs:s.prefs||{}}; S.invite=data.invite_code; render(); } },
- async load_events(){ const {data}=await this.sb.from('events').select('id,baby,type,t,data,by_user').eq('family_id',this.fid).order('t',{ascending:false}).limit(400); if(data){ S.events=data.map(r=>Object.assign({},r.data||{},{id:r.id,baby:r.baby,type:r.type,t:Number(r.t),by:r.by_user})); const known=new Set(S.members.map(m=>m.user_id)); if(S.events.some(e=>e.by&&!known.has(e.by))) this.load_members(); render(); } },
+ async load_events(){ const {data}=await this.sb.from('events').select('id,baby,type,t,data,by_user').eq('family_id',this.fid).order('t',{ascending:false}).limit(3000); if(data){ S.events=data.map(r=>Object.assign({},r.data||{},{id:r.id,baby:r.baby,type:r.type,t:Number(r.t),by:r.by_user})); const known=new Set(S.members.map(m=>m.user_id)); if(S.events.some(e=>e.by&&!known.has(e.by))) this.load_members(); render(); } },
  async load_meds(){ const {data}=await this.sb.from('meds').select('id,baby,name,note').eq('family_id',this.fid).order('created_at'); if(data){ S.meds=data; render(); } },
  async setMyName(n){ if(!this.fid||!S.me) return; await this.sb.from('family_members').update({display_name:n}).eq('family_id',this.fid).eq('user_id',S.me); this.load_members(); },
  async load_members(){ const {data}=await this.sb.from('family_members').select('user_id,display_name').eq('family_id',this.fid); if(data){ S.members=data; render(); } },
@@ -595,13 +596,18 @@ function viewToday(){
   (sl?'<div class="sleep" style="left:'+pct(sl.start).toFixed(2)+'%;width:'+Math.max(1.2,100-pct(sl.start)).toFixed(2)+'%"></div>':'')+
   feeds.map(e=>'<span class="mark" style="left:'+pct(e.t).toFixed(2)+'%"></span>').join('')+'</div>';
  const axis='<div class="axis">'+[0,6,12,18,24].map(h=>'<span>'+hhmm(from+h*36e5)+'</span>').join('')+'</div>';
- const todayList=list.filter(e=>e.t>=startOfDay()).slice(0,30);
+ const hd=S.histDay||0, d0=dayStart(hd), d1=dayStart(hd-1);
+ const todayList=list.filter(e=>e.t>=d0&&e.t<d1);
+ const dl=todayList, dFeeds=dl.filter(e=>e.type==='feed'), dMins=dFeeds.reduce((a,e)=>a+(e.mins||0),0), dSleep=dl.filter(e=>e.type==='sleep').reduce((a,e)=>a+(e.mins||0),0);
+ const fmtH=m=>m?(Math.floor(m/60)?Math.floor(m/60)+':'+pad(m%60)+' '+(L.hrs||'h'):m+' '+L.min):'';
+ const dayChips='<div class="seg-scroll" role="group" aria-label="'+esc(L.histAria)+'">'+[0,1,2,3,4,5,6].map(i=>'<button type="button" class="chip" data-act="hday" data-v="'+i+'" aria-pressed="'+(i===hd)+'">'+esc(i<3?L.dayNames[i]:new Date(dayStart(i)).toLocaleDateString(S.lang==='he'?'he-IL':S.lang==='ar'?'ar-u-nu-latn':'en-GB',{weekday:'short',day:'numeric',month:'numeric'}))+'</button>').join('')+'</div>';
+ const daySummary=dl.length?'<p class="small muted">'+esc(L.daySum(dFeeds.length,dMins,dl.filter(e=>e.type==='bottle').length,dl.filter(e=>e.type==='diaper').length,fmtH(dSleep)))+'</p>':'';
  const rows=todayList.length?'<ul class="list">'+todayList.map(e=>{
   const c=S.confirmDel===e.id;
   return '<li><span class="time">'+hhmm(e.t)+'</span><span class="grow">'+esc(evText(e))+'</span><span class="small muted">'+esc(whoLabel(e.by))+'</span>'+
    (c?'<span class="confirm"><button type="button" class="yes" data-act="delyes" data-id="'+esc(e.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="delno">'+esc(L.no)+'</button></span>'
      :'<button type="button" class="icon-btn" data-act="delask" data-id="'+esc(e.id)+'" aria-label="'+esc(L.del+': '+evText(e)+' '+hhmm(e.t))+'">'+IC.trash+'</button>')+'</li>';
- }).join('')+'</ul>':'<p class="empty">'+esc(L.nothingToday)+'</p>';
+ }).join('')+'</ul>':'<p class="empty">'+esc(hd?L.nothingDay:L.nothingToday)+'</p>';
  return headerHTML(L.feeding,dateLine())+
  (S.mode==='local'?'<p class="banner">'+esc(L.local)+'</p>':'')+
  '<section class="feed" aria-label="'+esc(L.feeding)+'"><p class="muted" aria-live="polite" style="text-align:center">'+esc(status)+'</p><div class="circle">'+half('L')+half('R')+'</div>'+
@@ -613,7 +619,7 @@ function viewToday(){
  '</nav>'+
  '<section class="section rule" aria-label="'+esc(L.last24)+'"><div class="between"><h2>'+esc(L.last24)+'</h2><span class="small muted">'+esc(L.totals(feeds.length,diapers.length))+'</span></div>'+ribbon+axis+
  '<div class="legend"><span class="row" style="gap:6px"><span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:var(--dawn)"></span>'+esc(L.legendFeed)+'</span><span class="row" style="gap:6px"><span aria-hidden="true" style="width:16px;height:6px;border-radius:3px;background:var(--dusk);opacity:.4"></span>'+esc(L.legendSleep)+'</span></div></section>'+
- '<section class="section" aria-label="'+esc(L.recent)+'"><h2>'+esc(L.recent)+'</h2>'+rows+'</section>'+
+ '<section class="section" aria-label="'+esc(L.recent)+'"><h2>'+esc(L.recent)+'</h2>'+dayChips+daySummary+rows+'</section>'+
  '<a class="opt" href="#feeding" style="text-decoration:none;min-height:72px"><span class="opt-ic">'+IC.guide+'</span><span class="opt-tx"><span class="opt-t">'+esc((HT[S.lang]||HT.he).guide[0])+'</span><span class="opt-h">'+esc((HT[S.lang]||HT.he).guide[1])+'</span></span></a>';
 }
 function qb(type,label){ return '<button type="button" class="qbtn" data-act="quick" data-type="'+type+'"><span class="ic">'+IC[type]+'</span>'+esc(label)+'</button>'; }
@@ -1533,6 +1539,7 @@ document.addEventListener('click',e=>{
  if(a==='safetytoggle'){ e.preventDefault(); S.safetyOpen=!S.safetyOpen; render(); return; }
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
+ if(a==='hday'){ S.histDay=Number(el.dataset.v); S.confirmDel=null; render(); return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
  if(a==='fsub'){ S.foodSub=el.dataset.v; S.confirmDel=null; render(); window.scrollTo(0,0); return; }
