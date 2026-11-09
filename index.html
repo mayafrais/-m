@@ -837,8 +837,8 @@ const fname=(id)=>{ const f=fobj(id); if(!f) return id; return S.lang==='en'?f[3
 const lix=()=>S.lang==='en'?3:S.lang==='ar'?4:2;
 const catName=(c)=>{ const x=FCATS.find(y=>y[0]===c); return x?x[lix()]:c; };
 const alName=(a)=>{ const x=ALLERGENS.find(y=>y[0]===a); return x?x[lix()]:a; };
-const hasImg=(id)=>FOOD_IMG.includes(id);
-const FOOD_LOCAL={pasta:'/img/foods/pasta.jpg'};
+const hasImg=(id)=>FOOD_IMG.includes(id)||!!FOOD_LOCAL[id];
+const FOOD_LOCAL=Object.fromEntries(['pasta','blueberries','broccoli','fish','eggplant','almond-butter','watermelon','tofu','tomato','legumes','pepper','peach','kiwi','melon','cauliflower','strawberry'].map(id=>[id,'/img/foods/'+id+'.jpg']));
 // exact emoji per food (only where a matching emoji exists; otherwise the food's first letter)
 const FOOD_EMOJI={eggplant:'🍆',tomato:'🍅',pepper:'🫑',broccoli:'🥦',melon:'🍈',watermelon:'🍉',blueberries:'🫐',strawberry:'🍓',kiwi:'🥝',peach:'🍑',fish:'🐟',legumes:'🫘',milk:'🥛'};
 const fimg=(id)=>FOOD_LOCAL[id]||(IMG_BASE+id+'.jpg');
