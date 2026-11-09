@@ -1404,7 +1404,7 @@ function installHomeCard(){
 const ADMIN_EMAIL='mayafrais@gmail.com';
 const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
 async function loadAdmin(){
- if(!isAdmin()||S.adminLoading) return; S.adminLoading=true; S.adminErr=''; render();
+ if(!isAdmin()||S.adminLoading) return; S.adminLoading=true; S.adminErr=''; if(!S.admin) render();
  try{ const {data,error}=await Store.sb.rpc('admin_stats'); if(error) throw error; S.admin=data; }
  catch(e){ S.adminErr='לא הצלחתי לטעון את הנתונים. נסי שוב בעוד רגע.'; }
  S.adminLoading=false; render();
@@ -1412,10 +1412,11 @@ async function loadAdmin(){
 function viewAdmin(){
  if(!isAdmin()) return '<p class="empty">המסך הזה זמין רק למנהלת האפליקציה.</p><a class="link" href="#home">'+esc(t().back)+'</a>';
  if(!S.admin&&!S.adminLoading&&!S.adminErr) setTimeout(loadAdmin,0);
+ if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden) loadAdmin(); else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
  const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL');
  const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
  const head='<header class="section" style="gap:4px"><a class="link" href="#family">'+esc(t().back)+'</a><div class="between"><h1>לוח נתונים</h1><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div>'+
-  (A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+'. רק את רואה את המסך הזה.</p>':'')+'</header>';
+  (A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+'. מתרענן לבד כל דקה. רק את רואה את המסך הזה.</p>':'')+'</header>';
  if(S.adminErr) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
  if(!A) return head+'<p class="empty" role="status">טוען נתונים...</p>';
  const T=A.totals||{}, AC=A.active||{};
