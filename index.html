@@ -243,12 +243,36 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .utable{width:100%;border-collapse:collapse;font-size:.8125rem}
 .utable th,.utable td{text-align:right;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
 .utable th{color:var(--ink2);font-weight:600}
+.app.wide{max-width:1240px}
+.adm-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.adm-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.adm-sw{display:flex;gap:8px;align-items:center;font-size:.9375rem}
+.adm-nav{position:sticky;top:0;z-index:3;background:var(--bg);padding-top:6px}
+.adm-kpis{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.adm-card .hbar{grid-template-columns:minmax(6em,9em) minmax(40px,1fr) max-content}
+.adm-card .hbar b{white-space:nowrap;font-weight:600;font-size:.8125rem}
+.kpi small{font-size:.75rem;color:var(--ink2)}
+.adm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:14px;align-items:start}
+.adm-card,#adm-over{scroll-margin-top:70px}
+
+.heat{display:grid;grid-template-columns:2em repeat(24,minmax(0,1fr));gap:2px;direction:ltr;align-items:center}
+.heat i{display:block;aspect-ratio:1;border-radius:3px}
+.heat .hd{font-size:.75rem;color:var(--ink2);text-align:center}
+.heat .hx{font-size:.6875rem;color:var(--ink2)}
+.adm-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.adm-filters .field{flex:1;min-width:150px}
+.st{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.75rem;font-weight:600;background:var(--mist);color:var(--ink)}
+.st-ok{background:color-mix(in srgb,#2E8B57 22%,var(--surface))}.st-warn{background:var(--dawn-soft);color:var(--dawn-text)}
+.coh td,.coh th{text-align:center}
+.adm-fab{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:6;width:56px;height:56px;border-radius:50%;background:var(--dusk);color:var(--on-dusk);font-size:1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -8px rgba(30,30,70,.55);text-decoration:none}
+.adm-fab[hidden]{display:none}
 .uwrap{overflow-x:auto}
 </style>
 </head>
 <body>
 
 
+<a class="adm-fab" id="adm-fab" href="#admin" aria-label="לוח נתונים" title="לוח נתונים" hidden><span aria-hidden="true">📊</span></a>
 <div class="app" id="app" dir="rtl" lang="he">
   <div class="topbar" id="topbar"></div>
   <main id="view" class="view" tabindex="-1"></main>
@@ -557,7 +581,7 @@ function evText(e){
  if(e.type==='taste'){ const F=FT[S.lang]||FT.he; const lk=F.likes.find(l=>l[0]===e.liked); return F.tasteEv+': '+fname(e.food)+(lk?', '+lk[1]:'')+(e.reaction?', '+F.reactionEv:''); }
  return '';
 }
-function say(msg){ const el=document.getElementById('live'); el.textContent=''; setTimeout(()=>{el.textContent=msg;},30); }
+function say(msg){ try{ if(msg===at().notSaved) Usage.add('save_fail'); }catch(e){} const el=document.getElementById('live'); el.textContent=''; setTimeout(()=>{el.textContent=msg;},30); }
 
 // ---------- views ----------
 function headerHTML(title,sub){
@@ -1435,52 +1459,106 @@ function installHomeCard(){
  return '<div class="opt install-card"><span class="opt-ic" aria-hidden="true">📲</span><a class="opt-tx" href="#install" style="text-decoration:none;color:inherit"><span class="opt-t">'+esc(X.homeCard)+'</span><span class="opt-h">'+esc(X.homeCardSub)+'</span></a><button type="button" class="link small" data-act="installdismiss">'+esc(X.dismiss)+'</button></div>';
 }
 
+// ---------- usage tracking (beta analytics; only for signed-in users, stored in Supabase "usage") ----------
+const Usage={q:[],timer:0,lastView:'',lastOpen:0,
+ platform(){ const u=navigator.userAgent||''; if(/iPhone|iPad|iPod/i.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1)) return 'ios'; if(/Android/i.test(u)) return 'android'; return 'desktop'; },
+ add(kind,extra){ if(S.mode!=='db'||!S.me||!Store.sb) return; this.q.push(Object.assign({kind,screen:S.view||null,lang:S.lang,platform:this.platform(),standalone:isStandalone()},extra||{})); if(this.q.length>=20) this.flush(); else if(!this.timer) this.timer=setTimeout(()=>this.flush(),8000); },
+ async flush(){ clearTimeout(this.timer); this.timer=0; if(!this.q.length||!Store.sb||!S.me) return; const rows=this.q.splice(0,50); try{ await Store.sb.from('usage').insert(rows); }catch(e){} },
+ view(){ if(S.mode!=='db'||!S.me) return; if(Date.now()-this.lastOpen>30*60e3){ this.lastOpen=Date.now(); this.add('open'); } if(S.view!==this.lastView){ this.lastView=S.view; this.add('view'); } },
+ err(msg){ const m=String(msg||'').slice(0,300); if(!m||this._last===m) return; this._last=m; this.add('error',{detail:m}); }
+};
+window.addEventListener('error',e=>Usage.err((e.message||'error')+(e.filename?' @'+String(e.filename).split('/').pop()+':'+e.lineno:'')));
+window.addEventListener('unhandledrejection',e=>Usage.err('promise: '+((e.reason&&(e.reason.message||e.reason))||'')));
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) Usage.flush(); else Usage.view(); });
+window.addEventListener('appinstalled',()=>Usage.add('install'));
+
 // ---------- admin dashboard (owner only; data from admin_stats RPC, which checks the email server-side) ----------
 const ADMIN_EMAIL='mayafrais@gmail.com';
 const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
 async function loadAdmin(force){
  if(!isAdmin()||S.adminLoading) return; if(!force&&S.adminAt&&Date.now()-S.adminAt<15000) return; S.adminLoading=true; S.adminErr=''; if(!S.admin) render();
- try{ const [r1,r2]=await Promise.all([Store.sb.rpc('admin_stats'),Store.sb.rpc('admin_feedback')]); if(r1.error) throw r1.error; S.admin=r1.data; S.adminFb=r2&&!r2.error?r2.data:null; }
+ try{ const [r1,r2]=await Promise.all([Store.sb.rpc('admin_dashboard',{p_exclude_me:!!ls.get('gp-adm-ex',false)}),Store.sb.rpc('admin_feedback')]); if(r1.error) throw r1.error; S.admin=r1.data; S.adminFb=r2&&!r2.error?r2.data:null; }
  catch(e){ S.adminErr='לא הצלחתי לטעון את הנתונים. נסי שוב בעוד רגע.'; }
  S.adminLoading=false; S.adminAt=Date.now(); render();
 }
+const ADM_SCREENS={home:'בית',today:'מעקב יומי',meds:'תרופות',firstdays:'הימים הראשונים',feeding:'מה קורה בכל שלב',latch:'אחיזה ותנוחות',article:'אוכל/ת מספיק?',pump:'שאיבה ואחסון',pacifier:'מוצץ',foods:'טעימות',dev:'התפתחות',routine:'סדר יום ושינה',calm:'הרגעת תינוק',family:'הגדרות',install:'התקנה',community:'קהילה',admin:'לוח נתונים'};
+const ADM_TYPES={feed:'הנקות',bottle:'בקבוקים',pump:'שאיבות',diaper:'חיתולים',sleep:'שינה',med:'תרופות',taste:'טעימות'};
+const ADM_PLAT={ios:'אייפון',android:'אנדרואיד',desktop:'מחשב'};
+function admCsv(name,rows){ if(!rows.length) return; const cols=Object.keys(rows[0]); const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+ const csv='﻿'+[cols.join(',')].concat(rows.map(r=>cols.map(c=>q(r[c])).join(','))).join('\n');
+ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},500); }
+function admStatus(u){ if(!u.last_seen) return ['לא התחילו','off']; const d=(Date.now()-new Date(u.last_seen))/864e5; return d<2?['פעילים','ok']:d<7?['שקטים לאחרונה','warn']:['לא פעילים','off']; }
 function viewAdmin(){
  if(!isAdmin()) return '<p class="empty">המסך הזה זמין רק למנהלת האפליקציה.</p><a class="link" href="#home">'+esc(t().back)+'</a>';
  if(!S.adminLoading&&(!S.adminAt||Date.now()-S.adminAt>15000)) setTimeout(loadAdmin,0);
  if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden) loadAdmin(true); else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
- const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL');
+ const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL'), pc=(a,b)=>b?Math.round(a/b*100):0;
  const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
- const head='<header class="section" style="gap:4px"><a class="link" href="#family">'+esc(t().back)+'</a><div class="between"><h1>לוח נתונים</h1><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div>'+
-  (A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+'. מתרענן לבד כל דקה. רק את רואה את המסך הזה.</p>':'')+'</header>';
- if(S.adminErr) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
+ const ago=v=>{ if(!v) return '—'; const m=(Date.now()-new Date(v))/6e4; return m<60?'לפני '+Math.max(1,Math.round(m))+' דק׳':m<1440?'לפני '+Math.round(m/60)+' ש׳':'לפני '+Math.round(m/1440)+' ימים'; };
+ const ex=!!ls.get('gp-adm-ex',false);
+ const head='<header class="adm-head"><div><a class="link" href="#home">'+esc(t().back)+'</a><h1>לוח נתונים</h1>'+(A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+' · מתרענן לבד כל דקה · רק את רואה את המסך הזה</p>':'')+'</div>'+
+  '<div class="adm-tools"><label class="adm-sw"><input type="checkbox" data-act="admex"'+(ex?' checked':'')+'> בלי הפעילות שלי</label><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div></header>'+
+  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-over','סקירה'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
+ if(S.adminErr&&!A) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
  if(!A) return head+'<p class="empty" role="status">טוען נתונים...</p>';
- const T=A.totals||{}, AC=A.active||{};
- const kpi=(n,l)=>'<div class="kpi"><b>'+nf(n)+'</b><span>'+esc(l)+'</span></div>';
- const days=(arr,n)=>{ const m={}; (arr||[]).forEach(x=>m[x.d]=x.n); const out=[]; for(let i=n-1;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=d.toLocaleDateString('en-CA',{timeZone:'Asia/Jerusalem'}); out.push([k,m[k]||0]); } return out; };
- const bars=(arr,n,label)=>{ const ds=days(arr,n), mx=Math.max(1,...ds.map(x=>x[1])), sum=ds.reduce((a,x)=>a+x[1],0);
-  return '<div class="bars" role="img" aria-label="'+esc(label+': '+sum+' ב-'+n+' ימים')+'">'+ds.map(([d,v])=>'<i class="'+(v?'':'z')+'" style="height:'+(v?Math.max(6,Math.round(v/mx*100)):3)+'%" title="'+esc(d.slice(8)+'/'+d.slice(5,7)+': '+v)+'"></i>').join('')+'</div>'+
-  '<div class="bars-ax"><span>'+esc(ds[0][0].slice(8)+'/'+ds[0][0].slice(5,7))+'</span><span>סה״כ '+nf(sum)+'</span><span>היום</span></div>'; };
- const TYPES={feed:'הנקות',bottle:'בקבוקים',pump:'שאיבות',diaper:'חיתולים',sleep:'שינה',med:'תרופות',taste:'טעימות'};
- const hb=(obj,lab)=>{ const ent=Object.entries(obj||{}).sort((a,b)=>b[1]-a[1]); if(!ent.length) return '<p class="small muted">אין עדיין נתונים.</p>'; const mx=Math.max(...ent.map(e=>e[1]));
-  return '<div class="section" style="gap:8px">'+ent.map(([k,v])=>'<div class="hbar"><span>'+esc(lab(k))+'</span><span class="tr"><i style="width:'+Math.round(v/mx*100)+'%"></i></span><b>'+nf(v)+'</b></div>').join('')+'</div>'; };
- const ages={}; ['0-3','3-6','6-9','9-12','12+'].forEach(k=>{ if((A.baby_ages||{})[k]) ages[k]=A.baby_ages[k]; });
- const foods={}; (A.top_foods||[]).forEach(f=>foods[f.food]=f.n);
- const users=(A.users||[]);
- return head+
- '<div class="kpis">'+kpi(T.users,'נרשמו')+kpi(T.families,'משפחות')+kpi(T.shared_families,'משפחות עם שני הורים')+kpi(T.babies,'תינוקות')+kpi(AC.today,'פעילים היום')+kpi(AC.d7,'פעילים ב-7 ימים')+kpi(AC.d30,'פעילים ב-30 ימים')+kpi(T.events,'רישומים בסך הכול')+'</div>'+
- '<p class="small muted">"פעילים" = משתמשים שתיעדו משהו. '+nf(AC.signed_in_7d)+' משתמשים התחברו ב-7 הימים האחרונים.</p>'+
- '<section class="card"><h2>הרשמות ב-30 הימים האחרונים</h2>'+bars(A.signups_by_day,30,'הרשמות')+'</section>'+
- '<section class="card"><h2>רישומים ב-14 הימים האחרונים</h2>'+bars(A.events_by_day,14,'רישומים')+'</section>'+
- '<section class="card"><h2>במה משתמשים (7 ימים)</h2>'+hb(A.events_by_type_7d,k=>TYPES[k]||k)+'<p class="small muted">מאז ההתחלה: '+esc(Object.entries(A.events_by_type||{}).map(([k,v])=>(TYPES[k]||k)+' '+v).join(' · ')||'—')+'</p></section>'+
- '<section class="card"><h2>המאכלים שטועמים הכי הרבה</h2>'+hb(foods,k=>fname(k))+'</section>'+
- '<section class="card"><h2>גיל התינוקות (בחודשים)</h2>'+hb(ages,k=>k+' חודשים')+'</section>'+
- '<section class="card"><h2>משתמשים ('+nf(users.length)+')</h2><div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">נרשמו</th><th scope="col">כניסה אחרונה</th><th scope="col">פעילות אחרונה</th><th scope="col">רישומים</th><th scope="col">במשפחה</th></tr></thead><tbody>'+
-  users.map(u=>'<tr><td>'+esc(u.name||'—')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(dt(u.last_sign_in))+'</td><td>'+esc(dt(u.last_event))+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td></tr>').join('')+
- '</tbody></table></div></section>'+
- (()=>{ const F=S.adminFb; if(!F) return ''; const it=F.items||[];
-  return '<section class="card"><h2>משובים ('+nf(F.count)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')</h2>'+(it.length?'<ul class="list">'+it.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+(f.source?' · '+esc(f.source):'')+'</p>'+
-   (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם יגיעו מטופס המשוב בדף הנחיתה.</p>')+'</section>'; })()+
- '<p class="note">משתמשות שעובדות בלי חשבון (שמירה בטלפון בלבד) לא נספרות כאן.</p>';
+ const K=A.kpi||{}, F=S.adminFb||{}, card=(id,title,body,hint,cls)=>'<section class="card adm-card '+(cls||'')+'"'+(id?' id="'+id+'"':'')+'><h2>'+esc(title)+'</h2>'+(hint?'<p class="small muted">'+esc(hint)+'</p>':'')+body+'</section>';
+ const kpi=(v,l,h)=>'<div class="kpi"><b>'+v+'</b><span>'+esc(l)+'</span>'+(h?'<small>'+esc(h)+'</small>':'')+'</div>';
+ const hbar=(rows,lab)=>rows.length?'<div class="section" style="gap:8px">'+(()=>{ const mx=Math.max(1,...rows.map(r=>r[1])); return rows.map(r=>'<div class="hbar"><span>'+esc(lab(r[0]))+'</span><span class="tr"><i style="width:'+Math.round(r[1]/mx*100)+'%"></i></span><b>'+esc(r[2]!=null?r[2]:nf(r[1]))+'</b></div>').join(''); })()+'</div>':'<p class="small muted">אין עדיין נתונים.</p>';
+ const bars=(arr,key,label)=>{ if(!arr.length) return ''; const mx=Math.max(1,...arr.map(x=>x[key])), sum=arr.reduce((a,x)=>a+x[key],0);
+  return '<div class="bars" role="img" aria-label="'+esc(label+': סה״כ '+sum)+'">'+arr.map(x=>'<i class="'+(x[key]?'':'z')+'" style="height:'+(x[key]?Math.max(6,Math.round(x[key]/mx*100)):3)+'%" title="'+esc(x.d.slice(8)+'/'+x.d.slice(5,7)+': '+x[key])+'"></i>').join('')+'</div><div class="bars-ax"><span>'+esc(arr[0].d.slice(8)+'/'+arr[0].d.slice(5,7))+'</span><span>'+esc(label)+' · סה״כ '+nf(sum)+'</span><span>היום</span></div>'; };
+ const U=A.users||[], mau=K.mau||0;
+ const over='<div class="kpis adm-kpis" id="adm-over">'+
+  kpi(nf(K.users),'נרשמו','+'+nf(K.new_7d)+' השבוע, +'+nf(K.new_today)+' היום')+
+  kpi(nf(K.dau),'פעילים היום','')+kpi(nf(K.wau),'פעילים השבוע','')+kpi(nf(K.mau),'פעילים החודש','')+
+  kpi(pc(K.dau,K.mau)+'%','דביקות (יומי/חודשי)','20% טוב, 25%+ מצוין')+
+  kpi(pc(K.activated,K.users)+'%','תיעדו לפחות פעם אחת',nf(K.activated)+' משתמשים')+
+  kpi(pc(K.shared_families,K.families)+'%','משפחות עם שני הורים',nf(K.shared_families)+' מתוך '+nf(K.families))+
+  kpi(nf(K.installed),'פתחו כאפליקציה ממסך הבית','')+
+  kpi(nf(K.events_7d),'רישומים השבוע','')+
+  kpi((F.avg?F.avg+'★':'—'),'דירוג ממוצע',nf(F.count)+' משובים')+
+  kpi(nf(K.errors_7d),'תקלות השבוע',K.errors_7d?'פרטים בסעיף מכשירים ותקלות':'הכול שקט')+'</div>'+
+  (K.tracking_since?'':'<p class="banner">מדידת המסכים, המכשירים וההתקנות התחילה עכשיו. הנתונים האלה יתמלאו מהכניסות הבאות של המשתמשים.</p>');
+ const D=A.daily||[];
+ const daily=card('','פעילות ב-30 הימים האחרונים',bars(D,'active','משתמשים פעילים')+'<div style="height:14px"></div>'+bars(D,'signups','הרשמות')+'<div style="height:14px"></div>'+bars(D,'events','רישומים'),'');
+ const fn=A.funnel||[], f0=fn.length?fn[0].n:0;
+ const funnel=card('adm-funnel','משפך: מהרשמה ועד שימוש קבוע','<div class="section" style="gap:10px">'+fn.map(s=>'<div class="hbar fun"><span>'+esc(s.k)+'</span><span class="tr"><i style="width:'+pc(s.n,f0)+'%"></i></span><b>'+nf(s.n)+' · '+pc(s.n,f0)+'%</b></div>').join('')+'</div>','איפה משתמשים נעצרים. הפער הגדול ביותר בין שתי שורות הוא המקום הראשון לשפר.');
+ const rt=A.retention||[];
+ const ret=card('adm-ret','שימור: כמה חזרו אחרי X ימים',hbar(rt.map(r=>[r.d,pc(r.kept,r.eligible),r.eligible?pc(r.kept,r.eligible)+'% ('+r.kept+'/'+r.eligible+')':'אין עדיין']),d=>'אחרי '+d+(d===1?' יום':' ימים')),'מתוך מי שנרשם לפחות X ימים לפני היום. יעד מקובל: 20% אחרי יום, 10% אחרי שבוע.');
+ const co=A.cohorts||[];
+ const coh=card('','מחזורי הרשמה לפי שבוע',co.length?'<div class="uwrap" tabindex="0" role="region" aria-label="טבלת מחזורים"><table class="utable coh"><thead><tr><th scope="col">שבוע הרשמה</th><th scope="col">נרשמו</th>'+[0,1,2,3,4].map(w=>'<th scope="col">שבוע '+w+'</th>').join('')+'</tr></thead><tbody>'+co.map(c=>'<tr><th scope="row">'+esc(c.week.slice(8)+'/'+c.week.slice(5,7))+'</th><td>'+nf(c.size)+'</td>'+c.w.map(v=>{ const p=pc(v,c.size); const m=p>=60?100:Math.round(p*.7); return '<td style="background:color-mix(in srgb,var(--dusk) '+m+'%,var(--surface));color:'+(m===100?'var(--on-dusk)':'var(--ink)')+';font-weight:600">'+p+'%</td>'; }).join('')+'</tr>').join('')+'</tbody></table></div>':'<p class="small muted">אין עדיין נתונים.</p>','כמה מכל קבוצת נרשמים היו פעילים בכל שבוע אחרי ההרשמה. שבוע 0 = השבוע הראשון.');
+ const feats=card('adm-use','במה משתמשים (30 יום)',hbar((A.features||[]).map(x=>[x.k,x.n,nf(x.n)+' · '+x.users+' משתמשים ('+pc(x.users,mau)+'%)']),k=>ADM_TYPES[k]||k),'כמה רישומים מכל סוג, וכמה מהפעילים החודש השתמשו בו.');
+ const scr=card('','אילו מסכים פותחים (30 יום)',hbar((A.screens||[]).map(x=>[x.k,x.n,nf(x.n)+' · '+x.users+' משתמשים']),k=>ADM_SCREENS[k]||k),'צפיות ומשתמשים לכל מסך.');
+ const H=A.heat||[], hm={}; let hx=1; H.forEach(c=>{ hm[c.dow+'_'+c.h]=c.n; hx=Math.max(hx,c.n); });
+ const days=['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'];
+ const heat=card('','מתי משתמשים (30 יום)','<div class="heat" role="img" aria-label="מפת חום של שעות השימוש לפי ימים">'+days.map((d,i)=>'<span class="hd">'+d+'</span>'+Array.from({length:24},(_,h)=>{ const n=hm[i+'_'+h]||0; return '<i title="'+esc(d+' '+h+':00 · '+n)+'" style="background:'+(n?'color-mix(in srgb,var(--dawn) '+Math.round(15+85*n/hx)+'%,var(--mist))':'var(--mist)')+'"></i>'; }).join('')).join('')+'<span></span>'+[0,6,12,18].map(h=>'<span class="hx" style="grid-column:span 6">'+h+':00</span>').join('')+'</div>','לפי שעון ישראל. כהה יותר = יותר פעילות.');
+ const content=card('','תוכן',
+  '<p class="small" style="font-weight:600">גיל התינוקות (בחודשים)</p>'+hbar(['0-1','1-3','3-6','6-9','9-12','12+'].filter(k=>(A.baby_ages||{})[k]).map(k=>[k,A.baby_ages[k]]),k=>k+' חודשים')+
+  '<p class="small" style="font-weight:600;margin-top:10px">המאכלים שטועמים הכי הרבה</p>'+hbar((A.top_foods||[]).map(f=>[f.food,f.n]),k=>fname(k)),'');
+ const P=A.platforms||{}, ob=o=>Object.entries(o||{}).sort((a,b)=>b[1]-a[1]);
+ const tech=card('adm-tech','מכשירים ושפה',
+  '<p class="small" style="font-weight:600">מכשיר</p>'+hbar(ob(P.platform),k=>ADM_PLAT[k]||k)+
+  '<p class="small" style="font-weight:600;margin-top:10px">איך פותחים</p>'+hbar(ob(P.installed),k=>k)+
+  '<p class="small" style="font-weight:600;margin-top:10px">שפה</p>'+hbar(ob(P.lang),k=>({he:'עברית',en:'אנגלית',ar:'ערבית'})[k]||k),'לפי הכניסה האחרונה של כל משתמש.');
+ const E=A.errors||[];
+ const errs=card('','תקלות אחרונות',E.length?'<ul class="list">'+E.slice(0,15).map(e=>'<li style="display:block"><p class="small muted">'+esc(dt(e.at))+' · '+esc(e.kind==='save_fail'?'שמירה נכשלה':'שגיאה')+' · '+esc(ADM_SCREENS[e.screen]||e.screen||'')+' · '+esc(ADM_PLAT[e.platform]||e.platform||'')+'</p>'+(e.detail?'<p class="small" dir="ltr" style="text-align:left;word-break:break-word">'+esc(e.detail)+'</p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">אין תקלות.</p>','שגיאות שקרו אצל משתמשים, ושמירות שנכשלו. דוח הבוקר היומי בודק גם אותן.');
+ const q=(S.admQ||'').trim().toLowerCase(), sort=S.admSort||'signed_up';
+ let list=U.filter(u=>!q||((u.name||'')+' '+(u.email||'')).toLowerCase().includes(q));
+ const key={signed_up:u=>u.signed_up,last_seen:u=>u.last_seen||'',days_active:u=>u.days_active,events:u=>u.events}[sort]||(u=>u.signed_up);
+ list=list.slice().sort((a,b)=>{ const x=key(a), y=key(b); return x<y?1:x>y?-1:0; });
+ const counts={}; U.forEach(u=>{ const s=admStatus(u)[0]; counts[s]=(counts[s]||0)+1; });
+ const users=card('adm-users','משתמשים ('+nf(U.length)+')',
+  '<p class="small">'+Object.entries(counts).map(([k,v])=>esc(k)+': <b>'+v+'</b>').join(' · ')+'</p>'+
+  '<div class="adm-filters"><label class="field" for="adm-q">חיפוש<input id="adm-q" type="text" inputmode="search" data-adm-q="1" value="'+esc(S.admQ||'')+'" placeholder="שם או אימייל" autocomplete="off"></label>'+
+  '<label class="field" for="adm-sort">מיון<select id="adm-sort" data-adm-sort="1">'+[['signed_up','הצטרפות'],['last_seen','נראו לאחרונה'],['days_active','ימים פעילים'],['events','רישומים']].map(o=>'<option value="'+o[0]+'"'+(sort===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></label>'+
+  '<button type="button" class="btn ghost" data-act="admcsv" data-v="users">ייצוא לאקסל (CSV)</button></div>'+
+  '<div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">סטטוס</th><th scope="col">הצטרפו</th><th scope="col">נראו לאחרונה</th><th scope="col">ימים פעילים</th><th scope="col">רישומים</th><th scope="col">במשפחה</th><th scope="col">מכשיר</th><th scope="col">כאפליקציה</th><th scope="col">שפה</th></tr></thead><tbody>'+
+  list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td>'+esc(u.name||'—')+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
+  '</tbody></table></div>','"פעילים" = נראו ביומיים האחרונים. "שקטים לאחרונה" = 2 עד 7 ימים. כדאי לפנות אליהם ולשאול מה חסר.');
+ const fbi=F.items||[];
+ const fb=card('adm-fb','משובים ('+nf(F.count)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
+  (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
+ return head+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
+  '<p class="note">"פעילים" = תיעדו משהו או פתחו את האפליקציה כשהם מחוברים. משתמשות שעובדות בלי חשבון לא נספרות. מדידת המסכים והמכשירים פועלת רק אצל משתמשים מחוברים.</p>';
 }
 function viewInstall(){
  const X=ST[S.lang]||ST.he, ios=isIOS();
@@ -1546,6 +1624,7 @@ function render(){ cancelAnimationFrame(raf); raf=requestAnimationFrame(draw); }
 function draw(){
  const L=t();
  const app=document.getElementById('app'); app.dir=L.dir; app.lang=S.lang;
+ app.classList.toggle('wide',S.view==='admin'); { const fab=document.getElementById('adm-fab'); if(fab) fab.hidden=!(isAdmin()&&S.view!=='admin'); } Usage.view();
  document.documentElement.lang=S.lang; document.documentElement.dir=L.dir;
  if(S.theme==='system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',S.theme);
  const v=document.getElementById('view');
@@ -1640,6 +1719,9 @@ document.addEventListener('click',e=>{
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
  if(a==='adminrefresh'){ loadAdmin(true); return; }
+ if(a==='admex'){ ls.set('gp-adm-ex',!!el.checked); loadAdmin(true); return; }
+ if(a==='admjump'){ const t2=document.getElementById(el.dataset.v); if(t2) t2.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+ if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','ליצירת קשר':f.contact||''}))); return; }
  if(a==='hday'){ S.histDay=Number(el.dataset.v); S.confirmDel=null; render(); return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
@@ -1715,6 +1797,7 @@ document.addEventListener('submit',e=>{
 });
 document.addEventListener('change',e=>{
  const el=e.target;
+ if(el.dataset&&el.dataset.admSort){ S.admSort=el.value; render(); return; }
  if(el.id==='setup-twins'){ S.setupTwins=el.checked; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.getElementById(el.checked?'setup-name2':'setup-twins'); if(n) n.focus(); })); return; }
  if(el.dataset.myName){ const v=el.value.trim(); if(v){ Store.setMyName(v.slice(0,40)); say(t().saved); } return; }
  if(el.dataset.allergen){ const b=baby(); if(b){ Store.fam({allergens:{[b.id]:{[el.dataset.allergen]:{[el.dataset.k]:el.checked}}}}); say(t().saved); } return; }
@@ -1725,7 +1808,7 @@ document.addEventListener('change',e=>{
   Store.fam({babies:bs}); say(t().saved);
  }
 });
-document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
+document.addEventListener('input',e=>{ const el=e.target; if(el.dataset&&el.dataset.admQ){ S.admQ=el.value; const q=el.value.trim().toLowerCase(); document.querySelectorAll('[data-urow]').forEach(r=>{ r.hidden=!!q&&!r.dataset.urow.includes(q); }); return; } if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
 const VIEWS=['admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
