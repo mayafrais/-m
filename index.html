@@ -267,6 +267,23 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .adm-fab{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:6;width:56px;height:56px;border-radius:50%;background:var(--dusk);color:var(--on-dusk);font-size:1.5rem;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px -8px rgba(30,30,70,.55);text-decoration:none}
 .adm-fab[hidden]{display:none}
 .uwrap{overflow-x:auto}
+/* per-child colors (2nd child and up) */
+.kc-mint{--kc:#2F7D64}.kc-lavender{--kc:#6A4FA8}.kc-apricot{--kc:#A85A1C}.kc-mustard{--kc:#7E6210}.kc-teal{--kc:#1F6F76}.kc-olive{--kc:#556B22}
+:root{--kc-on:#FFFFFF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--kc-on:#14111C}:root:not([data-theme="light"]) .kc-mint,:root.kc-mint:not([data-theme="light"]){--kc:#7FD3B4}:root:not([data-theme="light"]) .kc-lavender,:root.kc-lavender:not([data-theme="light"]){--kc:#BCA8F0}:root:not([data-theme="light"]) .kc-apricot,:root.kc-apricot:not([data-theme="light"]){--kc:#F2B07A}:root:not([data-theme="light"]) .kc-mustard,:root.kc-mustard:not([data-theme="light"]){--kc:#E3C766}:root:not([data-theme="light"]) .kc-teal,:root.kc-teal:not([data-theme="light"]){--kc:#7CD0D6}:root:not([data-theme="light"]) .kc-olive,:root.kc-olive:not([data-theme="light"]){--kc:#B9CF7E}}
+:root[data-theme="dark"]{--kc-on:#14111C}:root[data-theme="dark"] .kc-mint,:root[data-theme="dark"].kc-mint{--kc:#7FD3B4}:root[data-theme="dark"] .kc-lavender,:root[data-theme="dark"].kc-lavender{--kc:#BCA8F0}:root[data-theme="dark"] .kc-apricot,:root[data-theme="dark"].kc-apricot{--kc:#F2B07A}:root[data-theme="dark"] .kc-mustard,:root[data-theme="dark"].kc-mustard{--kc:#E3C766}:root[data-theme="dark"] .kc-teal,:root[data-theme="dark"].kc-teal{--kc:#7CD0D6}:root[data-theme="dark"] .kc-olive,:root[data-theme="dark"].kc-olive{--kc:#B9CF7E}
+:root[data-kid]{--bg:color-mix(in srgb,var(--kc) 11%,#FFFFFF);--mist:color-mix(in srgb,var(--kc) 18%,#FFFFFF);--line:color-mix(in srgb,var(--kc) 24%,#FFFFFF)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"])[data-kid]{--bg:color-mix(in srgb,var(--kc) 10%,#14111C);--mist:color-mix(in srgb,var(--kc) 18%,#1F1A2A);--line:color-mix(in srgb,var(--kc) 26%,#1F1A2A)}}
+:root[data-theme="dark"][data-kid]{--bg:color-mix(in srgb,var(--kc) 10%,#14111C);--mist:color-mix(in srgb,var(--kc) 18%,#1F1A2A);--line:color-mix(in srgb,var(--kc) 26%,#1F1A2A)}
+:root[data-kid] body{background:var(--bg)}
+:root[data-kid] #app::before{content:"";position:fixed;top:0;left:0;right:0;height:5px;background:var(--kc);z-index:40}
+.seg button[class*="kc-"]::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--kc);margin-inline-end:7px;vertical-align:middle}
+.seg button[class*="kc-"][aria-pressed="true"]{background:var(--kc);color:var(--kc-on);font-weight:700}
+.seg button[class*="kc-"][aria-pressed="true"]::before{background:var(--kc-on)}
+.swatches{display:flex;flex-wrap:wrap;gap:10px}
+.swatch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 10px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-weight:500}
+.swatch i{width:22px;height:22px;border-radius:50%;background:var(--kc);display:block}
+.swatch[aria-checked="true"]{border-color:var(--kc);box-shadow:0 0 0 2px var(--kc) inset;font-weight:700}
 </style>
 </head>
 <body>
@@ -310,7 +327,7 @@ const T = {
   members:'מי מחובר',invite:'איך מצרפים את בן/בת הזוג',inviteText:'שתפו את הקישור לאפליקציה מכפתור "שיתוף" בראש העמוד. בגרסת הניסיון, מי שמצטרף צריך חשבון Claude באותו ארגון.',
   prefs:'תצוגה',language:'שפה',theme:'מצב תצוגה',themeSys:'לפי הטלפון',themeLight:'יום',themeDark:'לילה',
   setupTitle:'ברוכה הבאה',setupText:'נתחיל בשם התינוק. יש עוד ילד/ה? אפשר להוסיף גם.',start:'התחלה',
-  babiesLabel:'בחירת תינוק',
+  babiesLabel:'בחירת תינוק',kidColor:n=>'הצבע של '+n+' באפליקציה',kidFirst:'הצבעים הרגילים של האפליקציה',
   guideFor:(n,w)=>'מותאם ל'+n+(w?', '+w:''),weeks:(w)=>w===1?'שבוע ראשון':'שבוע '+w,
   stages:['שבוע 1','שבוע 2','שבוע 3','שבועות 4–6','חודשים 2–3'],
   stageTitle:'מה קורה בשלב הזה',
@@ -349,7 +366,7 @@ const T = {
   members:'Who is connected',invite:'How to add your partner',inviteText:'Share the app link from the Share button at the top of the page. In this trial version, whoever joins needs a Claude account in the same organization.',
   prefs:'Display',language:'Language',theme:'Theme',themeSys:'Match phone',themeLight:'Day',themeDark:'Night',
   setupTitle:'Welcome',setupText:'Start with your baby’s name. Have another child? You can add them too.',start:'Start',
-  babiesLabel:'Choose baby',
+  babiesLabel:'Choose baby',kidColor:n=>n+'\u2019s color in the app',kidFirst:'The app\u2019s usual colors',
   guideFor:(n,w)=>'For '+n+(w?', '+w:''),weeks:(w)=>'week '+w,
   stages:['Week 1','Week 2','Week 3','Weeks 4–6','Months 2–3'],
   stageTitle:'What happens at this stage',
@@ -388,7 +405,7 @@ const T = {
   members:'من متصل',invite:'كيف تضيفين الشريك',inviteText:'شاركي رابط التطبيق من زر «مشاركة» أعلى الصفحة. في النسخة التجريبية، يحتاج من ينضم إلى حساب Claude في المؤسسة نفسها.',
   prefs:'العرض',language:'اللغة',theme:'المظهر',themeSys:'حسب الهاتف',themeLight:'نهار',themeDark:'ليل',
   setupTitle:'أهلًا بكِ',setupText:'لنبدأ باسم الطفل. لديك طفل آخر؟ يمكن إضافته أيضًا.',start:'ابدئي',
-  babiesLabel:'اختيار الطفل',
+  babiesLabel:'اختيار الطفل',kidColor:n=>'لون '+n+' في التطبيق',kidFirst:'ألوان التطبيق المعتادة',
   guideFor:(n,w)=>'مخصّص لـ'+n+(w?'، '+w:''),weeks:(w)=>'الأسبوع '+w,
   stages:['الأسبوع 1','الأسبوع 2','الأسبوع 3','الأسابيع 4–6','الشهران 2–3'],
   stageTitle:'ماذا يحدث في هذه المرحلة',
@@ -559,6 +576,8 @@ function viewOnboard(){
 // ---------- derived ----------
 function hasTwins(){ const bs=S.family.babies||[]; if(bs.some(x=>x.twin)) return true; const d=bs.map(x=>x.born).filter(Boolean); return d.length!==new Set(d).size; }
 function baby(){ const b=S.family.babies||[]; return b.find(x=>x.id===S.babyId)||b[0]||null; }
+const KID_COLORS=[['mint','מנטה','Mint','نعناعي'],['lavender','לבנדר','Lavender','لافندر'],['apricot','משמש','Apricot','مشمشي'],['mustard','חרדל','Mustard','خردلي'],['teal','טורקיז','Teal','فيروزي'],['olive','זית','Olive','زيتوني']];
+function kidColor(x){ const bs=S.family.babies||[]; const i=bs.findIndex(y=>y.id===(x&&x.id)); if(i<=0) return ''; return KID_COLORS.some(c=>c[0]===x.color)?x.color:KID_COLORS[(i-1)%KID_COLORS.length][0]; }
 function evs(){ const b=baby(); return b?S.events.filter(e=>e.baby===b.id):[]; }
 function whoLabel(id){ if(!id) return ''; if(id===S.me) return t().you; const m=(S.members||[]).find(x=>x.user_id===id); return (m&&m.display_name)||t().partner; }
 let resolving=false;
@@ -595,7 +614,7 @@ function headerHTML(title,sub){
 function babySwitch(){
  const bs=S.family.babies||[]; if(bs.length<2) return '';
  const b=baby();
- return '<div class="seg" role="group" aria-label="'+esc(t().babiesLabel)+'" style="grid-template-columns:repeat('+bs.length+',minmax(0,1fr))">'+bs.map(x=>'<button type="button" data-act="baby" data-id="'+esc(x.id)+'" aria-pressed="'+(b&&x.id===b.id)+'">'+esc(x.name)+'</button>').join('')+'</div>';
+ return '<div class="seg" role="group" aria-label="'+esc(t().babiesLabel)+'" style="grid-template-columns:repeat('+bs.length+',minmax(0,1fr))">'+bs.map(x=>'<button type="button" data-act="baby" data-id="'+esc(x.id)+'" aria-pressed="'+(b&&x.id===b.id)+'"'+(kidColor(x)?' class="kc-'+kidColor(x)+'"':'')+'>'+esc(x.name)+'</button>').join('')+'</div>';
 }
 function dateLine(){ try{ return new Date().toLocaleDateString(S.lang==='ar'?'ar-u-nu-latn':S.lang==='en'?'en-GB':'he-IL',{weekday:'long',day:'numeric',month:'long'}); }catch(e){ return ''; } }
 
@@ -1586,7 +1605,7 @@ function viewFamily(){
  const sec=(title,body,cls)=>'<section class="'+(cls||'card')+'"><h2>'+esc(title)+'</h2>'+body+'</section>';
  return '<header class="section" style="gap:4px"><a class="link" href="#home">'+esc(L.back)+'</a><h1>'+esc(X.title)+'</h1></header>'+
  sec(X.me,'<label class="field" for="my-name">'+esc(X.myName)+'<input id="my-name" type="text" maxlength="40" autocomplete="off" value="'+esc(myName)+'" data-my-name="1"></label><p class="small muted">'+esc(X.myNameHint)+'</p><p class="small muted">'+esc(at().signedAs(S.email||''))+'</p><button type="button" class="btn ghost" data-act="logout">'+esc(at().logout)+'</button>')+
- sec(X.babiesT,bs.map((x,i)=>'<div class="section" style="gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)"><label class="field" for="bn-'+i+'">'+esc(L.babyName)+'<input id="bn-'+i+'" type="text" value="'+esc(x.name)+'" data-baby-name="'+esc(x.id)+'"></label><label class="field" for="bb-'+i+'">'+esc(L.born)+'<input id="bb-'+i+'" type="date" value="'+esc(x.born||'')+'" data-baby-born="'+esc(x.id)+'"></label>'+(bs.length>1?'<button type="button" class="link small" data-act="rmbaby" data-id="'+esc(x.id)+'">'+esc(L.removeBaby)+'</button>':'')+'</div>').join('')+'<button type="button" class="btn ghost" data-act="addbaby">'+esc(L.addBaby)+'</button>')+
+ sec(X.babiesT,bs.map((x,i)=>'<div class="section" style="gap:8px;padding-bottom:12px;border-bottom:1px solid var(--line)"><label class="field" for="bn-'+i+'">'+esc(L.babyName)+'<input id="bn-'+i+'" type="text" value="'+esc(x.name)+'" data-baby-name="'+esc(x.id)+'"></label><label class="field" for="bb-'+i+'">'+esc(L.born)+'<input id="bb-'+i+'" type="date" value="'+esc(x.born||'')+'" data-baby-born="'+esc(x.id)+'"></label>'+(i>0?(()=>{ const cur=kidColor(x), gid='kc-'+i; return '<div class="section" style="gap:6px"><p class="small" id="'+gid+'" style="font-weight:600">'+esc(L.kidColor(x.name))+'</p><div class="swatches" role="radiogroup" aria-labelledby="'+gid+'">'+KID_COLORS.map(c=>'<button type="button" role="radio" class="swatch kc-'+c[0]+'" data-act="kidcolor" data-id="'+esc(x.id)+'" data-v="'+c[0]+'" aria-checked="'+(cur===c[0])+'"><i aria-hidden="true"></i>'+esc(c[lix()-1])+'</button>').join('')+'</div></div>'; })():(bs.length>1?'<p class="small muted">'+esc(L.kidFirst)+'</p>':''))+(bs.length>1?'<button type="button" class="link small" data-act="rmbaby" data-id="'+esc(x.id)+'">'+esc(L.removeBaby)+'</button>':'')+'</div>').join('')+'<button type="button" class="btn ghost" data-act="addbaby">'+esc(L.addBaby)+'</button>')+
  sec(X.foodPrefs,'<p class="small" style="font-weight:600">'+esc(X.style)+'</p><div class="chips" role="group" aria-label="'+esc(X.style)+'">'+F.styles.map(s=>'<button type="button" class="chip" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'">'+esc(s[1])+'</button>').join('')+'</div>'+
   (b?'<p class="small" style="font-weight:600;margin-top:8px">'+esc(X.allergy)+'</p>'+(bs.length>1?babySwitch():'<p class="small muted">'+esc(X.allergyFor(b.name))+'</p>')+'<div class="chips" role="group" aria-label="'+esc(X.allergy)+'">'+ALLERGENS.map(a=>'<label class="chip check-chip"><input type="checkbox" data-allergen="'+a[0]+'" data-k="avoid"'+((as[a[0]]||{}).avoid?' checked':'')+'><span aria-hidden="true">'+a[1]+'</span> '+esc(a[lix()])+'</label>').join('')+'</div>':''))+
  '<a class="opt" href="#install" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📲</span><span class="opt-tx"><span class="opt-t">'+esc(X.install)+'</span><span class="opt-h">'+esc(isStandalone()?X.already:X.installSub)+'</span></span></a>'+
@@ -1629,6 +1648,7 @@ function render(){ cancelAnimationFrame(raf); raf=requestAnimationFrame(draw); }
 function draw(){
  const L=t();
  const app=document.getElementById('app'); app.dir=L.dir; app.lang=S.lang;
+ { const kc=S.mode==='db'||S.mode==='local'?kidColor(baby()):''; const de=document.documentElement; if(kc){ de.dataset.kid=kc; de.className=(de.className||'').replace(/\s*kc-\w+/g,'')+' kc-'+kc; } else { delete de.dataset.kid; de.className=(de.className||'').replace(/\s*kc-\w+/g,''); } }
  app.classList.toggle('wide',S.view==='admin'); { const fab=document.getElementById('adm-fab'); if(fab) fab.hidden=!(isAdmin()&&S.view!=='admin'); } Usage.view();
  document.documentElement.lang=S.lang; document.documentElement.dir=L.dir;
  if(S.theme==='system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme',S.theme);
@@ -1713,6 +1733,7 @@ document.addEventListener('click',e=>{
  const el=e.target.closest('[data-act]'); if(!el) return;
  const a=el.dataset.act, L=t(), b=baby();
  if(a==='setupmore'){ S.setupMore=el.dataset.v||''; render(); if(S.setupMore) requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.getElementById('setup-name2'); if(n) n.focus(); })); return; }
+ if(a==='kidcolor'){ const id=el.dataset.id, v=el.dataset.v; Store.fam({babies:(S.family.babies||[]).map(x=>x.id===id?Object.assign({},x,{color:v}):x)}); say(L.saved); return; }
  if(a==='baby'){ S.devAge=null; S.babyId=el.dataset.id; ls.set('gp-baby',S.babyId); render(); return; }
  if(a==='authmode'){ S.authMode=S.authMode==='login'?'signup':'login'; S.authMsg=''; render(); return; }
  if(a==='onb'){ S.onb=el.dataset.v; S.authMsg=''; render(); return; }
