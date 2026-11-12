@@ -539,20 +539,21 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   const deep=(a,b)=>{ const r=Object.assign({},a); for(const k in b){ const v=b[k]; r[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&r[k]&&typeof r[k]==='object')?deep(r[k],v):v; } return r; };
   S.family=deep(S.family,patch); render();
   if(!this.fid) return;
-  const {data,error}=await retrySave(()=>this.sb.rpc('patch_family_state',{p_family:this.fid,p_patch:patch}));
-  if(error){ saveFailed(error); this.load_family(); return; }
+  const rr=await retrySave(()=>this.sb.rpc('patch_family_state',{p_family:this.fid,p_patch:patch}),'family:'+Object.keys(patch||{}).join('+'));
+  const {data,error}=rr;
+  if(error){ saveFailed(error,rr); this.load_family(); return; }
   if(data){ S.family={babies:data.babies||[],active:data.active||{},sleep:data.sleep||{},milestones:data.milestones||{},allergens:data.allergens||{},prefs:data.prefs||{}}; render(); }
  },
  async addEvent(ev){
   const {baby,type,t:tm}=ev; const rest=Object.assign({},ev); delete rest.baby; delete rest.type; delete rest.t;
   const tmp={id:'tmp'+uid(),baby,type,t:tm,by:S.me}; Object.assign(tmp,rest); S.events=[tmp].concat(S.events).sort((a,b)=>b.t-a.t); render();
   const row={family_id:this.fid,baby,type,t:tm,data:rest}; try{ if(crypto&&crypto.randomUUID) row.id=crypto.randomUUID(); }catch(e){}
-  let first=true; const r=await retrySave(async()=>{ const x=await this.sb.from('events').insert(row); if(x.error&&!first&&x.error.code==='23505') return {}; first=false; return x; });
-  if(r&&r.error) saveFailed(r.error);
+  let first=true; const r=await retrySave(async()=>{ const x=await this.sb.from('events').insert(row); if(x.error&&!first&&x.error.code==='23505') return {}; first=false; return x; },'event:'+type);
+  if(r&&r.error) saveFailed(r.error,r);
   this.load_events();
  },
  async delEvent(id){ S.events=S.events.filter(e=>e.id!==id); render(); if(String(id).startsWith('tmp')) return; await this.sb.from('events').delete().eq('id',id); this.load_events(); },
- async addMed(m){ const {error}=await retrySave(()=>this.sb.from('meds').insert({family_id:this.fid,baby:m.baby,name:m.name,note:m.note||''})); if(error) saveFailed(error); this.load_meds(); },
+ async addMed(m){ const r=await retrySave(()=>this.sb.from('meds').insert({family_id:this.fid,baby:m.baby,name:m.name,note:m.note||''}),'med'); if(r.error) saveFailed(r.error,r); this.load_meds(); },
  async delMed(id){ S.meds=S.meds.filter(m=>m.id!==id); render(); await this.sb.from('meds').delete().eq('id',id); this.load_meds(); },
  async createFamily(name,babies){
   const {data,error}=await this.sb.rpc('create_family',{p_display_name:name});
@@ -624,8 +625,22 @@ function evText(e){
  if(e.type==='taste'){ const F=FT[S.lang]||FT.he; const lk=F.likes.find(l=>l[0]===e.liked); return F.tasteEv+': '+fname(e.food)+(lk?', '+lk[1]:'')+(e.reaction?', '+F.reactionEv:''); }
  return '';
 }
-async function retrySave(fn){ for(let i=0;i<3;i++){ let r; try{ r=await fn(); }catch(e){ r={error:e}; } if(!r||!r.error) return r||{}; const m=String(r.error.message||r.error||''); const net=/fetch|network|load failed|timed? ?out|abort/i.test(m)||(!r.error.code&&!r.status); if(!net||i===2) return r; await new Promise(z=>setTimeout(z,[900,2500][i])); } }
-function saveFailed(err){ try{ Usage.add('save_fail',{detail:String((err&&(err.message||err.code))||err||'').slice(0,200)}); }catch(e){} say(at().notSaved); }
+// Save with retries on network drops. Every failure records WHY (network / timeout / http status / db code), how many tries,
+// how long, and the device context, so the owner dashboard shows whether it is a real bug or a passing connection drop.
+function iabName(){ const u=navigator.userAgent||''; return /Instagram/i.test(u)?'Instagram':/FBAN|FBAV|FB_IAB/i.test(u)?'Facebook':/WhatsApp/i.test(u)?'WhatsApp':/TikTok|musical_ly/i.test(u)?'TikTok':''; }
+function errInfo(e,status){ const m=String((e&&typeof e==='object')?(e.message||e.error_description||e.details||''):(e||'')).trim(); const code=(e&&e.code)||''; const st=status||(e&&e.status)||0;
+ const reason=/timed? ?out|timeout|57014/i.test(m+' '+code)?'timeout':/fetch|network|load failed|abort|connection|offline/i.test(m)||(!code&&!st)?'network':st&&st>=500?'server '+st:st?'http '+st:'db';
+ return {reason,code,status:st,msg:m}; }
+function saveCtx(){ const c=[]; try{ c.push(navigator.onLine===false?'offline':'online'); if(document.visibilityState==='hidden') c.push('hidden'); const b=iabName(); if(b) c.push('in-app:'+b); else if(isStandalone()) c.push('home-screen'); }catch(e){} return c.join(','); }
+function saveDetail(what,info,tries,ms){ return [what||'save',info.reason+(info.code?' code '+info.code:'')+(info.status&&!/^(http|server)/.test(info.reason)?' status '+info.status:''),'tries '+tries,(ms/1000).toFixed(1)+'s',saveCtx(),info.msg?('msg: '+info.msg):''].filter(Boolean).join(' · ').slice(0,290); }
+async function retrySave(fn,what){ const t0=Date.now(); let info=null;
+ for(let i=0;i<3;i++){ let r; try{ r=await fn(); }catch(e){ r={error:e}; }
+  if(!r||!r.error){ if(info){ try{ Usage.add('save_retry_ok',{detail:saveDetail(what,info,i+1,Date.now()-t0)}); }catch(e){} } return r||{}; }
+  info=errInfo(r.error,r.status);
+  const transient=info.reason==='network'||info.reason==='timeout'||/^server (502|503|504|520|522|524)$/.test(info.reason);
+  if(!transient||i===2){ r.saveDetail=saveDetail(what,info,i+1,Date.now()-t0); return r; }
+  await new Promise(z=>setTimeout(z,[900,2500][i])); } }
+function saveFailed(err,r){ try{ Usage.add('save_fail',{detail:(r&&r.saveDetail)||saveDetail('save',errInfo(err),1,0)}); }catch(e){} say(at().notSaved); }
 function say(msg){ const el=document.getElementById('live'); el.textContent=''; setTimeout(()=>{el.textContent=msg;},30); }
 
 // ---------- views ----------
@@ -1513,8 +1528,13 @@ const Usage={q:[],timer:0,lastView:'',lastOpen:0,
  add(kind,extra){ if(S.mode!=='db'||!S.me||!Store.sb) return; this.q.push(Object.assign({kind,screen:S.view||null,lang:S.lang,platform:this.platform(),standalone:isStandalone()},extra||{})); if(this.q.length>=20) this.flush(); else if(!this.timer) this.timer=setTimeout(()=>this.flush(),8000); },
  async flush(){ clearTimeout(this.timer); this.timer=0; if(!this.q.length||!Store.sb||!S.me) return; const rows=this.q.splice(0,50); try{ await Store.sb.from('usage').insert(rows); }catch(e){} },
  view(){ if(S.mode!=='db'||!S.me) return; if(Date.now()-this.lastOpen>30*60e3){ this.lastOpen=Date.now(); this.add('open'); } if(S.view!==this.lastView){ this.lastView=S.view; this.add('view'); } },
- err(msg){ const m=String(msg||'').slice(0,300); if(!m||/^Script error\.?$/i.test(m.split(' @')[0].trim())||this._last===m) return; this._last=m; this.add('error',{detail:m}); }
+ err(msg){ let m=String(msg||'').trim(); if(!m||this._last===m) return; this._last=m;
+  // "Script error." = the browser hides the real message because it came from a script on another site (usually code the Instagram/Facebook in-app browser injects into the page). Kept, but marked external.
+  if(/^Script error\.?$/i.test(m.split(' @')[0].trim())){ const b=iabName(); m='[external] Script error from a non-app script'+(b?' · in-app:'+b:' · '+(isStandalone()?'home-screen':'browser'))+' · '+(this.lastAct||''); }
+  else m=m+' · '+saveCtx();
+  this.add('error',{detail:m.slice(0,290)}); }
 };
+document.addEventListener('click',e=>{ try{ const el=e.target.closest&&e.target.closest('[data-act],a[href]'); if(el) Usage.lastAct='last tap: '+(el.dataset.act||el.getAttribute('href')||'').slice(0,40); }catch(err){} },true);
 window.addEventListener('error',e=>Usage.err((e.message||'error')+(e.filename?' @'+String(e.filename).split('/').pop()+':'+e.lineno:'')));
 window.addEventListener('unhandledrejection',e=>Usage.err('promise: '+((e.reason&&(e.reason.message||e.reason))||'')));
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) Usage.flush(); else Usage.view(); });
@@ -1576,7 +1596,7 @@ async function sendContact(){
  if(!Store.sb){ S.aboutSt='fail'; render(); return; }
  S.aboutSt='sending'; render();
  let ok=false;
- try{ const r=await retrySave(()=>Store.sb.from('feedback').insert({source:'contact',role:nm.slice(0,40),contact:em.slice(0,200),message:msg.slice(0,2000)})); ok=!r.error; }catch(e){ ok=false; }
+ try{ const r=await retrySave(()=>Store.sb.from('feedback').insert({source:'contact',role:nm.slice(0,40),contact:em.slice(0,200),message:msg.slice(0,2000)}),'contact'); ok=!r.error; if(!ok) try{ Usage.add('save_fail',{detail:r.saveDetail}); }catch(e){} }catch(e){ ok=false; }
  if(ok){ S.aboutSt='sent'; ['ct-name','ct-contact','ct-msg'].forEach(k=>{ if(S.draft) delete S.draft[k]; }); say(A.sent); }
  else S.aboutSt='fail';
  render();
@@ -1654,7 +1674,7 @@ function viewAdmin(){
   '<p class="small" style="font-weight:600;margin-top:10px">איך פותחים</p>'+hbar(ob(P.installed),k=>k)+
   '<p class="small" style="font-weight:600;margin-top:10px">שפה</p>'+hbar(ob(P.lang),k=>({he:'עברית',en:'אנגלית',ar:'ערבית'})[k]||k),'לפי הכניסה האחרונה של כל משתמש.');
  const E=A.errors||[];
- const errs=card('','תקלות אחרונות',E.length?'<ul class="list">'+E.slice(0,15).map(e=>'<li style="display:block"><p class="small muted">'+esc(dt(e.at))+' · '+esc(e.kind==='save_fail'?'שמירה נכשלה':'שגיאה')+' · '+esc(ADM_SCREENS[e.screen]||e.screen||'')+' · '+esc(ADM_PLAT[e.platform]||e.platform||'')+'</p>'+(e.detail?'<p class="small" dir="ltr" style="text-align:left;word-break:break-word">'+esc(e.detail)+'</p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">אין תקלות.</p>','שגיאות שקרו אצל משתמשים, ושמירות שנכשלו. דוח הבוקר היומי בודק גם אותן.');
+ const errs=card('','תקלות אחרונות',E.length?'<ul class="list">'+E.slice(0,15).map(e=>'<li style="display:block"><p class="small muted">'+esc(dt(e.at))+' · '+esc(e.kind==='save_fail'?'שמירה נכשלה':e.kind==='save_retry_ok'?'✓ נשמר בניסיון חוזר (אחרי ניתוק)':/^\[external\]/.test(e.detail||'')?'שגיאה חיצונית (לא מקוד האפליקציה)':'שגיאה')+' · '+esc(ADM_SCREENS[e.screen]||e.screen||'')+' · '+esc(ADM_PLAT[e.platform]||e.platform||'')+'</p>'+(e.detail?'<p class="small" dir="ltr" style="text-align:left;word-break:break-word">'+esc(e.detail)+'</p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">אין תקלות.</p>','לכל תקלה רשומים: מה נשמר, הסיבה (network = ניתוק רשת, timeout, server/http + קוד), כמה ניסיונות, כמה זמן, ואם המכשיר היה מחובר או בתוך דפדפן של אינסטגרם. "נשמר בניסיון חוזר" = היה ניתוק קצר והנתון נשמר בסוף. "שגיאה חיצונית" = קוד של הדפדפן/אינסטגרם, לא של האפליקציה.');
  // ---- 1) active users list + 2) per-user detail ----
  const sinceMs=u=>u.last_seen?Date.now()-new Date(u.last_seen):Infinity;
  const actU=U.filter(u=>sinceMs(u)<7*864e5).sort((a,b)=>sinceMs(a)-sinceMs(b));
@@ -1672,7 +1692,7 @@ function viewAdmin(){
  if(sel){
   const u=U.find(x=>x.id===sel)||{}, DD=(S.admDet&&S.admDet.id===sel)?S.admDet.data:null, st=admStatus(u);
   const evTxt=x=>{ const d=x.d||{}; const e={type:x.k,side:d.side,mins:d.mins!=null?Number(d.mins):undefined,ml:d.ml!=null?Number(d.ml):undefined,kind:d.kind,food:d.food,liked:d.liked,medName:d.medName}; try{ return evText(e)||ADM_TYPES[x.k]||x.k; }catch(err){ return ADM_TYPES[x.k]||x.k; } };
-  const tlTxt=x=>x.src==='event'?['תיעדה',evTxt(x)]:x.src==='view'?['פתחה מסך',ADM_SCREENS[x.k]||x.k||'']:x.src==='open'?['נכנסה לאפליקציה',(ADM_PLAT[x.platform]||'')+(x.standalone?' · ממסך הבית':' · בדפדפן')]:x.src==='install'?['התקינה למסך הבית','']:x.src==='save_fail'?['שמירה נכשלה',x.detail||'']:x.src==='error'?['שגיאה',x.detail||'']:[x.src,x.k||''];
+  const tlTxt=x=>x.src==='event'?['תיעדה',evTxt(x)]:x.src==='view'?['פתחה מסך',ADM_SCREENS[x.k]||x.k||'']:x.src==='open'?['נכנסה לאפליקציה',(ADM_PLAT[x.platform]||'')+(x.standalone?' · ממסך הבית':' · בדפדפן')]:x.src==='install'?['התקינה למסך הבית','']:x.src==='save_fail'?['שמירה נכשלה',x.detail||'']:x.src==='save_retry_ok'?['נשמר בניסיון חוזר',x.detail||'']:x.src==='error'?['שגיאה',x.detail||'']:[x.src,x.k||''];
   let body='<p class="small muted" role="status">טוען את הפעילות שלה...</p>';
   if(DD){
    const fam=DD.family||{}, mem=(fam.members||[]).filter(m=>!m.self).map(m=>m.name||'הורה נוסף'), bm=(fam.babies_months||[]).map(m=>m==null?'?':m<1?'פחות מחודש':m<24?m+' חודשים':Math.floor(m/12)+' שנים');
