@@ -625,6 +625,7 @@ function viewToday(){
  }).join('')+'</ul>':'<p class="empty">'+esc(hd?L.nothingDay:L.nothingToday)+'</p>';
  return headerHTML(L.feeding,dateLine())+
  (S.mode==='local'?'<p class="banner">'+esc(L.local)+'</p>':'')+
+ ((()=>{ const dd=ageWeeks(baby()); return dd!=null&&dd<15&&S.lang==='he'?'<a class="opt" href="#firstdays" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">🌱</span><span class="opt-tx"><span class="opt-t">הימים הראשונים להנקה</span><span class="opt-h">קולוסטרום, כמויות, חיתולים ומה נורמלי</span></span></a>':''; })())+
  '<section class="feed" aria-label="'+esc(L.feeding)+'"><p class="muted" aria-live="polite" style="text-align:center">'+esc(status)+'</p><div class="circle">'+half('L')+half('R')+'</div>'+
  (act?'<button type="button" class="btn ink" style="width:min(256px,72vw)" data-act="finish">'+esc(L.finish)+'</button>':'<button type="button" class="link" data-act="past">'+esc(L.forgot)+'</button>')+'</section>'+
  '<nav class="quick" aria-label="'+esc(L.quick)+'">'+
@@ -1227,6 +1228,40 @@ function viewLatch(){
  '<section class="warn"><h2>מתי פונים לעזרה</h2><ul style="margin:0;padding-inline-start:20px;line-height:1.6">'+X.help.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul><p style="font-weight:600">'+esc(X.helpNote)+'</p></section></div>'+
  shareLink('latch')+'<p class="note">'+esc(t().guideNote)+'</p>';
 }
+
+// ---------- the first days of breastfeeding (Hebrew) ----------
+const FIRST={
+ lead:'בימים הראשונים אחרי הלידה הגוף מייצר קולוסטרום, החלב הראשון. הכמויות קטנות מאוד, וזה בדיוק מה שצריך: הקיבה של יילוד קטנה, והוא מקבל את מה שהוא צריך בהנקות קצרות ותכופות.',
+ colo:['נוזל סמיך ודביק, בצבע צהוב עד כתום. יש שקוראים לו "נוזל הזהב"','הגוף מתחיל לייצר אותו כבר בהריון, כך שהוא מוכן מיד אחרי הלידה','עשיר מאוד בנוגדנים שמגנים על התינוק מפני זיהומים, ומצפה את המעי שלו','עוזר לתינוק להוציא את היציאות הראשונות (מקוניום)','הכמויות קטנות: כ-30 מ"ל בכל היממה הראשונה ביחד, טיפות עד כפית בכל הנקה','בימים האלה השדיים יכולים להרגיש רכים ו"ריקים". זה תקין, והתינוק מקבל מספיק'],
+ stomachHead:['יום','כמה נכנס בהנקה','בגודל של'],
+ stomach:[['יום 1','5 עד 7 מ"ל (כפית)','דובדבן'],['יום 3','22 עד 27 מ"ל','אגוז מלך'],['סוף השבוע הראשון','45 עד 60 מ"ל','משמש']],
+ stomachNote:'בגלל זה תינוקות רוצים לינוק לעתים קרובות כל כך: הקיבה מתמלאת מהר ומתרוקנת מהר.',
+ milk:['בדרך כלל בין היום השני לחמישי אחרי הלידה החלב "עולה": השדיים מתמלאים, נעשים חמים וכבדים, והחלב נעשה לבן ונוזלי יותר','הנקות תכופות בימים האלה עוזרות להקל על תחושת הגודש ולבסס את כמות החלב','אם השד קשה מאוד והתינוק מתקשה להיצמד, אפשר לרכך מעט את העטרה (האזור הכהה) בהוצאת חלב קלה ביד לפני ההנקה','אחרי לידה בניתוח קיסרי, או אחרי לידה קשה, החלב לפעמים עולה מעט מאוחר יותר. זה עדיין תקין'],
+ freq:['מניקים לפי דרישה, בלי להגביל את מספר ההנקות או את משך ההנקה','בדרך כלל 8 עד 12 הנקות ביממה, ולפעמים יותר','לפעמים ההנקות צפופות מאוד, כל חצי שעה עד שעתיים, ואחריהן הפסקה ארוכה יותר. זה תקין','מחפשים סימני רעב מוקדמים: ליקוק שפתיים, הכנסת ידיים לפה, סיבוב הראש לצדדים. בכי הוא סימן מאוחר','יילודים יכולים לישון הרבה, אבל צריכים להתעורר לאכול. אם התינוק ישנוני מאוד וקשה להעיר אותו להנקות, פונים לטיפת חלב או לרופא/ת'],
+ diaperHead:['יום','חיתולים רטובים','יציאות'],
+ diapers:[['יום 1','לפחות 1','מקוניום: שחור-ירקרק, סמיך ודביק'],['יום 2','לפחות 2','מקוניום'],['יום 3','לפחות 3','יציאות מעבר: ירקרקות-חומות, פחות דביקות'],['יום 4','4 ומעלה','מתבהרות לירוק-צהוב'],['מיום 5','6 ומעלה','צהוב חרדל, רכות ועם "גרגירים". לרוב 3 ומעלה ביממה']],
+ diaperNote:'זה מדריך כללי, ובכל תינוק זה קצת שונה. ביומן שבאפליקציה אפשר לסמן חיתולים ולראות כמה היו ביממה האחרונה.',
+ weight:['ירידה במשקל בימים הראשונים היא תקינה. רובה נוזלים שהתינוק נפטר מהם אחרי הלידה','רוב התינוקות חוזרים למשקל הלידה תוך 10 עד 14 ימים','טיפת חלב שוקלת ועוקבת. ירידה של יותר מ-7% ממשקל הלידה היא סיבה לבדוק את ההנקה עם יועצת הנקה או אחות טיפת חלב'],
+ tips:['מגע עור לעור: התינוק על החזה, בלי בגדים ביניכם. זה מרגיע ומעודד הנקה','מנסים להניק כבר בשעה הראשונה אחרי הלידה, אם אפשר','בודקים שהאחיזה עמוקה. הסבר ותמונות בלשונית "אחיזה ותנוחות"','כאב חזק לאורך כל ההנקה, או סדקים בפטמה, הם סיבה לבקש עזרה מיועצת הנקה','שותים כשצמאים, אוכלים ונחים ככל האפשר. בן או בת הזוג יכולים לעזור בהחתלה, בגרעפס ובהרגעה'],
+ when:['פחות חיתולים רטובים מהצפוי לפי הטבלה, שתן כהה, או חיתולים יבשים','מיום 5 היציאות עדיין שחורות, או שאין יציאות','התינוק ישנוני מאוד, רפוי, או מתעורר להנקה פחות מ-8 פעמים ביממה','צהבת בעור או בלובן העיניים שמתגברת','סימני התייבשות: פה יבש, בכי בלי דמעות, מרפס (פונטנלה) שקוע','חום של 38°C ומעלה ביילוד: פונים מיד לרופא או למיון','כאב חזק בהנקה, סדקים, או שד אדום, חם וכואב עם חום'],
+ source:'מבוסס על מידע להורים של מכבי שירותי בריאות, האיגוד הישראלי לרפואת ילדים, איגוד רופאי הילדים האמריקאי (AAP) ולה לצ\'ה ליג. המידע כללי ואינו מחליף ייעוץ רפואי או ייעוץ של יועצת הנקה.'
+};
+function viewFirstDays(){
+ const X=FIRST, ul=a=>'<ul class="bul">'+a.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+ const tbl=(cap,h,rows)=>'<div class="table-wrap"><table class="tbl"><caption class="sr">'+esc(cap)+'</caption><thead><tr>'+h.map(x=>'<th scope="col">'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr><th scope="row">'+esc(r[0])+'</th><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td></tr>').join('')+'</tbody></table></div>';
+ return artHead('הימים הראשונים להנקה')+
+ '<div lang="he" dir="rtl" class="section" style="gap:22px">'+
+ '<p class="prose">'+esc(X.lead)+'</p>'+
+ '<section class="dark-card"><h2 style="color:var(--dawn)">קולוסטרום: החלב הראשון</h2>'+ul(X.colo)+'</section>'+
+ '<section class="section" style="gap:10px"><h2 style="font-size:1.25rem">כמה נכנס לקיבה של יילוד</h2>'+tbl('גודל הקיבה של יילוד לפי ימים',X.stomachHead,X.stomach)+'<p class="small muted">'+esc(X.stomachNote)+'</p></section>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">עליית החלב</h2>'+ul(X.milk)+'</section>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">כמה פעמים מניקים</h2>'+ul(X.freq)+'</section>'+
+ '<section class="section" style="gap:10px"><h2 style="font-size:1.25rem">חיתולים ויציאות בשבוע הראשון</h2>'+tbl('חיתולים ויציאות לפי יום',X.diaperHead,X.diapers)+'<p class="small muted">'+esc(X.diaperNote)+'</p></section>'+
+ '<section class="card"><h2>משקל</h2>'+ul(X.weight)+'</section>'+
+ '<section class="section prose"><h2 style="font-size:1.25rem">מה עוזר בימים הראשונים</h2>'+ul(X.tips)+'</section>'+
+ '<section class="warn"><h2>מתי פונים לטיפת חלב או לרופא/ת</h2>'+ul(X.when)+'<p style="font-weight:600">במצב חירום: <a href="tel:101" style="color:inherit;font-weight:700">מד״א 101</a></p></section></div>'+
+ shareLink('firstdays')+'<p class="note">'+esc(X.source)+'</p>';
+}
 function viewPump(){
  const X=PUMP;
  return artHead('שאיבה ואחסון חלב אם')+
@@ -1244,13 +1279,13 @@ function viewPump(){
 // ---------- share with friends ----------
 const SF={
  he:{btn:'שתפו עם חברים',sub:'מכירה מישהי שזה יעזור לה? שלחי לה קישור',title:'שיתוף עם חברים',small:'שתפו עם חברה',
-  msg:{app:'גיליתי אפליקציה חינמית להורים לתינוקות: יומן הנקה משותף לשני ההורים, טעימות ובייבילד, והתפתחות לפי חודשים. שווה לנסות 💕',latch:'מצאתי הסבר ברור על אחיזה נכונה ותנוחות הנקה, באפליקציה "הורות":',pump:'מצאתי טבלה מסודרת של שאיבה ואחסון חלב אם (לפי משרד הבריאות), באפליקציה "הורות":',foods:'מצאתי מדריך נוח לטעימות ובייבילד, עם מאכלים, אלרגנים ומתכונים, באפליקציה "הורות":',dev:'מצאתי מדריך התפתחות לפי חודשים, כולל קפיצות גדילה, באפליקציה "הורות":',pacifier:'מצאתי הסבר ברור על מוצץ בתקופת ההנקה, באפליקציה "הורות":'},
+  msg:{app:'גיליתי אפליקציה חינמית להורים לתינוקות: יומן הנקה משותף לשני ההורים, טעימות ובייבילד, והתפתחות לפי חודשים. שווה לנסות 💕',latch:'מצאתי הסבר ברור על אחיזה נכונה ותנוחות הנקה, באפליקציה "הורות":',pump:'מצאתי טבלה מסודרת של שאיבה ואחסון חלב אם (לפי משרד הבריאות), באפליקציה "הורות":',foods:'מצאתי מדריך נוח לטעימות ובייבילד, עם מאכלים, אלרגנים ומתכונים, באפליקציה "הורות":',dev:'מצאתי מדריך התפתחות לפי חודשים, כולל קפיצות גדילה, באפליקציה "הורות":',pacifier:'מצאתי הסבר ברור על מוצץ בתקופת ההנקה, באפליקציה "הורות":',firstdays:'מצאתי הסבר ברור על הימים הראשונים של ההנקה: קולוסטרום, כמויות וחיתולים, באפליקציה "הורות":'},
   preview:'כך תיראה ההודעה',more:'שיתוף בדרך אחרת',note:'הקישור מוביל להרשמה לאפליקציה. מי שמקבלת אותו פותחת יומן משלה, והנתונים שלכם לא משותפים איתה.'},
  en:{btn:'Share with friends',sub:'Know someone this would help? Send them a link',title:'Share with friends',small:'Share with a friend',
-  msg:{app:'I found a free app for parents of babies: a feeding log shared by both parents, first foods and baby-led weaning, and development by month. Worth a try 💕',latch:'A clear guide to latching and breastfeeding positions, in the Parenting app:',pump:'A clear table for pumping and storing breast milk, in the Parenting app:',foods:'A handy guide to first foods and baby-led weaning, in the Parenting app:',dev:'A month-by-month development guide, including growth spurts, in the Parenting app:',pacifier:'A clear guide to pacifiers while breastfeeding, in the Parenting app:'},
+  msg:{app:'I found a free app for parents of babies: a feeding log shared by both parents, first foods and baby-led weaning, and development by month. Worth a try 💕',latch:'A clear guide to latching and breastfeeding positions, in the Parenting app:',pump:'A clear table for pumping and storing breast milk, in the Parenting app:',foods:'A handy guide to first foods and baby-led weaning, in the Parenting app:',dev:'A month-by-month development guide, including growth spurts, in the Parenting app:',pacifier:'A clear guide to pacifiers while breastfeeding, in the Parenting app:',firstdays:'A clear guide to the first days of breastfeeding (colostrum, amounts, diapers), in the Parenting app:'},
   preview:'Your message',more:'Share another way',note:'The link leads to sign-up. Whoever gets it starts their own log; your data is not shared with them.'},
  ar:{btn:'شاركي مع الصديقات',sub:'تعرفين من قد يفيدها هذا؟ أرسلي لها الرابط',title:'المشاركة مع الأصدقاء',small:'شاركي مع صديقة',
-  msg:{app:'وجدت تطبيقًا مجانيًا لأهالي الرضّع: سجل رضاعة مشترك للوالدين، أول الأطعمة والتغذية الذاتية، والنمو حسب الأشهر. يستحق التجربة 💕',latch:'شرح واضح للالتقام الصحيح ووضعيات الرضاعة في تطبيق التربية:',pump:'جدول واضح لشفط حليب الأم وتخزينه في تطبيق التربية:',foods:'دليل عملي لأول الأطعمة والتغذية الذاتية في تطبيق التربية:',dev:'دليل النمو حسب الأشهر، مع طفرات النمو، في تطبيق التربية:',pacifier:'شرح واضح عن اللهاية خلال فترة الرضاعة في تطبيق التربية:'},
+  msg:{app:'وجدت تطبيقًا مجانيًا لأهالي الرضّع: سجل رضاعة مشترك للوالدين، أول الأطعمة والتغذية الذاتية، والنمو حسب الأشهر. يستحق التجربة 💕',latch:'شرح واضح للالتقام الصحيح ووضعيات الرضاعة في تطبيق التربية:',pump:'جدول واضح لشفط حليب الأم وتخزينه في تطبيق التربية:',foods:'دليل عملي لأول الأطعمة والتغذية الذاتية في تطبيق التربية:',dev:'دليل النمو حسب الأشهر، مع طفرات النمو، في تطبيق التربية:',pacifier:'شرح واضح عن اللهاية خلال فترة الرضاعة في تطبيق التربية:',firstdays:'شرح واضح عن الأيام الأولى للرضاعة (اللبأ والكميات والحفاضات) في تطبيق التربية:'},
   preview:'هكذا ستبدو الرسالة',more:'مشاركة بطريقة أخرى',note:'الرابط يقود إلى التسجيل. من تستلمه تبدأ سجلًا خاصًا بها، ولا تتم مشاركة بياناتكم معها.'}
 };
 const IC_HEART='<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
@@ -1494,10 +1529,10 @@ function enhanceAcc(root){
  });
 }
 // ---------- nursing section tabs ----------
-const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון'],['pacifier','מוצץ בהנקה']],
- en:[['today','Daily log'],['meds','Medicines & vitamins'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage'],['pacifier','Pacifier & breastfeeding']],
- ar:[['today','المتابعة اليومية'],['meds','الأدوية والفيتامينات'],['feeding','حسب المرحلة'],['latch','الالتقام والوضعيات'],['article','هل يأكل ما يكفي؟'],['pump','الشفط والتخزين'],['pacifier','اللهاية والرضاعة']]};
-const NURSING_VIEWS=['today','meds','feeding','latch','article','pump','pacifier'];
+const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['firstdays','הימים הראשונים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון'],['pacifier','מוצץ בהנקה']],
+ en:[['today','Daily log'],['meds','Medicines & vitamins'],['firstdays','The first days'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage'],['pacifier','Pacifier & breastfeeding']],
+ ar:[['today','المتابعة اليومية'],['meds','الأدوية والفيتامينات'],['firstdays','الأيام الأولى'],['feeding','حسب المرحلة'],['latch','الالتقام والوضعيات'],['article','هل يأكل ما يكفي؟'],['pump','الشفط والتخزين'],['pacifier','اللهاية والرضاعة']]};
+const NURSING_VIEWS=['today','meds','firstdays','feeding','latch','article','pump','pacifier'];
 function nursingTabs(){ const list=NT[S.lang]||NT.he; return '<nav class="seg-scroll ntabs" aria-label="'+esc(t().feeding)+'">'+list.map(x=>'<a class="chip" href="#'+x[0]+'"'+(S.view===x[0]?' aria-current="page"':'')+'>'+esc(x[1])+'</a>').join('')+'</nav>'; }
 function withNursingTabs(html){ if(!NURSING_VIEWS.includes(S.view)) return html; const i=html.indexOf('</header>'); return i<0?nursingTabs()+html:html.slice(0,i+9)+nursingTabs()+html.slice(i+9); }
 // ---------- render ----------
@@ -1514,7 +1549,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump(); case 'firstdays':return viewFirstDays();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -1689,7 +1724,7 @@ document.addEventListener('change',e=>{
 document.addEventListener('input',e=>{ const el=e.target; if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['admin','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
+const VIEWS=['admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
 function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
