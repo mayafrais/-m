@@ -306,10 +306,10 @@ const T = {
   givenNow:'סימנתי שניתן עכשיו',givenAt:(t,w)=>'ניתן היום ב-'+t+' ('+w+')',notGiven:'עוד לא ניתן היום',undo:'ביטול הסימון',
   addMed:'הוספת תרופה או ויטמין',medName:'שם',medNote:'הערה (למשל: פעם ביום לפי טיפת חלב)',add:'הוספה',noMeds:'עוד אין תרופות ברשימה. אפשר להוסיף ויטמין D, ברזל או תרופה לפי מרשם.',
   back:'חזרה',
-  family:'המשפחה',familyHint:'כולם רואים את אותה היסטוריה ומתעדים יחד.',babies:'התינוקות',babyName:'שם התינוק/ת',born:'תאריך הלידה של התינוק/ת',addBaby:'הוספת תינוק/ת (תאומים)',removeBaby:'הסרה',
+  family:'המשפחה',familyHint:'כולם רואים את אותה היסטוריה ומתעדים יחד.',babies:'התינוקות',babyName:'שם התינוק/ת',born:'תאריך הלידה של התינוק/ת',addBaby:'הוספת ילד/ה',removeBaby:'הסרה',
   members:'מי מחובר',invite:'איך מצרפים את בן/בת הזוג',inviteText:'שתפו את הקישור לאפליקציה מכפתור "שיתוף" בראש העמוד. בגרסת הניסיון, מי שמצטרף צריך חשבון Claude באותו ארגון.',
   prefs:'תצוגה',language:'שפה',theme:'מצב תצוגה',themeSys:'לפי הטלפון',themeLight:'יום',themeDark:'לילה',
-  setupTitle:'ברוכה הבאה',setupText:'נתחיל בשם התינוק. אפשר להוסיף עוד אחד אם יש תאומים.',start:'התחלה',
+  setupTitle:'ברוכה הבאה',setupText:'נתחיל בשם התינוק. יש עוד ילד/ה? אפשר להוסיף גם.',start:'התחלה',
   babiesLabel:'בחירת תינוק',
   guideFor:(n,w)=>'מותאם ל'+n+(w?', '+w:''),weeks:(w)=>w===1?'שבוע ראשון':'שבוע '+w,
   stages:['שבוע 1','שבוע 2','שבוע 3','שבועות 4–6','חודשים 2–3'],
@@ -324,7 +324,7 @@ const T = {
   artWhen:'מתי פונים לרופא או לטיפת חלב',artWhenList:['פחות חיתולים רטובים מהרגיל, או שתן כהה','התינוק ישנוני מאוד וקשה להעיר אותו להנקה','הצהבת בעור או בעיניים מתגברת'],artDoubt:'בכל ספק, עדיף לשאול.',
   commTitle:'קהילה',commText:'קבוצות של אמהות באותו שלב, קבוצה לתאומים וקבוצה לשעות הלילה. הקהילה נבנית עכשיו ותיפתח בגרסה הבאה.',
   foodsTitle:'טעימות',foodsText:'מודול הטעימות, עם מאגר המזונות, יומן הטעימות והאלרגנים, יחובר לכאן בשלב הבא.',
-  familyLink:'משפחה והגדרות',appName:'הורות',appFull:'הורות: הנקה, התפתחות, טעימות',home:'בית',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',
+  familyLink:'משפחה והגדרות',appName:'הורות',appFull:'הורות: הנקה, התפתחות, טעימות',home:'בית',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',moreQ:'יש עוד ילד/ה?',moreNo:'לא',moreTwins:'תאומים',moreSib:'בגיל אחר',sibName:'שם הילד/ה הנוסף/ת',sibBorn:'תאריך הלידה של הילד/ה הנוסף/ת',
   share:'שיתוף',shareTitle:'שיתוף עם בן/בת הזוג',shareText:'שלחי את הקישור, ואחר כך אשרי לו/ה גישה מכפתור השיתוף של Claude בראש העמוד. בגרסת הניסיון צריך חשבון Claude באותו ארגון.',shareMsg:(n)=>'מצרפת אותך ליומן של '+n+' באפליקציה "הורות": ',whatsapp:'שליחה בוואטסאפ',copy:'העתקת הקישור',copied:'הקישור הועתק',close:'סגירה'},
  en:{dir:'ltr',name:'English',today:'Today',feeding:'Feeding',community:'Community',foods:'First foods',nav:'Main navigation',
   left:'Left',right:'Right',both:'Both sides',tapStart:'Tap to start',endedHere:'Last feed ended here',nursingNow:'Nursing now',switchHere:'Switch here',
@@ -345,10 +345,10 @@ const T = {
   givenNow:'Mark as given now',givenAt:(t,w)=>'Given today at '+t+' ('+w+')',notGiven:'Not given yet today',undo:'Undo',
   addMed:'Add a medicine or vitamin',medName:'Name',medNote:'Note (e.g. once a day as advised)',add:'Add',noMeds:'No medicines yet. Add vitamin D, iron or a prescription.',
   back:'Back',
-  family:'Family',familyHint:'Everyone sees the same history and logs together.',babies:'Babies',babyName:'Baby’s name',born:'Baby’s date of birth',addBaby:'Add a baby (twins)',removeBaby:'Remove',
+  family:'Family',familyHint:'Everyone sees the same history and logs together.',babies:'Babies',babyName:'Baby’s name',born:'Baby’s date of birth',addBaby:'Add a child',removeBaby:'Remove',
   members:'Who is connected',invite:'How to add your partner',inviteText:'Share the app link from the Share button at the top of the page. In this trial version, whoever joins needs a Claude account in the same organization.',
   prefs:'Display',language:'Language',theme:'Theme',themeSys:'Match phone',themeLight:'Day',themeDark:'Night',
-  setupTitle:'Welcome',setupText:'Start with your baby’s name. Add another one for twins.',start:'Start',
+  setupTitle:'Welcome',setupText:'Start with your baby’s name. Have another child? You can add them too.',start:'Start',
   babiesLabel:'Choose baby',
   guideFor:(n,w)=>'For '+n+(w?', '+w:''),weeks:(w)=>'week '+w,
   stages:['Week 1','Week 2','Week 3','Weeks 4–6','Months 2–3'],
@@ -363,7 +363,7 @@ const T = {
   artWhen:'When to call a doctor or nurse',artWhenList:['Fewer wet diapers than usual, or dark urine','Very sleepy and hard to wake for feeds','Yellowing of the skin or eyes is getting stronger'],artDoubt:'When in doubt, ask.',
   commTitle:'Community',commText:'Groups of mothers at the same stage, a group for twins and one for the night hours. The community is being built and opens in the next version.',
   foodsTitle:'First foods',foodsText:'The first foods module, with the food guide, tasting log and allergens, will be connected here next.',
-  familyLink:'Family and settings',appName:'Parenting',appFull:'Parenting: Nursing, Development, First Foods',home:'Home',dev:'Development',twinsQ:'I have twins',twinName:'Second twin\u2019s name',
+  familyLink:'Family and settings',appName:'Parenting',appFull:'Parenting: Nursing, Development, First Foods',home:'Home',dev:'Development',twinsQ:'I have twins',twinName:'Second twin\u2019s name',moreQ:'Another child?',moreNo:'No',moreTwins:'Twins',moreSib:'Different age',sibName:'Other child\u2019s name',sibBorn:'Other child\u2019s date of birth',
   share:'Share',shareTitle:'Share with your partner',shareText:'Send the link, then give them access from Claude\u2019s Share button at the top of the page. In this trial version they need a Claude account in the same organization.',shareMsg:(n)=>'Join '+n+'\u2019s log in the Parenting app: ',whatsapp:'Send on WhatsApp',copy:'Copy link',copied:'Link copied',close:'Close'},
  ar:{dir:'rtl',name:'العربية',today:'اليوم',feeding:'الرضاعة',community:'المجتمع',foods:'أول الأطعمة',nav:'التنقل الرئيسي',
   left:'يسار',right:'يمين',both:'الجهتان',tapStart:'المسي للبدء',endedHere:'هنا انتهت آخر رضعة',nursingNow:'ترضعين الآن',switchHere:'الانتقال لهذه الجهة',
@@ -384,10 +384,10 @@ const T = {
   givenNow:'أُعطي الآن',givenAt:(t,w)=>'أُعطي اليوم الساعة '+t+' ('+w+')',notGiven:'لم يُعطَ اليوم بعد',undo:'إلغاء',
   addMed:'إضافة دواء أو فيتامين',medName:'الاسم',medNote:'ملاحظة (مثلًا: مرة يوميًا حسب الإرشاد)',add:'إضافة',noMeds:'لا توجد أدوية بعد. أضيفي فيتامين D أو الحديد أو دواء بوصفة.',
   back:'رجوع',
-  family:'العائلة',familyHint:'الجميع يرى السجل نفسه ويسجّل معًا.',babies:'الأطفال',babyName:'اسم الطفل/ة',born:'تاريخ ولادة الطفل/ة',addBaby:'إضافة طفل (توائم)',removeBaby:'إزالة',
+  family:'العائلة',familyHint:'الجميع يرى السجل نفسه ويسجّل معًا.',babies:'الأطفال',babyName:'اسم الطفل/ة',born:'تاريخ ولادة الطفل/ة',addBaby:'إضافة طفل',removeBaby:'إزالة',
   members:'من متصل',invite:'كيف تضيفين الشريك',inviteText:'شاركي رابط التطبيق من زر «مشاركة» أعلى الصفحة. في النسخة التجريبية، يحتاج من ينضم إلى حساب Claude في المؤسسة نفسها.',
   prefs:'العرض',language:'اللغة',theme:'المظهر',themeSys:'حسب الهاتف',themeLight:'نهار',themeDark:'ليل',
-  setupTitle:'أهلًا بكِ',setupText:'لنبدأ باسم الطفل. يمكن إضافة طفل آخر للتوائم.',start:'ابدئي',
+  setupTitle:'أهلًا بكِ',setupText:'لنبدأ باسم الطفل. لديك طفل آخر؟ يمكن إضافته أيضًا.',start:'ابدئي',
   babiesLabel:'اختيار الطفل',
   guideFor:(n,w)=>'مخصّص لـ'+n+(w?'، '+w:''),weeks:(w)=>'الأسبوع '+w,
   stages:['الأسبوع 1','الأسبوع 2','الأسبوع 3','الأسابيع 4–6','الشهران 2–3'],
@@ -402,7 +402,7 @@ const T = {
   artWhen:'متى تتصلين بالطبيب أو العيادة',artWhenList:['حفاضات مبللة أقل من المعتاد، أو بول داكن','الطفل نعسان جدًا ويصعب إيقاظه للرضاعة','اصفرار الجلد أو العينين يزداد'],artDoubt:'عند الشك، اسألي.',
   commTitle:'المجتمع',commText:'مجموعات لأمهات في المرحلة نفسها، ومجموعة للتوائم، وأخرى لساعات الليل. المجتمع قيد البناء وسيفتح في النسخة القادمة.',
   foodsTitle:'أول الأطعمة',foodsText:'سيتم ربط وحدة أول الأطعمة هنا قريبًا، مع دليل الأطعمة وسجل التذوق ومسببات الحساسية.',
-  familyLink:'العائلة والإعدادات',appName:'التربية',appFull:'التربية: رضاعة، نمو، أول الأطعمة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',
+  familyLink:'العائلة والإعدادات',appName:'التربية',appFull:'التربية: رضاعة، نمو، أول الأطعمة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',moreQ:'هل لديك طفل آخر؟',moreNo:'لا',moreTwins:'توائم',moreSib:'بعمر مختلف',sibName:'اسم الطفل الآخر',sibBorn:'تاريخ ولادة الطفل الآخر',
   share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareText:'أرسلي الرابط، ثم امنحيه صلاحية الوصول من زر المشاركة في Claude أعلى الصفحة. في النسخة التجريبية يلزم حساب Claude في المؤسسة نفسها.',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق التربية: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
 };
 
@@ -439,7 +439,7 @@ const IC={
 
 // ---------- state ----------
 const S={lang:ls.get('gp-lang','he'),theme:ls.get('gp-theme2','light'),renderDrafts:false,view:'today',babyId:ls.get('gp-baby',null),me:null,names:{},
-  mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:null,foodSub:'info',openFood:null,foodQ:'',foodStyle:null,recStage:'all',recTex:'all',setupTwins:false,devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
+  mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:null,foodSub:'info',openFood:null,foodQ:'',foodStyle:null,recStage:'all',recTex:'all',setupMore:'',devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
 const t=()=>T[S.lang]||T.he;
 
 // ---------- store (Supabase) ----------
@@ -556,6 +556,7 @@ function viewOnboard(){
 }
 
 // ---------- derived ----------
+function hasTwins(){ const bs=S.family.babies||[]; if(bs.some(x=>x.twin)) return true; const d=bs.map(x=>x.born).filter(Boolean); return d.length!==new Set(d).size; }
 function baby(){ const b=S.family.babies||[]; return b.find(x=>x.id===S.babyId)||b[0]||null; }
 function evs(){ const b=baby(); return b?S.events.filter(e=>e.baby===b.id):[]; }
 function whoLabel(id){ if(!id) return ''; if(id===S.me) return t().you; const m=(S.members||[]).find(x=>x.user_id===id); return (m&&m.display_name)||t().partner; }
@@ -601,8 +602,9 @@ function viewSetup(){
  return '<header class="section"><h1>'+esc(L.setupTitle)+'</h1><p class="muted">'+esc(L.setupText)+'</p></header>'+
  (S.fid?'':'<button type="button" class="link" data-act="onb" data-v="">'+esc(L.back)+'</button>')+'<form class="section" data-form="setup">'+(S.fid?'':'<label class="field" for="setup-me">'+esc(at().yourName)+'<input id="setup-me" type="text" required autocomplete="off" value="'+dv('setup-me')+'"></label>')+'<label class="field" for="setup-name">'+esc(L.babyName)+'<input id="setup-name" type="text" required autocomplete="off" value="'+dv('setup-name')+'"></label>'+
  '<label class="field" for="setup-born">'+esc(L.born)+'<input id="setup-born" type="date" value="'+dv('setup-born')+'"></label>'+
- '<label class="row" for="setup-twins" style="min-height:48px;gap:12px;font-weight:500"><input id="setup-twins" type="checkbox"'+(S.setupTwins?' checked':'')+' style="width:24px;height:24px;accent-color:var(--dusk)">'+esc(L.twinsQ)+'</label>'+
- (S.setupTwins?'<label class="field" for="setup-name2">'+esc(L.twinName)+'<input id="setup-name2" type="text" required autocomplete="off" value="'+dv('setup-name2')+'"></label>':'')+
+ '<div class="section" style="gap:8px"><p id="setup-more-q" style="font-weight:500">'+esc(L.moreQ)+'</p><div class="seg" role="group" aria-labelledby="setup-more-q" style="grid-template-columns:repeat(3,minmax(0,1fr))">'+[['',L.moreNo],['twins',L.moreTwins],['sib',L.moreSib]].map(o=>'<button type="button" data-act="setupmore" data-v="'+o[0]+'" aria-pressed="'+(S.setupMore===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div></div>'+
+ (S.setupMore?'<label class="field" for="setup-name2">'+esc(S.setupMore==='twins'?L.twinName:L.sibName)+'<input id="setup-name2" type="text" required autocomplete="off" value="'+dv('setup-name2')+'"></label>':'')+
+ (S.setupMore==='sib'?'<label class="field" for="setup-born2">'+esc(L.sibBorn)+'<input id="setup-born2" type="date" value="'+dv('setup-born2')+'"></label>':'')+
  (S.authMsg?'<p class="banner" role="alert">'+esc(S.authMsg)+'</p>':'')+'<button class="btn block" type="submit"'+(S.busy?' disabled':'')+'>'+esc(S.busy?at().working:L.start)+'</button></form>';
 }
 
@@ -692,7 +694,7 @@ function viewGuide(){
  '<section class="dark-card" aria-labelledby="stage-h"><span class="badge">'+esc(L.draft)+'</span><h2 id="stage-h" style="font-size:1.25rem">'+esc(L.stageTitle)+'</h2>'+
  '<ol class="stages">'+L.stages.map((s,i)=>'<li'+(i===si?' aria-current="step"':'')+'><span></span>'+esc(s)+'</li>').join('')+'</ol>'+
  '<p style="font-size:1rem;line-height:1.65">'+esc(L.stageText[si])+'</p></section>'+
- '<section class="section" style="gap:0"><h2 style="margin-bottom:4px">'+esc(L.topics)+'</h2>'+L.topicList.filter((x,i)=>i!==4||(S.family.babies||[]).length>1).map(x=>{
+ '<section class="section" style="gap:0"><h2 style="margin-bottom:4px">'+esc(L.topics)+'</h2>'+L.topicList.filter((x,i)=>i!==4||hasTwins()).map(x=>{
   const inner='<span class="mono'+(x[4]?' warm':'')+'" aria-hidden="true">'+esc(x[0])+'</span><span class="grow section" style="gap:2px"><span style="font-weight:500">'+esc(x[1])+'</span><span class="small muted">'+esc(x[2])+'</span></span>';
   const href=x[3]||(L.topicList.indexOf(x)===1?'latch':L.topicList.indexOf(x)===3?'pump':''); if(href&&!x[3]){ const warm=inner.replace('class="mono"','class="mono warm"'); return '<a class="topic" href="#'+href+'">'+warm+'</a>'; }
   return x[3]?'<a class="topic" href="#'+x[3]+'">'+inner+'</a>':'<div class="topic">'+inner+'<span class="badge" style="background:var(--mist);color:var(--ink2)">'+esc(L.soon)+'</span></div>';
@@ -1707,6 +1709,7 @@ function saveSheet(){
 document.addEventListener('click',e=>{
  const el=e.target.closest('[data-act]'); if(!el) return;
  const a=el.dataset.act, L=t(), b=baby();
+ if(a==='setupmore'){ S.setupMore=el.dataset.v||''; render(); if(S.setupMore) requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.getElementById('setup-name2'); if(n) n.focus(); })); return; }
  if(a==='baby'){ S.devAge=null; S.babyId=el.dataset.id; ls.set('gp-baby',S.babyId); render(); return; }
  if(a==='authmode'){ S.authMode=S.authMode==='login'?'signup':'login'; S.authMsg=''; render(); return; }
  if(a==='onb'){ S.onb=el.dataset.v; S.authMsg=''; render(); return; }
@@ -1782,9 +1785,9 @@ document.addEventListener('submit',e=>{
   return;
  }
  if(f.dataset.form==='setup'){
-  const n1=document.getElementById('setup-name').value.trim(), born=document.getElementById('setup-born').value, n2el=document.getElementById('setup-name2'), n2=S.setupTwins&&n2el?n2el.value.trim():'';
+  const n1=document.getElementById('setup-name').value.trim(), born=document.getElementById('setup-born').value, n2el=document.getElementById('setup-name2'), n2=S.setupMore&&n2el?n2el.value.trim():'', b2el=document.getElementById('setup-born2');
   if(!n1) return;
-  const bs=[{id:'b'+uid(),name:n1,born:born||''}]; if(n2) bs.push({id:'b'+uid(),name:n2,born:born||''});
+  const bs=[{id:'b'+uid(),name:n1,born:born||''}]; if(n2){ if(S.setupMore==='twins'){ bs[0].twin=true; bs.push({id:'b'+uid(),name:n2,born:born||'',twin:true}); } else bs.push({id:'b'+uid(),name:n2,born:(b2el&&b2el.value)||''}); }
   S.babyId=bs[0].id; ls.set('gp-baby',S.babyId); document.activeElement&&document.activeElement.blur();
   if(S.fid){ S.draft={}; Store.fam({babies:bs}); render(); return; }
   const me=(document.getElementById('setup-me')||{}).value||''; S.busy=true; S.authMsg=''; render();
@@ -1798,7 +1801,7 @@ document.addEventListener('submit',e=>{
 document.addEventListener('change',e=>{
  const el=e.target;
  if(el.dataset&&el.dataset.admSort){ S.admSort=el.value; render(); return; }
- if(el.id==='setup-twins'){ S.setupTwins=el.checked; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.getElementById(el.checked?'setup-name2':'setup-twins'); if(n) n.focus(); })); return; }
+ 
  if(el.dataset.myName){ const v=el.value.trim(); if(v){ Store.setMyName(v.slice(0,40)); say(t().saved); } return; }
  if(el.dataset.allergen){ const b=baby(); if(b){ Store.fam({allergens:{[b.id]:{[el.dataset.allergen]:{[el.dataset.k]:el.checked}}}}); say(t().saved); } return; }
  if(el.dataset.ms){ const b=baby(); if(b){ Store.fam({milestones:{[b.id]:{[el.dataset.ms]:el.checked?Date.now():null}}}); say(t().saved); } return; }
