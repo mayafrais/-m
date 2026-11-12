@@ -290,7 +290,7 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .urow{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:4px;text-align:right;background:var(--bg);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;color:var(--ink);font:inherit;cursor:pointer;min-height:48px}
 .urow:hover{border-color:var(--dusk)}
 .urow.on{border-color:var(--dusk);background:color-mix(in srgb,var(--dusk) 10%,var(--surface))}
-.urow-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.urow-top .st{margin-inline-start:auto}
+.urow-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.urow-top b{overflow-wrap:anywhere;text-align:right}.urow-top .st{margin-inline-start:auto}
 .adm-detail{scroll-margin-top:64px}.adm-detail:focus{outline:none}
 .adm-empty{min-height:160px;justify-content:center;align-items:center;text-align:center}
 .adm-h3{font-size:1rem;margin:14px 0 4px}
@@ -1594,7 +1594,7 @@ function viewAdmin(){
  const lm=S.admList||'active', shown=lm==='all'?allU:actU, sel=S.admUser;
  const urow=u=>{ const st=admStatus(u), on=sel===u.id;
   return '<li><button type="button" class="urow'+(on?' on':'')+'" data-act="admuser" data-id="'+esc(u.id||'')+'" aria-pressed="'+on+'">'+
-   '<span class="urow-top"><b>'+esc(u.name||(u.email||'').split('@')[0]||'—')+'</b>'+(u.is_me?' <span class="badge">את</span>':'')+'<span class="st st-'+st[1]+'">'+esc(st[0])+'</span></span>'+
+   '<span class="urow-top"><b dir="ltr">'+esc(u.email||'—')+'</b>'+(u.name?'<span class="small muted">'+esc(u.name)+'</span>':'')+(u.is_me?' <span class="badge">את</span>':'')+'<span class="st st-'+st[1]+'">'+esc(st[0])+'</span></span>'+
    '<span class="small muted">'+esc((u.last_seen?'נראתה '+ago(u.last_seen):'עוד לא נכנסה')+' · '+nf(u.days_active)+' ימים פעילים · '+nf(u.events)+' רישומים'+(u.platform?' · '+(ADM_PLAT[u.platform]||u.platform):''))+'</span></button></li>'; };
  const ulist='<section class="card adm-card" id="adm-people" aria-labelledby="adm-people-h"><h2 id="adm-people-h">'+(lm==='all'?'כל המשתמשים':'משתמשים פעילים השבוע')+' ('+nf(shown.length)+')</h2>'+
   '<div class="row" role="group" aria-label="איזה משתמשים להציג" style="gap:8px;flex-wrap:wrap"><button type="button" class="chip" data-act="admlist" data-v="active" aria-pressed="'+(lm==='active')+'">פעילים השבוע ('+nf(actU.length)+')</button><button type="button" class="chip" data-act="admlist" data-v="all" aria-pressed="'+(lm==='all')+'">כולם ('+nf(U.length)+')</button></div>'+
@@ -1625,7 +1625,7 @@ function viewAdmin(){
    const tlb='<h3 class="adm-h3">מה עשתה, לפי הסדר</h3>'+(tlh||'<p class="small muted">אין עדיין פעילות.</p>');
    body=facts+did+act+scr2+tlb;
   } else if(S.admDetErr) body='<p class="banner" role="alert">'+esc(S.admDetErr)+'</p>';
-  det='<section class="card adm-card adm-detail" id="adm-detail" tabindex="-1" aria-labelledby="adm-det-h"><div class="between" style="align-items:flex-start;gap:10px"><div class="section" style="gap:2px"><h2 id="adm-det-h">'+esc(u.name||(u.email||'').split('@')[0]||'משתמשת')+' <span class="st st-'+st[1]+'">'+esc(st[0])+'</span></h2><p class="small muted" dir="ltr" style="text-align:right">'+esc(u.email||'')+(u.confirmed===false?' (לא אומת)':'')+'</p></div>'+
+  det='<section class="card adm-card adm-detail" id="adm-detail" tabindex="-1" aria-labelledby="adm-det-h"><div class="between" style="align-items:flex-start;gap:10px"><div class="section" style="gap:2px"><h2 id="adm-det-h"><span dir="ltr">'+esc(u.email||'משתמשת')+'</span> <span class="st st-'+st[1]+'">'+esc(st[0])+'</span></h2><p class="small muted">'+esc((u.name?'נרשמה בתור: '+u.name:'')+(u.confirmed===false?(u.name?' · ':'')+'המייל לא אומת':''))+'</p></div>'+
    '<button type="button" class="btn ghost" data-act="admuser" data-id="">סגירה</button></div>'+body+'</section>';
  } else det='<section class="card adm-card adm-detail adm-empty" id="adm-detail"><p class="muted">בחרי משתמשת מהרשימה כדי לראות את הפירוט שלה.</p></section>';
  const people='<div class="adm-split">'+ulist+det+'</div>';
@@ -1640,7 +1640,7 @@ function viewAdmin(){
   '<label class="field" for="adm-sort">מיון<select id="adm-sort" data-adm-sort="1">'+[['signed_up','הצטרפות'],['last_seen','נראו לאחרונה'],['days_active','ימים פעילים'],['events','רישומים']].map(o=>'<option value="'+o[0]+'"'+(sort===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></label>'+
   '<button type="button" class="btn ghost" data-act="admcsv" data-v="users">ייצוא לאקסל (CSV)</button></div>'+
   '<div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">סטטוס</th><th scope="col">הצטרפו</th><th scope="col">נראו לאחרונה</th><th scope="col">ימים פעילים</th><th scope="col">רישומים</th><th scope="col">במשפחה</th><th scope="col">מכשיר</th><th scope="col">כאפליקציה</th><th scope="col">שפה</th></tr></thead><tbody>'+
-  list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td><button type="button" class="link" data-act="admuser" data-id="'+esc(u.id||'')+'">'+esc(u.name||(u.email||'').split('@')[0]||'—')+'</button>'+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
+  list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td>'+esc(u.name||'—')+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr"><button type="button" class="link" data-act="admuser" data-id="'+esc(u.id||'')+'">'+esc(u.email||'')+'</button>'+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
   '</tbody></table></div>','"פעילים" = נראו ביומיים האחרונים. "שקטים לאחרונה" = 2 עד 7 ימים. כדאי לפנות אליהם ולשאול מה חסר.');
  const fbi=F.items||[];
  const fb=card('adm-fb','משובים ('+nf(F.count)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
