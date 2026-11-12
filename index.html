@@ -303,6 +303,8 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .kid-list>li{border-inline-start:4px solid var(--kc,var(--dusk));padding-inline-start:10px}
 textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:10px 12px;font-size:1rem;resize:vertical;line-height:1.5}
 .about-card p{line-height:1.65}
+.about-card{overflow:hidden}.about-img{display:block;width:calc(100% + 36px);max-width:none;height:auto;margin:-18px -18px 4px;aspect-ratio:960/710;object-fit:cover}
+.wa-btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 #adm-contact{margin-top:14px}
 </style>
 </head>
@@ -1519,56 +1521,62 @@ document.addEventListener('visibilitychange',()=>{ if(document.hidden) Usage.flu
 window.addEventListener('appinstalled',()=>Usage.add('install'));
 
 // ---------- about the maker + contact (messages go to Supabase "feedback" with source=contact; the owner's email is never shown) ----------
-const WA_NUMBER=''; // international format without + (e.g. 9725XXXXXXXX). Empty = no WhatsApp button.
+const WA_NUMBER='972528667266'; // international format without + (e.g. 9725XXXXXXXX). Empty = no WhatsApp button.
 const AB={
  he:{tile:['נעים להכיר','מי עומדת מאחורי האפליקציה, ואיך לדבר איתי'],title:'נעים להכיר',
   hi:'היי, אני מאיה 👋',
-  body:['בניתי את האפליקציה הזו כדי שלהורים יהיה מקום אחד, פשוט ובעברית, לכל מה שקורה בחודשים הראשונים: הנקה, שינה, טעימות והתפתחות.','האפליקציה עדיין בהרצה, ואני משפרת אותה כל הזמן לפי מה שאתם כותבים לי. כל רעיון, שאלה או תקלה עוזרים לי.'],
-  talk:'רוצים לכתוב לי?',talkSub:'ההודעה מגיעה ישר אליי. אם תרצו שאחזור אליכם, השאירו מייל או טלפון.',
-  name:'איך קוראים לך? (לא חובה)',contact:'מייל או טלפון לחזרה (לא חובה)',msg:'מה רצית לכתוב?',send:'שליחה',sending:'שולחת...',
+  body:['אני אמא לתאומים ועוד קטנציק :)','מתוך חוסר שהרגשתי בגידול הילדים בניתי את האפליקציה הזו, כדי שלהורים יהיה מקום אחד ופשוט לכל מה שקורה בחודשים הראשונים: הנקה, שינה, טעימות והתפתחות.','האפליקציה עדיין בהרצה, ואני משפרת אותה כל הזמן לפי מה שאתם כותבים לי. כל רעיון, שאלה או תקלה עוזרים לי.','אשמח לשמוע מכם!'],alt:'מאיה והילדים על רקע אגם והרים',
+  talk:'רוצים לכתוב לי?',talkSub:'ההודעה מגיעה ישר אליי, ואחזור אליכם למייל.',
+  name:'שם',contact:'מייל',badMail:'בדקו שכתובת המייל נכונה.',needName:'כתבו את השם שלכם.',msg:'מה רצית לכתוב?',send:'שליחה',sending:'שולחת...',
   sent:'תודה! ההודעה הגיעה אליי.',fail:'ההודעה לא נשלחה. בדקו את החיבור לאינטרנט ונסו שוב.',empty:'כתבו משהו לפני השליחה.',
-  wa:'או בוואטסאפ',waBtn:'שליחת הודעה בוואטסאפ',waText:'היי מאיה, אני משתמש/ת באפליקציה הורות ורציתי לכתוב לך:',
+  wa:'או בוואטסאפ',waBtn:'כתבו לי בוואטסאפ',waAria:'כתבו לי בוואטסאפ (נפתח בוואטסאפ)',waText:'היי מאיה, אני משתמש/ת באפליקציה הורות ורציתי לכתוב לך:',
   note:'המידע באפליקציה כללי ואינו מחליף ייעוץ של רופא/ה, אחות או יועצת הנקה.'},
  en:{tile:['Nice to meet you','Who is behind the app, and how to reach me'],title:'Nice to meet you',
   hi:'Hi, I\'m Maya 👋',
-  body:['I built this app so parents have one simple place for everything in the first months: nursing, sleep, first foods and development.','The app is still in its trial period, and I keep improving it based on what you tell me. Every idea, question or bug report helps.'],
-  talk:'Want to write to me?',talkSub:'Your message comes straight to me. If you\'d like a reply, leave an email or phone number.',
-  name:'Your name (optional)',contact:'Email or phone for a reply (optional)',msg:'What would you like to say?',send:'Send',sending:'Sending...',
+  body:['I\'m a mom of twins and one more little one :)','I built this app out of something I felt was missing while raising my kids, so parents have one simple place for everything in the first months: nursing, sleep, first foods and development.','The app is still in its trial period, and I keep improving it based on what you tell me. Every idea, question or bug report helps.','I\'d love to hear from you!'],alt:'Maya and her kids by a lake in the mountains',
+  talk:'Want to write to me?',talkSub:'Your message comes straight to me, and I\'ll reply by email.',
+  name:'Name',contact:'Email',badMail:'Check that the email address is correct.',needName:'Please write your name.',msg:'What would you like to say?',send:'Send',sending:'Sending...',
   sent:'Thank you! Your message reached me.',fail:'The message wasn\'t sent. Check your connection and try again.',empty:'Write something before sending.',
-  wa:'Or on WhatsApp',waBtn:'Message me on WhatsApp',waText:'Hi Maya, I use the Parenting app and wanted to write to you:',
+  wa:'Or on WhatsApp',waBtn:'Message me on WhatsApp',waAria:'Message me on WhatsApp (opens WhatsApp)',waText:'Hi Maya, I use the Parenting app and wanted to write to you:',
   note:'The information in the app is general and does not replace advice from a doctor, nurse or lactation consultant.'},
  ar:{tile:['تشرفنا','من تقف وراء التطبيق، وكيف تتواصلون معي'],title:'تشرفنا',
   hi:'مرحبًا، أنا مايا 👋',
-  body:['بنيت هذا التطبيق ليكون للأهل مكان واحد وبسيط لكل ما يحدث في الأشهر الأولى: الرضاعة، النوم، الأطعمة الأولى والتطور.','التطبيق ما زال في فترة التجربة، وأنا أحسّنه باستمرار بحسب ما تكتبونه لي. كل فكرة أو سؤال أو خلل يساعدني.'],
-  talk:'تريدون أن تكتبوا لي؟',talkSub:'رسالتكم تصلني مباشرة. إذا أردتم أن أرد، اتركوا بريدًا إلكترونيًا أو رقم هاتف.',
-  name:'ما اسمك؟ (اختياري)',contact:'بريد أو هاتف للرد (اختياري)',msg:'ماذا تريدون أن تكتبوا؟',send:'إرسال',sending:'جارٍ الإرسال...',
+  body:['أنا أم لتوأم وطفل صغير آخر :)','بنيت هذا التطبيق بسبب نقص شعرت به أثناء تربية أطفالي، ليكون للأهل مكان واحد وبسيط لكل ما يحدث في الأشهر الأولى: الرضاعة، النوم، الأطعمة الأولى والتطور.','التطبيق ما زال في فترة التجربة، وأنا أحسّنه باستمرار بحسب ما تكتبونه لي. كل فكرة أو سؤال أو خلل يساعدني.','يسعدني أن أسمع منكم!'],alt:'مايا وأطفالها بجانب بحيرة في الجبال',
+  talk:'تريدون أن تكتبوا لي؟',talkSub:'رسالتكم تصلني مباشرة، وسأرد عليكم عبر البريد الإلكتروني.',
+  name:'الاسم',contact:'البريد الإلكتروني',badMail:'تحققوا من صحة عنوان البريد الإلكتروني.',needName:'اكتبوا اسمكم.',msg:'ماذا تريدون أن تكتبوا؟',send:'إرسال',sending:'جارٍ الإرسال...',
   sent:'شكرًا! وصلتني رسالتكم.',fail:'لم تُرسل الرسالة. تحققوا من الاتصال بالإنترنت وحاولوا مرة أخرى.',empty:'اكتبوا شيئًا قبل الإرسال.',
-  wa:'أو عبر واتساب',waBtn:'إرسال رسالة عبر واتساب',waText:'مرحبًا مايا، أستخدم تطبيق الأبوّة وأردت أن أكتب لك:',
+  wa:'أو عبر واتساب',waBtn:'راسلوني عبر واتساب',waAria:'راسلوني عبر واتساب (يُفتح في واتساب)',waText:'مرحبًا مايا، أستخدم تطبيق الأبوّة وأردت أن أكتب لك:',
   note:'المعلومات في التطبيق عامة ولا تغني عن استشارة طبيب/ة أو ممرضة أو مستشارة رضاعة.'}
 };
 function viewAbout(){
  const A=AB[S.lang]||AB.he, dv=id=>esc((S.draft||{})[id]||'');
  const st=S.aboutSt||'';
+ const ERR={name:A.needName,mail:A.badMail,empty:A.empty};
+ const inv=k=>st===k?' aria-invalid="true" aria-describedby="ct-err"':'';
+ const fld=(id,lab,ctl)=>'<label class="field" for="'+id+'"><span>'+esc(lab)+' <span aria-hidden="true" style="color:var(--danger)">*</span></span>'+ctl+'</label>'+((id==='ct-name'&&st==='name')||(id==='ct-contact'&&st==='mail')||(id==='ct-msg'&&st==='empty')?'<p class="small" id="ct-err" role="alert" style="color:var(--danger);font-weight:600;margin-top:-4px">'+esc(ERR[st])+'</p>':'');
  const form=st==='sent'?'<p class="banner" role="status" style="background:color-mix(in srgb,#2E8B57 16%,var(--surface))">'+esc(A.sent)+'</p>':
   '<form class="section" data-form="contact" style="gap:12px" novalidate>'+
-  '<label class="field" for="ct-name">'+esc(A.name)+'<input id="ct-name" type="text" autocomplete="given-name" maxlength="40" value="'+dv('ct-name')+'"></label>'+
-  '<label class="field" for="ct-contact">'+esc(A.contact)+'<input id="ct-contact" type="text" dir="auto" autocomplete="email" maxlength="120" value="'+dv('ct-contact')+'"></label>'+
-  '<label class="field" for="ct-msg">'+esc(A.msg)+'<textarea id="ct-msg" rows="5" maxlength="2000" required aria-required="true"'+(st==='empty'?' aria-invalid="true" aria-describedby="ct-err"':'')+'>'+dv('ct-msg')+'</textarea></label>'+
-  (st==='empty'||st==='fail'?'<p class="small" id="ct-err" role="alert" style="color:var(--danger);font-weight:600">'+esc(st==='empty'?A.empty:A.fail)+'</p>':'')+
+  fld('ct-name',A.name,'<input id="ct-name" type="text" autocomplete="name" maxlength="40" required aria-required="true"'+inv('name')+' value="'+dv('ct-name')+'">')+
+  fld('ct-contact',A.contact,'<input id="ct-contact" type="email" dir="ltr" inputmode="email" autocomplete="email" maxlength="120" required aria-required="true"'+inv('mail')+' value="'+dv('ct-contact')+'">')+
+  fld('ct-msg',A.msg,'<textarea id="ct-msg" rows="5" maxlength="2000" required aria-required="true"'+inv('empty')+'>'+dv('ct-msg')+'</textarea>')+
+  (st==='fail'?'<p class="small" role="alert" style="color:var(--danger);font-weight:600">'+esc(A.fail)+'</p>':'')+
   '<button type="submit" class="btn"'+(st==='sending'?' disabled':'')+'>'+esc(st==='sending'?A.sending:A.send)+'</button></form>';
- const wa=WA_NUMBER?'<p class="small muted" style="text-align:center">'+esc(A.wa)+'</p><a class="btn ghost" href="https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(A.waText)+'" target="_blank" rel="noopener">'+esc(A.waBtn)+'</a>':'';
+ const wa=WA_NUMBER?'<p class="small muted" style="text-align:center">'+esc(A.wa)+'</p><a class="btn ghost wa-btn" href="https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(A.waText)+'" target="_blank" rel="noopener" aria-label="'+esc(A.waAria)+'"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 20.5l1.3-4.2A8.5 8.5 0 1 1 8 19.4z"/><path d="M9 8.6c0 3.3 2.9 6.2 6.4 6.4l1.2-1.5-2-1-1 .8c-1.2-.5-2.3-1.6-2.8-2.8l.8-1-1-2z"/></svg>'+esc(A.waBtn)+'</a>':'';
  return '<header class="section" style="gap:6px"><a class="link" href="#home" style="align-self:flex-start">'+esc(t().back)+'</a><h1>'+esc(A.title)+'</h1></header>'+
-  '<section class="card about-card"><h2>'+esc(A.hi)+'</h2>'+A.body.map(p=>'<p>'+esc(p)+'</p>').join('')+'</section>'+
+  '<section class="card about-card"><img class="about-img" src="img/about/maya.jpg" alt="'+esc(A.alt)+'" width="960" height="710" decoding="async"><h2>'+esc(A.hi)+'</h2>'+A.body.map(p=>'<p>'+esc(p)+'</p>').join('')+'</section>'+
   '<section class="card" aria-labelledby="ct-h"><h2 id="ct-h">'+esc(A.talk)+'</h2><p class="small muted">'+esc(A.talkSub)+'</p>'+form+wa+'</section>'+
   '<p class="note">'+esc(A.note)+'</p>';
 }
 async function sendContact(){
  const A=AB[S.lang]||AB.he, g=id=>((document.getElementById(id)||{}).value||'').trim();
- const msg=g('ct-msg'); if(!msg){ S.aboutSt='empty'; render(); const m=document.getElementById('ct-msg'); if(m) m.focus(); return; }
+ const msg=g('ct-msg'), nm=g('ct-name'), em=g('ct-contact');
+ try{ const ae=document.activeElement; if(ae&&ae.blur) ae.blur(); }catch(e){}
+ const bad=!nm?['name','ct-name']:!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)?['mail','ct-contact']:!msg?['empty','ct-msg']:null;
+ if(bad){ S.aboutSt=bad[0]; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const m=document.getElementById(bad[1]); if(m) m.focus(); })); return; }
  if(!Store.sb){ S.aboutSt='fail'; render(); return; }
  S.aboutSt='sending'; render();
  let ok=false;
- try{ const r=await retrySave(()=>Store.sb.from('feedback').insert({source:'contact',role:g('ct-name')||null,contact:g('ct-contact')||null,message:msg.slice(0,2000)})); ok=!r.error; }catch(e){ ok=false; }
+ try{ const r=await retrySave(()=>Store.sb.from('feedback').insert({source:'contact',role:nm.slice(0,40),contact:em.slice(0,200),message:msg.slice(0,2000)})); ok=!r.error; }catch(e){ ok=false; }
  if(ok){ S.aboutSt='sent'; ['ct-name','ct-contact','ct-msg'].forEach(k=>{ if(S.draft) delete S.draft[k]; }); say(A.sent); }
  else S.aboutSt='fail';
  render();
