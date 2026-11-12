@@ -284,6 +284,23 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .swatch{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 14px 0 10px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-weight:500}
 .swatch i{width:22px;height:22px;border-radius:50%;background:var(--kc);display:block}
 .swatch[aria-checked="true"]{border-color:var(--kc);box-shadow:0 0 0 2px var(--kc) inset;font-weight:700}
+.adm-split{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+@media(min-width:900px){.adm-split{grid-template-columns:minmax(300px,400px) minmax(0,1fr)}.adm-split #adm-people{position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto}}
+.ulist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.urow{width:100%;display:flex;flex-direction:column;align-items:stretch;gap:4px;text-align:right;background:var(--bg);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;color:var(--ink);font:inherit;cursor:pointer;min-height:48px}
+.urow:hover{border-color:var(--dusk)}
+.urow.on{border-color:var(--dusk);background:color-mix(in srgb,var(--dusk) 10%,var(--surface))}
+.urow-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.urow-top .st{margin-inline-start:auto}
+.adm-detail{scroll-margin-top:64px}.adm-detail:focus{outline:none}
+.adm-empty{min-height:160px;justify-content:center;align-items:center;text-align:center}
+.adm-h3{font-size:1rem;margin:14px 0 4px}
+.adm-detail .adm-kpis{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}.adm-detail .kpi{background:var(--bg);padding:10px 12px;border-radius:14px}
+.adm-all{margin:22px 0 0;padding-top:16px;border-top:2px solid var(--line);scroll-margin-top:64px}
+#adm-people{scroll-margin-top:64px}
+.list.tl li{padding:6px 0}
+.kid-tag{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:700;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--kc,var(--dusk)) 16%,var(--surface));color:var(--ink);vertical-align:middle;margin-inline-start:8px}
+.kid-tag i{width:10px;height:10px;border-radius:50%;background:var(--kc,var(--dusk))}
+.kid-list>li{border-inline-start:4px solid var(--kc,var(--dusk));padding-inline-start:10px}
 </style>
 </head>
 <body>
@@ -665,7 +682,8 @@ function viewToday(){
  const fmtH=m=>m?(Math.floor(m/60)?Math.floor(m/60)+':'+pad(m%60)+' '+(L.hrs||'h'):m+' '+L.min):'';
  const dayChips='<div class="seg-scroll" role="group" aria-label="'+esc(L.histAria)+'">'+[0,1,2,3,4,5,6].map(i=>'<button type="button" class="chip" data-act="hday" data-v="'+i+'" aria-pressed="'+(i===hd)+'">'+esc(i<3?L.dayNames[i]:new Date(dayStart(i)).toLocaleDateString(S.lang==='he'?'he-IL':S.lang==='ar'?'ar-u-nu-latn':'en-GB',{weekday:'short',day:'numeric',month:'numeric'}))+'</button>').join('')+'</div>';
  const daySummary=dl.length?'<p class="small muted">'+esc(L.daySum(dFeeds.length,dMins,dl.filter(e=>e.type==='bottle').length,dl.filter(e=>e.type==='diaper').length,fmtH(dSleep)))+'</p>':'';
- const rows=todayList.length?'<ul class="list">'+todayList.map(e=>{
+ const multi=(S.family.babies||[]).length>1, kb=baby(), ktag=multi&&kb?'<span class="kid-tag"><i aria-hidden="true"></i>'+esc(kb.name)+'</span>':'';
+ const rows=todayList.length?'<ul class="list'+(multi?' kid-list':'')+'">'+todayList.map(e=>{
   const c=S.confirmDel===e.id;
   return '<li><span class="time">'+hhmm(e.t)+'</span><span class="grow">'+esc(evText(e))+'</span><span class="small muted">'+esc(whoLabel(e.by))+'</span>'+
    (c?'<span class="confirm"><button type="button" class="yes" data-act="delyes" data-id="'+esc(e.id)+'">'+esc(L.yes)+'</button><button type="button" data-act="delno">'+esc(L.no)+'</button></span>'
@@ -681,9 +699,9 @@ function viewToday(){
   '<button type="button" class="qbtn" data-act="sleep" aria-pressed="'+(!!sl)+'"><span class="ic">'+IC.sleep+'</span>'+esc(sl?L.sleeping+' '+'':L.sleep)+(sl?'<span data-timer-s style="font-variant-numeric:tabular-nums">'+clock(sl.start)+'</span>':'')+'</button>'+
   '<a class="qbtn" href="#meds" style="text-decoration:none"><span class="ic">'+IC.med+'</span>'+esc(L.med)+'</a>'+
  '</nav>'+
- '<section class="section rule" aria-label="'+esc(L.last24)+'"><div class="between"><h2>'+esc(L.last24)+'</h2><span class="small muted">'+esc(L.totals(feeds.length,diapers.length))+'</span></div>'+ribbon+axis+
+ '<section class="section rule" aria-label="'+esc(L.last24+(multi&&kb?', '+kb.name:''))+'"><div class="between"><h2>'+esc(L.last24)+ktag+'</h2><span class="small muted">'+esc(L.totals(feeds.length,diapers.length))+'</span></div>'+ribbon+axis+
  '<div class="legend"><span class="row" style="gap:6px"><span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:var(--dawn)"></span>'+esc(L.legendFeed)+'</span><span class="row" style="gap:6px"><span aria-hidden="true" style="width:16px;height:6px;border-radius:3px;background:var(--dusk);opacity:.4"></span>'+esc(L.legendSleep)+'</span></div></section>'+
- '<section class="section" aria-label="'+esc(L.recent)+'"><h2>'+esc(L.recent)+'</h2>'+dayChips+daySummary+rows+'</section>'+
+ '<section class="section" aria-label="'+esc(L.recent+(multi&&kb?', '+kb.name:''))+'"><div class="between" style="gap:8px"><h2>'+esc(L.recent)+'</h2>'+ktag+'</div>'+dayChips+daySummary+rows+'</section>'+
  '<a class="opt" href="#feeding" style="text-decoration:none;min-height:72px"><span class="opt-ic">'+IC.guide+'</span><span class="opt-tx"><span class="opt-t">'+esc((HT[S.lang]||HT.he).guide[0])+'</span><span class="opt-h">'+esc((HT[S.lang]||HT.he).guide[1])+'</span></span></a>';
 }
 function qb(type,label){ return '<button type="button" class="qbtn" data-act="quick" data-type="'+type+'"><span class="ic">'+IC[type]+'</span>'+esc(label)+'</button>'; }
@@ -1505,6 +1523,10 @@ async function loadAdmin(force){
  catch(e){ S.adminErr='לא הצלחתי לטעון את הנתונים. נסי שוב בעוד רגע.'; }
  S.adminLoading=false; S.adminAt=Date.now(); render();
 }
+async function loadAdmUser(id){ if(!isAdmin()||!id) return; S.admDetErr='';
+ try{ const r=await Store.sb.rpc('admin_user_detail',{p_user:id}); if(r.error) throw r.error; if(S.admUser===id){ S.admDet={id,data:r.data,at:Date.now()}; } }
+ catch(e){ if(S.admUser===id) S.admDetErr='לא הצלחתי לטעון את הפירוט. נסי שוב בעוד רגע.'; }
+ if(S.view==='admin') render(); }
 const ADM_SCREENS={home:'בית',today:'מעקב יומי',meds:'תרופות',firstdays:'הימים הראשונים',feeding:'מה קורה בכל שלב',latch:'אחיזה ותנוחות',article:'אוכל/ת מספיק?',pump:'שאיבה ואחסון',pacifier:'מוצץ',foods:'טעימות',dev:'התפתחות',routine:'סדר יום ושינה',calm:'הרגעת תינוק',family:'הגדרות',install:'התקנה',community:'קהילה',admin:'לוח נתונים'};
 const ADM_TYPES={feed:'הנקות',bottle:'בקבוקים',pump:'שאיבות',diaper:'חיתולים',sleep:'שינה',med:'תרופות',taste:'טעימות'};
 const ADM_PLAT={ios:'אייפון',android:'אנדרואיד',desktop:'מחשב'};
@@ -1515,14 +1537,14 @@ function admStatus(u){ if(!u.last_seen) return ['לא התחילו','off']; cons
 function viewAdmin(){
  if(!isAdmin()) return '<p class="empty">המסך הזה זמין רק למנהלת האפליקציה.</p><a class="link" href="#home">'+esc(t().back)+'</a>';
  if(!S.adminLoading&&(!S.adminAt||Date.now()-S.adminAt>15000)) setTimeout(loadAdmin,0);
- if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden) loadAdmin(true); else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
+ if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden){ loadAdmin(true); if(S.admUser) loadAdmUser(S.admUser); } else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
  const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL'), pc=(a,b)=>b?Math.round(a/b*100):0;
  const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
  const ago=v=>{ if(!v) return '—'; const m=(Date.now()-new Date(v))/6e4; return m<60?'לפני '+Math.max(1,Math.round(m))+' דק׳':m<1440?'לפני '+Math.round(m/60)+' ש׳':'לפני '+Math.round(m/1440)+' ימים'; };
  const ex=!!ls.get('gp-adm-ex',false);
  const head='<header class="adm-head"><div><a class="link" href="#home">'+esc(t().back)+'</a><h1>לוח נתונים</h1>'+(A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+' · מתרענן לבד כל דקה · רק את רואה את המסך הזה</p>':'')+'</div>'+
   '<div class="adm-tools"><label class="adm-sw"><input type="checkbox" data-act="admex"'+(ex?' checked':'')+'> בלי הפעילות שלי</label><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div></header>'+
-  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-over','סקירה'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
+  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-people','משתמשים פעילים'],['adm-all','כל הנתונים'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','טבלת משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
  if(S.adminErr&&!A) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
  if(!A) return head+'<p class="empty" role="status">טוען נתונים...</p>';
  const K=A.kpi||{}, F=S.adminFb||{}, card=(id,title,body,hint,cls)=>'<section class="card adm-card '+(cls||'')+'"'+(id?' id="'+id+'"':'')+'><h2>'+esc(title)+'</h2>'+(hint?'<p class="small muted">'+esc(hint)+'</p>':'')+body+'</section>';
@@ -1565,23 +1587,65 @@ function viewAdmin(){
   '<p class="small" style="font-weight:600;margin-top:10px">שפה</p>'+hbar(ob(P.lang),k=>({he:'עברית',en:'אנגלית',ar:'ערבית'})[k]||k),'לפי הכניסה האחרונה של כל משתמש.');
  const E=A.errors||[];
  const errs=card('','תקלות אחרונות',E.length?'<ul class="list">'+E.slice(0,15).map(e=>'<li style="display:block"><p class="small muted">'+esc(dt(e.at))+' · '+esc(e.kind==='save_fail'?'שמירה נכשלה':'שגיאה')+' · '+esc(ADM_SCREENS[e.screen]||e.screen||'')+' · '+esc(ADM_PLAT[e.platform]||e.platform||'')+'</p>'+(e.detail?'<p class="small" dir="ltr" style="text-align:left;word-break:break-word">'+esc(e.detail)+'</p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">אין תקלות.</p>','שגיאות שקרו אצל משתמשים, ושמירות שנכשלו. דוח הבוקר היומי בודק גם אותן.');
+ // ---- 1) active users list + 2) per-user detail ----
+ const sinceMs=u=>u.last_seen?Date.now()-new Date(u.last_seen):Infinity;
+ const actU=U.filter(u=>sinceMs(u)<7*864e5).sort((a,b)=>sinceMs(a)-sinceMs(b));
+ const allU=U.slice().sort((a,b)=>sinceMs(a)-sinceMs(b)||(a.signed_up<b.signed_up?1:-1));
+ const lm=S.admList||'active', shown=lm==='all'?allU:actU, sel=S.admUser;
+ const urow=u=>{ const st=admStatus(u), on=sel===u.id;
+  return '<li><button type="button" class="urow'+(on?' on':'')+'" data-act="admuser" data-id="'+esc(u.id||'')+'" aria-pressed="'+on+'">'+
+   '<span class="urow-top"><b>'+esc(u.name||(u.email||'').split('@')[0]||'—')+'</b>'+(u.is_me?' <span class="badge">את</span>':'')+'<span class="st st-'+st[1]+'">'+esc(st[0])+'</span></span>'+
+   '<span class="small muted">'+esc((u.last_seen?'נראתה '+ago(u.last_seen):'עוד לא נכנסה')+' · '+nf(u.days_active)+' ימים פעילים · '+nf(u.events)+' רישומים'+(u.platform?' · '+(ADM_PLAT[u.platform]||u.platform):''))+'</span></button></li>'; };
+ const ulist='<section class="card adm-card" id="adm-people" aria-labelledby="adm-people-h"><h2 id="adm-people-h">'+(lm==='all'?'כל המשתמשים':'משתמשים פעילים השבוע')+' ('+nf(shown.length)+')</h2>'+
+  '<div class="row" role="group" aria-label="איזה משתמשים להציג" style="gap:8px;flex-wrap:wrap"><button type="button" class="chip" data-act="admlist" data-v="active" aria-pressed="'+(lm==='active')+'">פעילים השבוע ('+nf(actU.length)+')</button><button type="button" class="chip" data-act="admlist" data-v="all" aria-pressed="'+(lm==='all')+'">כולם ('+nf(U.length)+')</button></div>'+
+  '<p class="small muted">לחצי על משתמשת כדי לראות מה היא עשתה באפליקציה.</p>'+
+  (shown.length?'<ul class="ulist">'+shown.map(urow).join('')+'</ul>':'<p class="small muted">אין משתמשים פעילים השבוע. אפשר לעבור ל"כולם".</p>')+'</section>';
+ let det='';
+ if(sel){
+  const u=U.find(x=>x.id===sel)||{}, DD=(S.admDet&&S.admDet.id===sel)?S.admDet.data:null, st=admStatus(u);
+  const evTxt=x=>{ const d=x.d||{}; const e={type:x.k,side:d.side,mins:d.mins!=null?Number(d.mins):undefined,ml:d.ml!=null?Number(d.ml):undefined,kind:d.kind,food:d.food,liked:d.liked,medName:d.medName}; try{ return evText(e)||ADM_TYPES[x.k]||x.k; }catch(err){ return ADM_TYPES[x.k]||x.k; } };
+  const tlTxt=x=>x.src==='event'?['תיעדה',evTxt(x)]:x.src==='view'?['פתחה מסך',ADM_SCREENS[x.k]||x.k||'']:x.src==='open'?['נכנסה לאפליקציה',(ADM_PLAT[x.platform]||'')+(x.standalone?' · ממסך הבית':' · בדפדפן')]:x.src==='install'?['התקינה למסך הבית','']:x.src==='save_fail'?['שמירה נכשלה',x.detail||'']:x.src==='error'?['שגיאה',x.detail||'']:[x.src,x.k||''];
+  let body='<p class="small muted" role="status">טוען את הפעילות שלה...</p>';
+  if(DD){
+   const fam=DD.family||{}, mem=(fam.members||[]).filter(m=>!m.self).map(m=>m.name||'הורה נוסף'), bm=(fam.babies_months||[]).map(m=>m==null?'?':m<1?'פחות מחודש':m<24?m+' חודשים':Math.floor(m/12)+' שנים');
+   const mk=(v,l)=>'<div class="kpi"><b style="font-size:1.125rem">'+esc(v)+'</b><span>'+esc(l)+'</span></div>';
+   const facts='<div class="kpis adm-kpis">'+mk(dt(u.signed_up),'הצטרפה')+mk(u.last_seen?ago(u.last_seen):'—','נראתה לאחרונה')+mk(nf(u.days_active),'ימים פעילים')+mk(nf(u.events),'רישומים')+
+    mk((ADM_PLAT[u.platform]||'—')+(u.platform?(u.installed?' · ממסך הבית':' · בדפדפן'):''),'מכשיר')+mk(bm.length?bm.join(', '):'—',bm.length>1?'גילאי הילדים':'גיל התינוק/ת')+mk(mem.length?mem.join(', '):'לבד','שותפים במשפחה')+(fam.meds?mk(nf(fam.meds),'תרופות ברשימה'):'')+'</div>';
+   const ty=DD.types||[];
+   const did='<h3 class="adm-h3">מה היא תיעדה</h3>'+(ty.length?'<ul class="list">'+ty.map(x=>'<li style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>'+esc(ADM_TYPES[x.k]||x.k)+': '+nf(x.n)+'</b><span class="small muted">'+esc(nf(x.n7)+' השבוע · אחרון '+ago(x.last))+'</span></li>').join('')+'</ul>':'<p class="small muted">עוד לא תיעדה כלום.</p>');
+   const dys=DD.days||[];
+   const act='<h3 class="adm-h3">פעילות ב-14 הימים האחרונים</h3>'+bars(dys,'events','רישומים')+'<div style="height:10px"></div>'+bars(dys,'views','כניסות וצפיות במסכים');
+   const sc=DD.screens||[];
+   const scr2='<h3 class="adm-h3">מסכים שפתחה</h3>'+hbar(sc.map(x=>[x.k,x.n]),k=>ADM_SCREENS[k]||k);
+   const tl=(DD.timeline||[]).slice(0,80); let lastDay='', tlh='';
+   tl.forEach(x=>{ const d=new Date(x.at), dk=d.toLocaleDateString('he-IL',{weekday:'long',day:'numeric',month:'numeric'}); if(dk!==lastDay){ if(lastDay) tlh+='</ul>'; tlh+='<p class="small" style="font-weight:700;margin-top:10px">'+esc(dk)+'</p><ul class="list tl">'; lastDay=dk; }
+    const tx=tlTxt(x), bad=x.src==='error'||x.src==='save_fail';
+    tlh+='<li><span class="time">'+esc(d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}))+'</span><span class="grow"'+(bad?' style="color:var(--danger)"':'')+'><b>'+esc(tx[0])+'</b>'+(tx[1]?' · <span dir="auto">'+esc(tx[1])+'</span>':'')+'</span></li>'; });
+   if(lastDay) tlh+='</ul>';
+   const tlb='<h3 class="adm-h3">מה עשתה, לפי הסדר</h3>'+(tlh||'<p class="small muted">אין עדיין פעילות.</p>');
+   body=facts+did+act+scr2+tlb;
+  } else if(S.admDetErr) body='<p class="banner" role="alert">'+esc(S.admDetErr)+'</p>';
+  det='<section class="card adm-card adm-detail" id="adm-detail" tabindex="-1" aria-labelledby="adm-det-h"><div class="between" style="align-items:flex-start;gap:10px"><div class="section" style="gap:2px"><h2 id="adm-det-h">'+esc(u.name||(u.email||'').split('@')[0]||'משתמשת')+' <span class="st st-'+st[1]+'">'+esc(st[0])+'</span></h2><p class="small muted" dir="ltr" style="text-align:right">'+esc(u.email||'')+(u.confirmed===false?' (לא אומת)':'')+'</p></div>'+
+   '<button type="button" class="btn ghost" data-act="admuser" data-id="">סגירה</button></div>'+body+'</section>';
+ } else det='<section class="card adm-card adm-detail adm-empty" id="adm-detail"><p class="muted">בחרי משתמשת מהרשימה כדי לראות את הפירוט שלה.</p></section>';
+ const people='<div class="adm-split">'+ulist+det+'</div>';
  const q=(S.admQ||'').trim().toLowerCase(), sort=S.admSort||'signed_up';
  let list=U.filter(u=>!q||((u.name||'')+' '+(u.email||'')).toLowerCase().includes(q));
  const key={signed_up:u=>u.signed_up,last_seen:u=>u.last_seen||'',days_active:u=>u.days_active,events:u=>u.events}[sort]||(u=>u.signed_up);
  list=list.slice().sort((a,b)=>{ const x=key(a), y=key(b); return x<y?1:x>y?-1:0; });
  const counts={}; U.forEach(u=>{ const s=admStatus(u)[0]; counts[s]=(counts[s]||0)+1; });
- const users=card('adm-users','משתמשים ('+nf(U.length)+')',
+ const users=card('adm-users','טבלת כל המשתמשים ('+nf(U.length)+')',
   '<p class="small">'+Object.entries(counts).map(([k,v])=>esc(k)+': <b>'+v+'</b>').join(' · ')+'</p>'+
   '<div class="adm-filters"><label class="field" for="adm-q">חיפוש<input id="adm-q" type="text" inputmode="search" data-adm-q="1" value="'+esc(S.admQ||'')+'" placeholder="שם או אימייל" autocomplete="off"></label>'+
   '<label class="field" for="adm-sort">מיון<select id="adm-sort" data-adm-sort="1">'+[['signed_up','הצטרפות'],['last_seen','נראו לאחרונה'],['days_active','ימים פעילים'],['events','רישומים']].map(o=>'<option value="'+o[0]+'"'+(sort===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+'</select></label>'+
   '<button type="button" class="btn ghost" data-act="admcsv" data-v="users">ייצוא לאקסל (CSV)</button></div>'+
   '<div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">סטטוס</th><th scope="col">הצטרפו</th><th scope="col">נראו לאחרונה</th><th scope="col">ימים פעילים</th><th scope="col">רישומים</th><th scope="col">במשפחה</th><th scope="col">מכשיר</th><th scope="col">כאפליקציה</th><th scope="col">שפה</th></tr></thead><tbody>'+
-  list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td>'+esc(u.name||'—')+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
+  list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td><button type="button" class="link" data-act="admuser" data-id="'+esc(u.id||'')+'">'+esc(u.name||(u.email||'').split('@')[0]||'—')+'</button>'+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
   '</tbody></table></div>','"פעילים" = נראו ביומיים האחרונים. "שקטים לאחרונה" = 2 עד 7 ימים. כדאי לפנות אליהם ולשאול מה חסר.');
  const fbi=F.items||[];
  const fb=card('adm-fb','משובים ('+nf(F.count)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
   (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
- return head+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
+ return head+people+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
   '<p class="note">"פעילים" = תיעדו משהו או פתחו את האפליקציה כשהם מחוברים. משתמשות שעובדות בלי חשבון לא נספרות. מדידת המסכים והמכשירים פועלת רק אצל משתמשים מחוברים.</p>';
 }
 function viewInstall(){
@@ -1745,7 +1809,9 @@ document.addEventListener('click',e=>{
  if(a==='safetytoggle'){ e.preventDefault(); S.safetyOpen=!S.safetyOpen; render(); return; }
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
- if(a==='adminrefresh'){ loadAdmin(true); return; }
+ if(a==='adminrefresh'){ loadAdmin(true); if(S.admUser) loadAdmUser(S.admUser); return; }
+ if(a==='admlist'){ S.admList=el.dataset.v; render(); return; }
+ if(a==='admuser'){ const id=el.dataset.id||null, prev=S.admUser; S.admUser=id; S.admDetErr=''; if(id&&!(S.admDet&&S.admDet.id===id)) S.admDet=null; if(id) loadAdmUser(id); render(); setTimeout(()=>{ const t2=document.getElementById(id?'adm-detail':'adm-people'); if(t2&&(id?innerWidth<900:true)){ t2.scrollIntoView({behavior:'smooth',block:'start'}); } if(t2&&id) t2.focus({preventScroll:true}); else if(!id&&prev){ const b=document.querySelector('[data-act=admuser][data-id="'+prev+'"]'); if(b) b.focus(); } },30); return; }
  if(a==='admex'){ ls.set('gp-adm-ex',!!el.checked); loadAdmin(true); return; }
  if(a==='admjump'){ const t2=document.getElementById(el.dataset.v); if(t2) t2.scrollIntoView({behavior:'smooth',block:'start'}); return; }
  if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','ליצירת קשר':f.contact||''}))); return; }
