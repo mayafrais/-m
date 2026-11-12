@@ -1440,7 +1440,7 @@ const ADMIN_EMAIL='mayafrais@gmail.com';
 const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
 async function loadAdmin(force){
  if(!isAdmin()||S.adminLoading) return; if(!force&&S.adminAt&&Date.now()-S.adminAt<15000) return; S.adminLoading=true; S.adminErr=''; if(!S.admin) render();
- try{ const {data,error}=await Store.sb.rpc('admin_stats'); if(error) throw error; S.admin=data; }
+ try{ const [r1,r2]=await Promise.all([Store.sb.rpc('admin_stats'),Store.sb.rpc('admin_feedback')]); if(r1.error) throw r1.error; S.admin=r1.data; S.adminFb=r2&&!r2.error?r2.data:null; }
  catch(e){ S.adminErr='לא הצלחתי לטעון את הנתונים. נסי שוב בעוד רגע.'; }
  S.adminLoading=false; S.adminAt=Date.now(); render();
 }
@@ -1477,6 +1477,9 @@ function viewAdmin(){
  '<section class="card"><h2>משתמשים ('+nf(users.length)+')</h2><div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">נרשמו</th><th scope="col">כניסה אחרונה</th><th scope="col">פעילות אחרונה</th><th scope="col">רישומים</th><th scope="col">במשפחה</th></tr></thead><tbody>'+
   users.map(u=>'<tr><td>'+esc(u.name||'—')+'</td><td dir="ltr">'+esc(u.email||'')+(u.confirmed?'':' (לא אומת)')+'</td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(dt(u.last_sign_in))+'</td><td>'+esc(dt(u.last_event))+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td></tr>').join('')+
  '</tbody></table></div></section>'+
+ (()=>{ const F=S.adminFb; if(!F) return ''; const it=F.items||[];
+  return '<section class="card"><h2>משובים ('+nf(F.count)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')</h2>'+(it.length?'<ul class="list">'+it.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+(f.source?' · '+esc(f.source):'')+'</p>'+
+   (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם יגיעו מטופס המשוב בדף הנחיתה.</p>')+'</section>'; })()+
  '<p class="note">משתמשות שעובדות בלי חשבון (שמירה בטלפון בלבד) לא נספרות כאן.</p>';
 }
 function viewInstall(){
@@ -1504,6 +1507,7 @@ function viewFamily(){
  sec(X.foodPrefs,'<p class="small" style="font-weight:600">'+esc(X.style)+'</p><div class="chips" role="group" aria-label="'+esc(X.style)+'">'+F.styles.map(s=>'<button type="button" class="chip" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'">'+esc(s[1])+'</button>').join('')+'</div>'+
   (b?'<p class="small" style="font-weight:600;margin-top:8px">'+esc(X.allergy)+'</p>'+(bs.length>1?babySwitch():'<p class="small muted">'+esc(X.allergyFor(b.name))+'</p>')+'<div class="chips" role="group" aria-label="'+esc(X.allergy)+'">'+ALLERGENS.map(a=>'<label class="chip check-chip"><input type="checkbox" data-allergen="'+a[0]+'" data-k="avoid"'+((as[a[0]]||{}).avoid?' checked':'')+'><span aria-hidden="true">'+a[1]+'</span> '+esc(a[lix()])+'</label>').join('')+'</div>':''))+
  '<a class="opt" href="#install" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📲</span><span class="opt-tx"><span class="opt-t">'+esc(X.install)+'</span><span class="opt-h">'+esc(isStandalone()?X.already:X.installSub)+'</span></span></a>'+
+ '<a class="opt" href="/welcome" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">💬</span><span class="opt-tx"><span class="opt-t">'+(S.lang==='en'?'About the app & feedback':S.lang==='ar'?'عن التطبيق والملاحظات':'על האפליקציה ומשוב')+'</span><span class="opt-h">'+(S.lang==='en'?'This is a trial version. Tell us what to improve':S.lang==='ar'?'هذه نسخة تجريبية. أخبرينا بما يجب تحسينه':'זו גרסת ניסיון. ספרו לנו מה לשפר')+'</span></span></a>'+
  (isAdmin()?'<a class="opt" href="#admin" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📊</span><span class="opt-tx"><span class="opt-t">לוח נתונים</span><span class="opt-h">כמה נרשמו, כמה פעילים ובמה משתמשים. רק את רואה</span></span></a>':'')+
  sec(X.familyT,(mem?'<p class="small" style="font-weight:600">'+esc(L.members)+'</p>'+mem:'')+'<p class="small">'+esc(at().inviteText)+'</p><p class="small muted">'+esc(at().codeLabel)+'</p><p dir="ltr" style="font-size:1.75rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums;text-align:center">'+esc(S.invite||'')+'</p><button type="button" class="btn" data-act="share">'+esc(L.share)+'</button>')+
  sec(X.display,'<p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en','ar'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div><p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>')+
