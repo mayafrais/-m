@@ -281,7 +281,7 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 <div id="sheet-root"></div>
 <p id="live" class="sr" aria-live="polite"></p>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
 <script>
 (function(){
 'use strict';
@@ -500,19 +500,20 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   const deep=(a,b)=>{ const r=Object.assign({},a); for(const k in b){ const v=b[k]; r[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&r[k]&&typeof r[k]==='object')?deep(r[k],v):v; } return r; };
   S.family=deep(S.family,patch); render();
   if(!this.fid) return;
-  const {data,error}=await this.sb.rpc('patch_family_state',{p_family:this.fid,p_patch:patch});
-  if(error){ say(at().notSaved); this.load_family(); return; }
+  const {data,error}=await retrySave(()=>this.sb.rpc('patch_family_state',{p_family:this.fid,p_patch:patch}));
+  if(error){ saveFailed(error); this.load_family(); return; }
   if(data){ S.family={babies:data.babies||[],active:data.active||{},sleep:data.sleep||{},milestones:data.milestones||{},allergens:data.allergens||{},prefs:data.prefs||{}}; render(); }
  },
  async addEvent(ev){
   const {baby,type,t:tm}=ev; const rest=Object.assign({},ev); delete rest.baby; delete rest.type; delete rest.t;
   const tmp={id:'tmp'+uid(),baby,type,t:tm,by:S.me}; Object.assign(tmp,rest); S.events=[tmp].concat(S.events).sort((a,b)=>b.t-a.t); render();
-  const {error}=await this.sb.from('events').insert({family_id:this.fid,baby,type,t:tm,data:rest});
-  if(error) say(at().notSaved);
+  const row={family_id:this.fid,baby,type,t:tm,data:rest}; try{ if(crypto&&crypto.randomUUID) row.id=crypto.randomUUID(); }catch(e){}
+  let first=true; const r=await retrySave(async()=>{ const x=await this.sb.from('events').insert(row); if(x.error&&!first&&x.error.code==='23505') return {}; first=false; return x; });
+  if(r&&r.error) saveFailed(r.error);
   this.load_events();
  },
  async delEvent(id){ S.events=S.events.filter(e=>e.id!==id); render(); if(String(id).startsWith('tmp')) return; await this.sb.from('events').delete().eq('id',id); this.load_events(); },
- async addMed(m){ const {error}=await this.sb.from('meds').insert({family_id:this.fid,baby:m.baby,name:m.name,note:m.note||''}); if(error) say(at().notSaved); this.load_meds(); },
+ async addMed(m){ const {error}=await retrySave(()=>this.sb.from('meds').insert({family_id:this.fid,baby:m.baby,name:m.name,note:m.note||''})); if(error) saveFailed(error); this.load_meds(); },
  async delMed(id){ S.meds=S.meds.filter(m=>m.id!==id); render(); await this.sb.from('meds').delete().eq('id',id); this.load_meds(); },
  async createFamily(name,babies){
   const {data,error}=await this.sb.rpc('create_family',{p_display_name:name});
@@ -582,7 +583,9 @@ function evText(e){
  if(e.type==='taste'){ const F=FT[S.lang]||FT.he; const lk=F.likes.find(l=>l[0]===e.liked); return F.tasteEv+': '+fname(e.food)+(lk?', '+lk[1]:'')+(e.reaction?', '+F.reactionEv:''); }
  return '';
 }
-function say(msg){ try{ if(msg===at().notSaved) Usage.add('save_fail'); }catch(e){} const el=document.getElementById('live'); el.textContent=''; setTimeout(()=>{el.textContent=msg;},30); }
+async function retrySave(fn){ for(let i=0;i<3;i++){ let r; try{ r=await fn(); }catch(e){ r={error:e}; } if(!r||!r.error) return r||{}; const m=String(r.error.message||r.error||''); const net=/fetch|network|load failed|timed? ?out|abort/i.test(m)||(!r.error.code&&!r.status); if(!net||i===2) return r; await new Promise(z=>setTimeout(z,[900,2500][i])); } }
+function saveFailed(err){ try{ Usage.add('save_fail',{detail:String((err&&(err.message||err.code))||err||'').slice(0,200)}); }catch(e){} say(at().notSaved); }
+function say(msg){ const el=document.getElementById('live'); el.textContent=''; setTimeout(()=>{el.textContent=msg;},30); }
 
 // ---------- views ----------
 function headerHTML(title,sub){
@@ -1467,7 +1470,7 @@ const Usage={q:[],timer:0,lastView:'',lastOpen:0,
  add(kind,extra){ if(S.mode!=='db'||!S.me||!Store.sb) return; this.q.push(Object.assign({kind,screen:S.view||null,lang:S.lang,platform:this.platform(),standalone:isStandalone()},extra||{})); if(this.q.length>=20) this.flush(); else if(!this.timer) this.timer=setTimeout(()=>this.flush(),8000); },
  async flush(){ clearTimeout(this.timer); this.timer=0; if(!this.q.length||!Store.sb||!S.me) return; const rows=this.q.splice(0,50); try{ await Store.sb.from('usage').insert(rows); }catch(e){} },
  view(){ if(S.mode!=='db'||!S.me) return; if(Date.now()-this.lastOpen>30*60e3){ this.lastOpen=Date.now(); this.add('open'); } if(S.view!==this.lastView){ this.lastView=S.view; this.add('view'); } },
- err(msg){ const m=String(msg||'').slice(0,300); if(!m||this._last===m) return; this._last=m; this.add('error',{detail:m}); }
+ err(msg){ const m=String(msg||'').slice(0,300); if(!m||/^Script error\.?$/i.test(m.split(' @')[0].trim())||this._last===m) return; this._last=m; this.add('error',{detail:m}); }
 };
 window.addEventListener('error',e=>Usage.err((e.message||'error')+(e.filename?' @'+String(e.filename).split('/').pop()+':'+e.lineno:'')));
 window.addEventListener('unhandledrejection',e=>Usage.err('promise: '+((e.reason&&(e.reason.message||e.reason))||'')));
