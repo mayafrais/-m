@@ -301,6 +301,9 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .kid-tag{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:700;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--kc,var(--dusk)) 16%,var(--surface));color:var(--ink);vertical-align:middle;margin-inline-start:8px}
 .kid-tag i{width:10px;height:10px;border-radius:50%;background:var(--kc,var(--dusk))}
 .kid-list>li{border-inline-start:4px solid var(--kc,var(--dusk));padding-inline-start:10px}
+textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--line);background:var(--surface);padding:10px 12px;font-size:1rem;resize:vertical;line-height:1.5}
+.about-card p{line-height:1.65}
+#adm-contact{margin-top:14px}
 </style>
 </head>
 <body>
@@ -1065,6 +1068,7 @@ function viewHome(){
   tile('dev',IC.dev,H.dev[0],H.dev[1],'',(mo&&days!=null?(S.lang==='he'?mo[1]:X.monthChip(mo[0])):'')+(spNow?(S.lang==='he'?' · אולי קפיצת גדילה':''):''))+
   tile('family',IC.share,H.family[0],H.family[1],'')+
   '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>'+soon+
+  tile('about',IC_HEART,(AB[S.lang]||AB.he).tile[0],(AB[S.lang]||AB.he).tile[1],' about-tile')+
  '</nav>';
 }
 
@@ -1514,6 +1518,62 @@ window.addEventListener('unhandledrejection',e=>Usage.err('promise: '+((e.reason
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) Usage.flush(); else Usage.view(); });
 window.addEventListener('appinstalled',()=>Usage.add('install'));
 
+// ---------- about the maker + contact (messages go to Supabase "feedback" with source=contact; the owner's email is never shown) ----------
+const WA_NUMBER=''; // international format without + (e.g. 9725XXXXXXXX). Empty = no WhatsApp button.
+const AB={
+ he:{tile:['נעים להכיר','מי עומדת מאחורי האפליקציה, ואיך לדבר איתי'],title:'נעים להכיר',
+  hi:'היי, אני מאיה 👋',
+  body:['בניתי את האפליקציה הזו כדי שלהורים יהיה מקום אחד, פשוט ובעברית, לכל מה שקורה בחודשים הראשונים: הנקה, שינה, טעימות והתפתחות.','האפליקציה עדיין בהרצה, ואני משפרת אותה כל הזמן לפי מה שאתם כותבים לי. כל רעיון, שאלה או תקלה עוזרים לי.'],
+  talk:'רוצים לכתוב לי?',talkSub:'ההודעה מגיעה ישר אליי. אם תרצו שאחזור אליכם, השאירו מייל או טלפון.',
+  name:'איך קוראים לך? (לא חובה)',contact:'מייל או טלפון לחזרה (לא חובה)',msg:'מה רצית לכתוב?',send:'שליחה',sending:'שולחת...',
+  sent:'תודה! ההודעה הגיעה אליי.',fail:'ההודעה לא נשלחה. בדקו את החיבור לאינטרנט ונסו שוב.',empty:'כתבו משהו לפני השליחה.',
+  wa:'או בוואטסאפ',waBtn:'שליחת הודעה בוואטסאפ',waText:'היי מאיה, אני משתמש/ת באפליקציה הורות ורציתי לכתוב לך:',
+  note:'המידע באפליקציה כללי ואינו מחליף ייעוץ של רופא/ה, אחות או יועצת הנקה.'},
+ en:{tile:['Nice to meet you','Who is behind the app, and how to reach me'],title:'Nice to meet you',
+  hi:'Hi, I\'m Maya 👋',
+  body:['I built this app so parents have one simple place for everything in the first months: nursing, sleep, first foods and development.','The app is still in its trial period, and I keep improving it based on what you tell me. Every idea, question or bug report helps.'],
+  talk:'Want to write to me?',talkSub:'Your message comes straight to me. If you\'d like a reply, leave an email or phone number.',
+  name:'Your name (optional)',contact:'Email or phone for a reply (optional)',msg:'What would you like to say?',send:'Send',sending:'Sending...',
+  sent:'Thank you! Your message reached me.',fail:'The message wasn\'t sent. Check your connection and try again.',empty:'Write something before sending.',
+  wa:'Or on WhatsApp',waBtn:'Message me on WhatsApp',waText:'Hi Maya, I use the Parenting app and wanted to write to you:',
+  note:'The information in the app is general and does not replace advice from a doctor, nurse or lactation consultant.'},
+ ar:{tile:['تشرفنا','من تقف وراء التطبيق، وكيف تتواصلون معي'],title:'تشرفنا',
+  hi:'مرحبًا، أنا مايا 👋',
+  body:['بنيت هذا التطبيق ليكون للأهل مكان واحد وبسيط لكل ما يحدث في الأشهر الأولى: الرضاعة، النوم، الأطعمة الأولى والتطور.','التطبيق ما زال في فترة التجربة، وأنا أحسّنه باستمرار بحسب ما تكتبونه لي. كل فكرة أو سؤال أو خلل يساعدني.'],
+  talk:'تريدون أن تكتبوا لي؟',talkSub:'رسالتكم تصلني مباشرة. إذا أردتم أن أرد، اتركوا بريدًا إلكترونيًا أو رقم هاتف.',
+  name:'ما اسمك؟ (اختياري)',contact:'بريد أو هاتف للرد (اختياري)',msg:'ماذا تريدون أن تكتبوا؟',send:'إرسال',sending:'جارٍ الإرسال...',
+  sent:'شكرًا! وصلتني رسالتكم.',fail:'لم تُرسل الرسالة. تحققوا من الاتصال بالإنترنت وحاولوا مرة أخرى.',empty:'اكتبوا شيئًا قبل الإرسال.',
+  wa:'أو عبر واتساب',waBtn:'إرسال رسالة عبر واتساب',waText:'مرحبًا مايا، أستخدم تطبيق الأبوّة وأردت أن أكتب لك:',
+  note:'المعلومات في التطبيق عامة ولا تغني عن استشارة طبيب/ة أو ممرضة أو مستشارة رضاعة.'}
+};
+function viewAbout(){
+ const A=AB[S.lang]||AB.he, dv=id=>esc((S.draft||{})[id]||'');
+ const st=S.aboutSt||'';
+ const form=st==='sent'?'<p class="banner" role="status" style="background:color-mix(in srgb,#2E8B57 16%,var(--surface))">'+esc(A.sent)+'</p>':
+  '<form class="section" data-form="contact" style="gap:12px" novalidate>'+
+  '<label class="field" for="ct-name">'+esc(A.name)+'<input id="ct-name" type="text" autocomplete="given-name" maxlength="40" value="'+dv('ct-name')+'"></label>'+
+  '<label class="field" for="ct-contact">'+esc(A.contact)+'<input id="ct-contact" type="text" dir="auto" autocomplete="email" maxlength="120" value="'+dv('ct-contact')+'"></label>'+
+  '<label class="field" for="ct-msg">'+esc(A.msg)+'<textarea id="ct-msg" rows="5" maxlength="2000" required aria-required="true"'+(st==='empty'?' aria-invalid="true" aria-describedby="ct-err"':'')+'>'+dv('ct-msg')+'</textarea></label>'+
+  (st==='empty'||st==='fail'?'<p class="small" id="ct-err" role="alert" style="color:var(--danger);font-weight:600">'+esc(st==='empty'?A.empty:A.fail)+'</p>':'')+
+  '<button type="submit" class="btn"'+(st==='sending'?' disabled':'')+'>'+esc(st==='sending'?A.sending:A.send)+'</button></form>';
+ const wa=WA_NUMBER?'<p class="small muted" style="text-align:center">'+esc(A.wa)+'</p><a class="btn ghost" href="https://wa.me/'+WA_NUMBER+'?text='+encodeURIComponent(A.waText)+'" target="_blank" rel="noopener">'+esc(A.waBtn)+'</a>':'';
+ return '<header class="section" style="gap:6px"><a class="link" href="#home" style="align-self:flex-start">'+esc(t().back)+'</a><h1>'+esc(A.title)+'</h1></header>'+
+  '<section class="card about-card"><h2>'+esc(A.hi)+'</h2>'+A.body.map(p=>'<p>'+esc(p)+'</p>').join('')+'</section>'+
+  '<section class="card" aria-labelledby="ct-h"><h2 id="ct-h">'+esc(A.talk)+'</h2><p class="small muted">'+esc(A.talkSub)+'</p>'+form+wa+'</section>'+
+  '<p class="note">'+esc(A.note)+'</p>';
+}
+async function sendContact(){
+ const A=AB[S.lang]||AB.he, g=id=>((document.getElementById(id)||{}).value||'').trim();
+ const msg=g('ct-msg'); if(!msg){ S.aboutSt='empty'; render(); const m=document.getElementById('ct-msg'); if(m) m.focus(); return; }
+ if(!Store.sb){ S.aboutSt='fail'; render(); return; }
+ S.aboutSt='sending'; render();
+ let ok=false;
+ try{ const r=await retrySave(()=>Store.sb.from('feedback').insert({source:'contact',role:g('ct-name')||null,contact:g('ct-contact')||null,message:msg.slice(0,2000)})); ok=!r.error; }catch(e){ ok=false; }
+ if(ok){ S.aboutSt='sent'; ['ct-name','ct-contact','ct-msg'].forEach(k=>{ if(S.draft) delete S.draft[k]; }); say(A.sent); }
+ else S.aboutSt='fail';
+ render();
+}
+
 // ---------- admin dashboard (owner only; data from admin_stats RPC, which checks the email server-side) ----------
 const ADMIN_EMAIL='mayafrais@gmail.com';
 const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
@@ -1544,7 +1604,7 @@ function viewAdmin(){
  const ex=!!ls.get('gp-adm-ex',false);
  const head='<header class="adm-head"><div><a class="link" href="#home">'+esc(t().back)+'</a><h1>לוח נתונים</h1>'+(A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+' · מתרענן לבד כל דקה · רק את רואה את המסך הזה</p>':'')+'</div>'+
   '<div class="adm-tools"><label class="adm-sw"><input type="checkbox" data-act="admex"'+(ex?' checked':'')+'> בלי הפעילות שלי</label><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div></header>'+
-  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-people','משתמשים פעילים'],['adm-all','כל הנתונים'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','טבלת משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
+  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-people','משתמשים פעילים'],['adm-contact','פניות'],['adm-all','כל הנתונים'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','טבלת משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
  if(S.adminErr&&!A) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
  if(!A) return head+'<p class="empty" role="status">טוען נתונים...</p>';
  const K=A.kpi||{}, F=S.adminFb||{}, card=(id,title,body,hint,cls)=>'<section class="card adm-card '+(cls||'')+'"'+(id?' id="'+id+'"':'')+'><h2>'+esc(title)+'</h2>'+(hint?'<p class="small muted">'+esc(hint)+'</p>':'')+body+'</section>';
@@ -1561,7 +1621,7 @@ function viewAdmin(){
   kpi(pc(K.shared_families,K.families)+'%','משפחות עם שני הורים',nf(K.shared_families)+' מתוך '+nf(K.families))+
   kpi(nf(K.installed),'פתחו כאפליקציה ממסך הבית','')+
   kpi(nf(K.events_7d),'רישומים השבוע','')+
-  kpi((F.avg?F.avg+'★':'—'),'דירוג ממוצע',nf(F.count)+' משובים')+
+  kpi((F.avg?F.avg+'★':'—'),'דירוג ממוצע',nf((F.items||[]).filter(f=>f.source!=='contact').length)+' משובים')+
   kpi(nf(K.errors_7d),'תקלות השבוע',K.errors_7d?'פרטים בסעיף מכשירים ותקלות':'הכול שקט')+'</div>'+
   (K.tracking_since?'':'<p class="banner">מדידת המסכים, המכשירים וההתקנות התחילה עכשיו. הנתונים האלה יתמלאו מהכניסות הבאות של המשתמשים.</p>');
  const D=A.daily||[];
@@ -1642,10 +1702,11 @@ function viewAdmin(){
   '<div class="uwrap" tabindex="0" role="region" aria-label="טבלת משתמשים"><table class="utable"><thead><tr><th scope="col">שם</th><th scope="col">אימייל</th><th scope="col">סטטוס</th><th scope="col">הצטרפו</th><th scope="col">נראו לאחרונה</th><th scope="col">ימים פעילים</th><th scope="col">רישומים</th><th scope="col">במשפחה</th><th scope="col">מכשיר</th><th scope="col">כאפליקציה</th><th scope="col">שפה</th></tr></thead><tbody>'+
   list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td>'+esc(u.name||'—')+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr"><button type="button" class="link" data-act="admuser" data-id="'+esc(u.id||'')+'">'+esc(u.email||'')+'</button>'+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
   '</tbody></table></div>','"פעילים" = נראו ביומיים האחרונים. "שקטים לאחרונה" = 2 עד 7 ימים. כדאי לפנות אליהם ולשאול מה חסר.');
- const fbi=F.items||[];
- const fb=card('adm-fb','משובים ('+nf(F.count)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
+ const fbAll=F.items||[], fbi=fbAll.filter(f=>f.source!=='contact'), cts=fbAll.filter(f=>f.source==='contact');
+ const contacts='<section class="card adm-card" id="adm-contact"><h2>פניות אלייך מ"נעים להכיר" ('+nf(cts.length)+')</h2>'+(cts.length?'<ul class="list">'+cts.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.role?' · '+esc(f.role):'')+(f.signed_in?' · משתמש/ת רשום/ה':'')+'</p><p style="white-space:pre-wrap">'+esc(f.message||'')+'</p>'+(f.contact?'<p class="small">לחזור אל: <span dir="auto">'+esc(f.contact)+'</span></p>':'<p class="small muted">לא השאירו פרטים לחזרה</p>')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין פניות. הן יגיעו לכאן מהמסך "נעים להכיר" באפליקציה.</p>')+'</section>';
+ const fb=card('adm-fb','משובים ('+nf(fbi.length)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
   (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
- return head+people+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
+ return head+people+contacts+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
   '<p class="note">"פעילים" = תיעדו משהו או פתחו את האפליקציה כשהם מחוברים. משתמשות שעובדות בלי חשבון לא נספרות. מדידת המסכים והמכשירים פועלת רק אצל משתמשים מחוברים.</p>';
 }
 function viewInstall(){
@@ -1721,7 +1782,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump(); case 'firstdays':return viewFirstDays();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'about':return viewAbout(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump(); case 'firstdays':return viewFirstDays();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -1867,6 +1928,7 @@ document.addEventListener('submit',e=>{
     else S.authMsg=A.authErr; } S.busy=false; render(); })();
   return;
  }
+ if(f.dataset.form==='contact'){ sendContact(); return; }
  if(f.dataset.form==='join'){
   const A=at(), code=document.getElementById('join-code').value.replace(/\D/g,''), name=document.getElementById('join-name').value.trim();
   if(code.length!==6){ S.authMsg=A.badCode; render(); return; }
@@ -1904,8 +1966,8 @@ document.addEventListener('change',e=>{
 document.addEventListener('input',e=>{ const el=e.target; if(el.dataset&&el.dataset.admQ){ S.admQ=el.value; const q=el.value.trim().toLowerCase(); document.querySelectorAll('[data-urow]').forEach(r=>{ r.hidden=!!q&&!r.dataset.urow.includes(q); }); return; } if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
-function route(){ const h=(location.hash||'').slice(1); S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
+const VIEWS=['about','admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
+function route(){ const h=(location.hash||'').slice(1); if(h!=='about'&&S.aboutSt) S.aboutSt=''; S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
 Store.init();
