@@ -17,6 +17,18 @@
     if(v||camp){ ['src','utm_source','c','utm_campaign','utm_medium'].forEach(function(k){ q.delete(k); }); var qs=q.toString(); history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash); }
   }catch(_){}
 
+  // ---- opened from inside the app (home-screen app has no browser back button): show a clear way back ----
+  try{
+    var qq=new URLSearchParams(location.search), standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+    if(qq.get('from')==='app'){ sessionStorage.setItem('gp-from-app','1'); qq.delete('from'); var q2=qq.toString(); history.replaceState(null,'',location.pathname+(q2?'?'+q2:'')+location.hash); }
+    if(standalone||sessionStorage.getItem('gp-from-app')==='1'){
+      var bar=document.createElement('div'); bar.className='appbar';
+      bar.innerHTML='<div class="wrap"><a class="appbar-back" href="/"><span aria-hidden="true">→</span> חזרה לאפליקציה</a><a class="appbar-x" href="/" aria-label="סגירה וחזרה לאפליקציה"><span aria-hidden="true">✕</span></a></div>';
+      document.body.insertBefore(bar,document.body.firstChild.nextSibling);
+      document.documentElement.classList.add('from-app');
+    }
+  }catch(_){}
+
   // ---- mobile menu ----
   var mb=document.getElementById('menu-btn'), mn=document.getElementById('mnav');
   if(mb&&mn){

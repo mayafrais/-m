@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 html,body{overflow-x:clip}
-body{font-family:'IBM Plex Sans Hebrew',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:'IBM Plex Sans Hebrew',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 img,video{max-width:100%;display:block}
 img{height:auto}
@@ -212,3 +212,11 @@ input[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:var(--dang
 .foot-links a{text-decoration:none}.foot-links a:hover{text-decoration:underline}
 footer .wrap{align-items:flex-start}
 .foot-col{display:grid;gap:10px}
+.appbar{position:sticky;top:0;z-index:30;background:var(--dusk);color:var(--on-dusk)}
+.appbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px}
+.appbar a{color:inherit;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 4px}
+.appbar-x{justify-content:center;min-width:44px;font-size:1.25rem;border-radius:999px}
+.appbar a:focus-visible{outline:3px solid var(--dawn);outline-offset:2px}
+.from-app .top{top:52px}
+.from-app .top .cta-top,.from-app .mnav .btn{display:none}
+@supports (padding:max(0px)){.appbar{padding-top:env(safe-area-inset-top)}}
