@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="description" content="יומן משותף להנקה, שינה, תרופות, טעימות והתפתחות, לשני ההורים.">
 <title>הורות: הנקה, התפתחות, טעימות</title>
+<meta property="og:type" content="website"><meta property="og:site_name" content="הורות"><meta property="og:title" content="הורות: הנקה, התפתחות, טעימות"><meta property="og:description" content="יומן אחד לשני ההורים: הנקה, שינה, טעימות והתפתחות. חינם, בלי חנות אפליקציות."><meta property="og:image" content="https://nursing-motherhood.vercel.app/img/landing/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="he_IL"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
 <style>
@@ -306,6 +307,19 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 .about-card{overflow:hidden}.about-img{display:block;width:calc(100% + 36px);max-width:none;height:auto;margin:-18px -18px 4px;aspect-ratio:960/710;object-fit:cover}
 .wa-btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 #adm-contact{margin-top:14px}
+.first-step{gap:10px;border:2px solid var(--dawn);background:color-mix(in srgb,var(--dawn) 9%,var(--surface))}
+.first-step h2{font-size:1.1875rem}
+.fs-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fs-btns .btn{min-height:52px}
+@media(max-width:340px){.fs-btns{grid-template-columns:1fr}}
+.circle.pulse{animation:fsPulse 1s ease-in-out 3;border-radius:50%}
+@keyframes fsPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--dawn) 0%,transparent)}50%{box-shadow:0 0 0 14px color-mix(in srgb,var(--dawn) 45%,transparent)}}
+@media (prefers-reduced-motion:reduce){.circle.pulse{animation:none;outline:3px solid var(--dawn);outline-offset:6px}}
+.src-link{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.src-link span{overflow-wrap:anywhere}
+.src-links summary{cursor:pointer;font-weight:600;padding:10px 0;min-height:44px}
+#adm-src{margin-top:14px}
+.legal-links{text-align:center}.legal-links a{color:inherit;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:6px 2px}
 </style>
 </head>
 <body>
@@ -346,7 +360,7 @@ const T = {
   addMed:'הוספת תרופה או ויטמין',medName:'שם',medNote:'הערה (למשל: פעם ביום לפי טיפת חלב)',add:'הוספה',noMeds:'עוד אין תרופות ברשימה. אפשר להוסיף ויטמין D, ברזל או תרופה לפי מרשם.',
   back:'חזרה',
   family:'המשפחה',familyHint:'כולם רואים את אותה היסטוריה ומתעדים יחד.',babies:'התינוקות',babyName:'שם התינוק/ת',born:'תאריך הלידה של התינוק/ת',addBaby:'הוספת ילד/ה',removeBaby:'הסרה',
-  members:'מי מחובר',invite:'איך מצרפים את בן/בת הזוג',inviteText:'שתפו את הקישור לאפליקציה מכפתור "שיתוף" בראש העמוד. בגרסת הניסיון, מי שמצטרף צריך חשבון Claude באותו ארגון.',
+  members:'מי מחובר',invite:'איך מצרפים את בן/בת הזוג',
   prefs:'תצוגה',language:'שפה',theme:'מצב תצוגה',themeSys:'לפי הטלפון',themeLight:'יום',themeDark:'לילה',
   setupTitle:'ברוכה הבאה',setupText:'נתחיל בשם התינוק. יש עוד ילד/ה? אפשר להוסיף גם.',start:'התחלה',
   babiesLabel:'בחירת תינוק',kidColor:n=>'הצבע של '+n+' באפליקציה',kidFirst:'הצבעים הרגילים של האפליקציה',
@@ -364,7 +378,7 @@ const T = {
   commTitle:'קהילה',commText:'קבוצות של אמהות באותו שלב, קבוצה לתאומים וקבוצה לשעות הלילה. הקהילה נבנית עכשיו ותיפתח בגרסה הבאה.',
   foodsTitle:'טעימות',foodsText:'מודול הטעימות, עם מאגר המזונות, יומן הטעימות והאלרגנים, יחובר לכאן בשלב הבא.',
   familyLink:'משפחה והגדרות',appName:'הורות',appFull:'הורות: הנקה, התפתחות, טעימות',home:'בית',dev:'התפתחות',twinsQ:'יש לי תאומים',twinName:'שם התאום/ה השני/ה',moreQ:'מה מתאים לכם?',moreNo:'יחיד/ה',moreTwins:'תאומים',moreTrip:'שלישייה',moreSib:'ילד/ה בגיל אחר',tripName2:'שם התינוק/ת השני/ה',tripName3:'שם התינוק/ת השלישי/ת',sibName:'שם הילד/ה הנוסף/ת',sibBorn:'תאריך הלידה של הילד/ה הנוסף/ת',
-  share:'שיתוף',shareTitle:'שיתוף עם בן/בת הזוג',shareText:'שלחי את הקישור, ואחר כך אשרי לו/ה גישה מכפתור השיתוף של Claude בראש העמוד. בגרסת הניסיון צריך חשבון Claude באותו ארגון.',shareMsg:(n)=>'מצרפת אותך ליומן של '+n+' באפליקציה "הורות": ',whatsapp:'שליחה בוואטסאפ',copy:'העתקת הקישור',copied:'הקישור הועתק',close:'סגירה'},
+  share:'שיתוף',shareTitle:'שיתוף עם בן/בת הזוג',shareMsg:(n)=>'מצרפת אותך ליומן של '+n+' באפליקציה "הורות": ',whatsapp:'שליחה בוואטסאפ',copy:'העתקת הקישור',copied:'הקישור הועתק',close:'סגירה'},
  en:{dir:'ltr',name:'English',today:'Today',feeding:'Feeding',community:'Community',foods:'First foods',nav:'Main navigation',
   left:'Left',right:'Right',both:'Both sides',tapStart:'Tap to start',endedHere:'Last feed ended here',nursingNow:'Nursing now',switchHere:'Switch here',
   finish:'Finish and save',forgot:'Forgot to log? Add a past feed',noFeedYet:'No feeds logged yet. Tap a side to start the timer.',
@@ -385,7 +399,7 @@ const T = {
   addMed:'Add a medicine or vitamin',medName:'Name',medNote:'Note (e.g. once a day as advised)',add:'Add',noMeds:'No medicines yet. Add vitamin D, iron or a prescription.',
   back:'Back',
   family:'Family',familyHint:'Everyone sees the same history and logs together.',babies:'Babies',babyName:'Baby’s name',born:'Baby’s date of birth',addBaby:'Add a child',removeBaby:'Remove',
-  members:'Who is connected',invite:'How to add your partner',inviteText:'Share the app link from the Share button at the top of the page. In this trial version, whoever joins needs a Claude account in the same organization.',
+  members:'Who is connected',invite:'How to add your partner',
   prefs:'Display',language:'Language',theme:'Theme',themeSys:'Match phone',themeLight:'Day',themeDark:'Night',
   setupTitle:'Welcome',setupText:'Start with your baby’s name. Have another child? You can add them too.',start:'Start',
   babiesLabel:'Choose baby',kidColor:n=>n+'\u2019s color in the app',kidFirst:'The app\u2019s usual colors',
@@ -403,7 +417,7 @@ const T = {
   commTitle:'Community',commText:'Groups of mothers at the same stage, a group for twins and one for the night hours. The community is being built and opens in the next version.',
   foodsTitle:'First foods',foodsText:'The first foods module, with the food guide, tasting log and allergens, will be connected here next.',
   familyLink:'Family and settings',appName:'Parenting',appFull:'Parenting: Nursing, Development, First Foods',home:'Home',dev:'Development',twinsQ:'I have twins',twinName:'Second twin\u2019s name',moreQ:'Which fits you?',moreNo:'One baby',moreTwins:'Twins',moreTrip:'Triplets',moreSib:'A child of another age',tripName2:'Second baby\u2019s name',tripName3:'Third baby\u2019s name',sibName:'Other child\u2019s name',sibBorn:'Other child\u2019s date of birth',
-  share:'Share',shareTitle:'Share with your partner',shareText:'Send the link, then give them access from Claude\u2019s Share button at the top of the page. In this trial version they need a Claude account in the same organization.',shareMsg:(n)=>'Join '+n+'\u2019s log in the Parenting app: ',whatsapp:'Send on WhatsApp',copy:'Copy link',copied:'Link copied',close:'Close'},
+  share:'Share',shareTitle:'Share with your partner',shareMsg:(n)=>'Join '+n+'\u2019s log in the Parenting app: ',whatsapp:'Send on WhatsApp',copy:'Copy link',copied:'Link copied',close:'Close'},
  ar:{dir:'rtl',name:'العربية',today:'اليوم',feeding:'الرضاعة',community:'المجتمع',foods:'أول الأطعمة',nav:'التنقل الرئيسي',
   left:'يسار',right:'يمين',both:'الجهتان',tapStart:'المسي للبدء',endedHere:'هنا انتهت آخر رضعة',nursingNow:'ترضعين الآن',switchHere:'الانتقال لهذه الجهة',
   finish:'إنهاء وحفظ',forgot:'نسيتِ التسجيل؟ أضيفي رضعة سابقة',noFeedYet:'لم تُسجَّل أي رضعة بعد. المسي إحدى الجهتين لبدء المؤقت.',
@@ -424,7 +438,7 @@ const T = {
   addMed:'إضافة دواء أو فيتامين',medName:'الاسم',medNote:'ملاحظة (مثلًا: مرة يوميًا حسب الإرشاد)',add:'إضافة',noMeds:'لا توجد أدوية بعد. أضيفي فيتامين D أو الحديد أو دواء بوصفة.',
   back:'رجوع',
   family:'العائلة',familyHint:'الجميع يرى السجل نفسه ويسجّل معًا.',babies:'الأطفال',babyName:'اسم الطفل/ة',born:'تاريخ ولادة الطفل/ة',addBaby:'إضافة طفل',removeBaby:'إزالة',
-  members:'من متصل',invite:'كيف تضيفين الشريك',inviteText:'شاركي رابط التطبيق من زر «مشاركة» أعلى الصفحة. في النسخة التجريبية، يحتاج من ينضم إلى حساب Claude في المؤسسة نفسها.',
+  members:'من متصل',invite:'كيف تضيفين الشريك',
   prefs:'العرض',language:'اللغة',theme:'المظهر',themeSys:'حسب الهاتف',themeLight:'نهار',themeDark:'ليل',
   setupTitle:'أهلًا بكِ',setupText:'لنبدأ باسم الطفل. لديك طفل آخر؟ يمكن إضافته أيضًا.',start:'ابدئي',
   babiesLabel:'اختيار الطفل',kidColor:n=>'لون '+n+' في التطبيق',kidFirst:'ألوان التطبيق المعتادة',
@@ -442,7 +456,7 @@ const T = {
   commTitle:'المجتمع',commText:'مجموعات لأمهات في المرحلة نفسها، ومجموعة للتوائم، وأخرى لساعات الليل. المجتمع قيد البناء وسيفتح في النسخة القادمة.',
   foodsTitle:'أول الأطعمة',foodsText:'سيتم ربط وحدة أول الأطعمة هنا قريبًا، مع دليل الأطعمة وسجل التذوق ومسببات الحساسية.',
   familyLink:'العائلة والإعدادات',appName:'التربية',appFull:'التربية: رضاعة، نمو، أول الأطعمة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',moreQ:'ما الذي يناسبكم؟',moreNo:'طفل واحد',moreTwins:'توأم',moreTrip:'ثلاثة توائم',moreSib:'طفل بعمر آخر',tripName2:'اسم الطفل الثاني',tripName3:'اسم الطفل الثالث',sibName:'اسم الطفل الآخر',sibBorn:'تاريخ ولادة الطفل الآخر',
-  share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareText:'أرسلي الرابط، ثم امنحيه صلاحية الوصول من زر المشاركة في Claude أعلى الصفحة. في النسخة التجريبية يلزم حساب Claude في المؤسسة نفسها.',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق التربية: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
+  share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق التربية: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
 };
 
 const APP_URL=location.origin;
@@ -569,6 +583,10 @@ const Store={sb:null,fid:null,channel:null,timer:{},
  },
  async signOut(){ await this.sb.auth.signOut(); }
 };
+const LEGAL={he:{agree:['בהרשמה את/ה מסכים/ה ל','תנאי השימוש',' ול','מדיניות הפרטיות','.'],links:'פרטיות, תנאים ונגישות',privacy:'מדיניות פרטיות',terms:'תנאי שימוש',acc:'הצהרת נגישות'},
+ en:{agree:['By signing up you agree to the ','Terms of use',' and the ','Privacy policy',' (in Hebrew).'],links:'Privacy, terms & accessibility',privacy:'Privacy policy',terms:'Terms of use',acc:'Accessibility statement'},
+ ar:{agree:['بالتسجيل أنتِ توافقين على ','شروط الاستخدام',' و','سياسة الخصوصية',' (بالعبرية).'],links:'الخصوصية والشروط وإمكانية الوصول',privacy:'سياسة الخصوصية',terms:'شروط الاستخدام',acc:'بيان إمكانية الوصول'}};
+function legalLinks(){ const G=LEGAL[S.lang]||LEGAL.he; return '<p class="small muted legal-links"><a href="/privacy" lang="he">'+esc(G.privacy)+'</a> · <a href="/terms" lang="he">'+esc(G.terms)+'</a> · <a href="/accessibility" lang="he">'+esc(G.acc)+'</a></p>'; }
 function viewAuth(){
  const A=at(), up=S.authMode!=='login';
  return '<header class="section" style="gap:14px;padding-top:12px">'+LOGO_BIG+'<h1>'+esc(t().appFull||t().appName)+'</h1><p class="muted">'+esc(A.authLead)+'</p></header>'+(pendingJoin()?'<p class="banner">'+esc(A.invitedAuth)+'</p>':'')+
@@ -576,6 +594,7 @@ function viewAuth(){
  '<label class="field" for="auth-email">'+esc(A.email)+'<input id="auth-email" type="email" dir="ltr" autocomplete="email" inputmode="email" required value="'+dv('auth-email')+'"></label>'+
  '<label class="field" for="auth-pw">'+esc(A.password)+'<input id="auth-pw" type="password" dir="ltr" autocomplete="'+(up?'new-password':'current-password')+'" minlength="'+(up?8:6)+'" required value="'+dv('auth-pw')+'"></label>'+
  (up?'<p class="small muted">'+esc(A.pwHint)+'</p>':'')+
+ (up?(()=>{ const g=(LEGAL[S.lang]||LEGAL.he).agree; return '<p class="small muted">'+esc(g[0])+'<a href="/terms">'+esc(g[1])+'</a>'+esc(g[2])+'<a href="/privacy">'+esc(g[3])+'</a>'+esc(g[4])+'</p>'; })():'')+
  (S.authMsg?'<p class="banner" role="alert">'+esc(S.authMsg)+'</p>':'')+
  '<button class="btn block" type="submit"'+(S.busy?' disabled':'')+'>'+esc(S.busy?A.working:(up?A.signup:A.login))+'</button>'+
  '<button type="button" class="link" data-act="authmode">'+esc(up?A.toLogin:A.toSignup)+'</button></form>';
@@ -633,6 +652,25 @@ function errInfo(e,status){ const m=String((e&&typeof e==='object')?(e.message||
  return {reason,code,status:st,msg:m}; }
 function saveCtx(){ const c=[]; try{ c.push(navigator.onLine===false?'offline':'online'); if(document.visibilityState==='hidden') c.push('hidden'); const b=iabName(); if(b) c.push('in-app:'+b); else if(isStandalone()) c.push('home-screen'); }catch(e){} return c.join(','); }
 function saveDetail(what,info,tries,ms){ return [what||'save',info.reason+(info.code?' code '+info.code:'')+(info.status&&!/^(http|server)/.test(info.reason)?' status '+info.status:''),'tries '+tries,(ms/1000).toFixed(1)+'s',saveCtx(),info.msg?('msg: '+info.msg):''].filter(Boolean).join(' · ').slice(0,290); }
+// ---------- where each user came from (first touch). Links look like /welcome?src=instagram or /?src=facebook-groups ----------
+// Saved once per browser; sent with the signup so the owner dashboard can show which channel brings people who actually use the app.
+const Src={
+ get(){ try{ return JSON.parse(localStorage.getItem('gp-src')||'null'); }catch(e){ return null; } },
+ set(o){ try{ localStorage.setItem('gp-src',JSON.stringify(o)); }catch(e){} },
+ capture(){ try{
+  const q=new URLSearchParams(location.search), clean=v=>String(v||'').toLowerCase().replace(/[^a-z0-9_\-]/g,'').slice(0,40);
+  const v=clean(q.get('src')||q.get('utm_source')), camp=clean(q.get('c')||q.get('utm_campaign')), cur=this.get();
+  if(v){ if(!cur||cur.auto) this.set({src:v,camp:camp||'',auto:false,at:Date.now()}); }
+  else if(!cur){ const b=iabName().toLowerCase(), r=document.referrer||'', ext=r&&r.indexOf(location.origin)!==0;
+   const g=b||(/instagram/.test(r)?'instagram':/facebook|fb\.com/.test(r)?'facebook':/google\./.test(r)?'google':/whatsapp|wa\.me/.test(r)?'whatsapp':/tiktok/.test(r)?'tiktok':ext?'other':'');
+   if(g) this.set({src:g,camp:'',auto:true,at:Date.now()}); }
+  if(v||camp){ q.delete('src'); q.delete('utm_source'); q.delete('c'); q.delete('utm_campaign'); q.delete('utm_medium'); const qs=q.toString(); history.replaceState(null,'',location.pathname+(qs?'?'+qs:'')+location.hash); }
+ }catch(e){} },
+ forSignup(){ const c=this.get(); let joining=false; try{ joining=!!ls.get('gp-join'); }catch(e){}
+  if(joining) return {src:'invite',src_auto:false};
+  return c?{src:c.src,src_camp:c.camp||undefined,src_auto:!!c.auto}:{src:'direct',src_auto:true}; }
+};
+Src.capture();
 async function retrySave(fn,what){ const t0=Date.now(); let info=null;
  for(let i=0;i<3;i++){ let r; try{ r=await fn(); }catch(e){ r={error:e}; }
   if(!r||!r.error){ if(info){ try{ Usage.add('save_retry_ok',{detail:saveDetail(what,info,i+1,Date.now()-t0)}); }catch(e){} } return r||{}; }
@@ -1066,6 +1104,18 @@ const HT={
   lastFeed:'آخر رضعة',noFeed:'لم تُسجَّل أي رضعة بعد',tasted:(n)=>n+' أطعمة تذوقها',more:'المزيد',ageLine:(n,s)=>n+(s?'، '+s:'')}
 };
 function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
+// ---------- first step after signup: shown on Home until the family logs anything ----------
+const FS={he:{t:'צעד ראשון: בואו נרשום הנקה או שאיבה',h:'רישום אחד מספיק כדי להתחיל. כבר מחר תראו כמה הנקות היו, מתי ומאיזה צד.',feed:'התחלת הנקה',pump:'רישום שאיבה',past:'הנקה שכבר הייתה',skip:'אחר כך',tip:'בחרו צד בעיגול כדי להפעיל את הטיימר'},
+ en:{t:'First step: let\u2019s log a feed or a pump',h:'One entry is enough to start. By tomorrow you\u2019ll see how many feeds there were, when, and on which side.',feed:'Start a feed',pump:'Log pumping',past:'A feed that already happened',skip:'Later',tip:'Pick a side in the circle to start the timer'},
+ ar:{t:'الخطوة الأولى: لنسجّل رضعة أو شفطًا',h:'تسجيل واحد يكفي للبدء. من الغد سترون كم رضعة كانت، متى ومن أي جهة.',feed:'بدء رضعة',pump:'تسجيل شفط',past:'رضعة حصلت سابقًا',skip:'لاحقًا',tip:'اختاروا الجهة في الدائرة لتشغيل المؤقت'}};
+function firstStepCard(){
+ if(!S.ready||!(S.mode==='db'||S.mode==='local')) return '';
+ if((S.events||[]).length||ls.get('gp-first-skip')) return '';
+ const F=FS[S.lang]||FS.he;
+ return '<section class="card first-step" aria-labelledby="fs-h"><h2 id="fs-h">'+esc(F.t)+'</h2><p class="muted">'+esc(F.h)+'</p>'+
+  '<div class="fs-btns"><button type="button" class="btn" data-act="firststep" data-v="feed">'+esc(F.feed)+'</button><button type="button" class="btn ghost" data-act="firststep" data-v="pump">'+esc(F.pump)+'</button></div>'+
+  '<div class="between" style="gap:10px;flex-wrap:wrap"><button type="button" class="link" data-act="firststep" data-v="past">'+esc(F.past)+'</button><button type="button" class="link muted" data-act="firststep" data-v="skip">'+esc(F.skip)+'</button></div></section>';
+}
 function viewHome(){
  const L=t(), H=HT[S.lang]||HT.he, b=baby(); if(!b) return viewSetup();
  const X=DX[S.lang]||DX.he, days=ageWeeks(b);
@@ -1079,7 +1129,7 @@ function viewHome(){
  const tile=(href,ic,tt,sub,cls,extra)=>'<a class="opt'+(cls||'')+'" href="#'+href+'" style="text-decoration:none"><span class="opt-ic">'+ic+'</span><span class="opt-tx"><span class="opt-t">'+esc(tt)+'</span><span class="opt-h">'+esc(sub)+'</span>'+(extra?'<span class="small" style="font-weight:600">'+esc(extra)+'</span>':'')+'</span>'+chev+'</a>';
  const soon='<div class="opt" style="opacity:.7" aria-disabled="true"><span class="opt-ic">'+IC.comm+'</span><span class="opt-tx"><span class="opt-t">'+esc(H.community[0])+'</span><span class="opt-h">'+esc(H.community[1])+'</span></span><span class="badge">'+esc(L.soon)+'</span></div>';
  return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(H.hello)+'</h1><p class="muted small">'+esc(H.ageLine(b.name,age))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
- installHomeCard()+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
+ firstStepCard()+installHomeCard()+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
   tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
   tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, תנומות, טקס ערב והרגעה':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
@@ -1633,7 +1683,7 @@ function viewAdmin(){
  const ex=!!ls.get('gp-adm-ex',false);
  const head='<header class="adm-head"><div><a class="link" href="#home">'+esc(t().back)+'</a><h1>לוח נתונים</h1>'+(A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+' · מתרענן לבד כל דקה · רק את רואה את המסך הזה</p>':'')+'</div>'+
   '<div class="adm-tools"><label class="adm-sw"><input type="checkbox" data-act="admex"'+(ex?' checked':'')+'> בלי הפעילות שלי</label><button type="button" class="btn ghost" data-act="adminrefresh"'+(S.adminLoading?' disabled':'')+'>'+(S.adminLoading?'טוען...':'רענון')+'</button></div></header>'+
-  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-people','משתמשים פעילים'],['adm-contact','פניות'],['adm-all','כל הנתונים'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','טבלת משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
+  '<nav class="seg-scroll adm-nav" aria-label="חלקי הלוח">'+[['adm-people','משתמשים פעילים'],['adm-contact','פניות'],['adm-src','מאיפה הגיעו'],['adm-all','כל הנתונים'],['adm-funnel','משפך'],['adm-ret','שימור'],['adm-use','שימוש'],['adm-tech','מכשירים ותקלות'],['adm-users','טבלת משתמשים'],['adm-fb','משובים']].map(x=>'<button type="button" class="chip" data-act="admjump" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</nav>';
  if(S.adminErr&&!A) return head+'<p class="banner" role="alert">'+esc(S.adminErr)+'</p>';
  if(!A) return head+'<p class="empty" role="status">טוען נתונים...</p>';
  const K=A.kpi||{}, F=S.adminFb||{}, card=(id,title,body,hint,cls)=>'<section class="card adm-card '+(cls||'')+'"'+(id?' id="'+id+'"':'')+'><h2>'+esc(title)+'</h2>'+(hint?'<p class="small muted">'+esc(hint)+'</p>':'')+body+'</section>';
@@ -1732,10 +1782,23 @@ function viewAdmin(){
   list.map(u=>{ const st=admStatus(u); return '<tr data-urow="'+esc(((u.name||'')+' '+(u.email||'')).toLowerCase())+'"><td>'+esc(u.name||'—')+(u.is_me?' <span class="badge">את</span>':'')+'</td><td dir="ltr"><button type="button" class="link" data-act="admuser" data-id="'+esc(u.id||'')+'">'+esc(u.email||'')+'</button>'+(u.confirmed?'':' (לא אומת)')+'</td><td><span class="st st-'+st[1]+'">'+esc(st[0])+'</span></td><td>'+esc(dt(u.signed_up))+'</td><td>'+esc(ago(u.last_seen))+'</td><td>'+nf(u.days_active)+'</td><td>'+nf(u.events)+'</td><td>'+nf(u.family_size)+'</td><td>'+esc(ADM_PLAT[u.platform]||'—')+'</td><td>'+(u.installed?'כן':'—')+'</td><td>'+esc(u.lang||'—')+'</td></tr>'; }).join('')+
   '</tbody></table></div>','"פעילים" = נראו ביומיים האחרונים. "שקטים לאחרונה" = 2 עד 7 ימים. כדאי לפנות אליהם ולשאול מה חסר.');
  const fbAll=F.items||[], fbi=fbAll.filter(f=>f.source!=='contact'), cts=fbAll.filter(f=>f.source==='contact');
+ const ORIGIN=location.origin, CH=[['instagram-bio','אינסטגרם: קישור בביו'],['instagram-story','אינסטגרם: סטורי'],['instagram-reel','אינסטגרם: רילס'],['facebook-groups','פייסבוק: קבוצות הורים'],['whatsapp-groups','וואטסאפ: קבוצות'],['whatsapp-friends','וואטסאפ: חברות'],['twins-groups','קבוצות של תאומים'],['tiktok','טיקטוק'],['pros','יועצות, דולות וקורסי הכנה ללידה']];
+ const SRC_HE={instagram:'אינסטגרם',facebook:'פייסבוק',whatsapp:'וואטסאפ',tiktok:'טיקטוק',google:'גוגל',invite:'הזמנה מבן/בת הזוג',direct:'כניסה ישירה (בלי קישור מעקב)',other:'אתר אחר',unknown:'לא ידוע (לפני המדידה)'};
+ const srcName=k=>(CH.find(c=>c[0]===k)||[])[1]||SRC_HE[k]||SRC_HE[String(k).split('-')[0]]&&(SRC_HE[String(k).split('-')[0]]+' · '+String(k).split('-').slice(1).join('-'))||k;
+ const SRCS=A.sources||[];
+ const linkRow=(k,label)=>{ const u=ORIGIN+'/welcome?src='+k; return '<li class="src-link"><span><b>'+esc(label)+'</b><br><span class="small muted" dir="ltr">'+esc(u)+'</span></span><button type="button" class="btn ghost small" data-act="admcopy" data-v="'+esc(u)+'" aria-label="'+esc('העתקת הקישור של '+label)+'">העתקה</button></li>'; };
+ const custom=(S.admSrcName||'').toLowerCase().replace(/[^a-z0-9_\-]/g,'').slice(0,40);
+ const sources='<section class="card adm-card" id="adm-src"><h2>מאיפה הגיעו המשתמשים</h2>'+
+  '<p class="small muted">כל משתמש/ת חדש/ה נשמר/ת עם הערוץ שממנו הגיע/ה. "השתמשו" = רשמו משהו לפחות פעם אחת. "חזרו" = נכנסו לפחות ביומיים שונים. ערוץ טוב הוא כזה שמביא אנשים שמשתמשים, לא רק נרשמים.</p>'+
+  (SRCS.length?'<div class="uwrap" tabindex="0" role="region" aria-label="נרשמים לפי ערוץ"><table class="utable"><caption class="sr">נרשמים לפי ערוץ</caption><thead><tr><th scope="col">ערוץ</th><th scope="col">נרשמו</th><th scope="col">השתמשו</th><th scope="col">חזרו</th></tr></thead><tbody>'+
+   SRCS.map(x=>'<tr><th scope="row" style="text-align:right;font-weight:600">'+esc(srcName(x.k))+(x.auto&&x.k!=='direct'&&x.k!=='unknown'?' <span class="small muted">(זוהה לבד)</span>':'')+'</th><td>'+nf(x.users)+'</td><td>'+nf(x.activated)+' <span class="small muted">('+pc(x.activated,x.users)+'%)</span></td><td>'+nf(x.returned)+' <span class="small muted">('+pc(x.returned,x.users)+'%)</span></td></tr>').join('')+'</tbody></table></div>':'<p class="small muted">אין עדיין נתונים.</p>')+
+  '<details class="src-links"><summary>קישורים מוכנים לכל ערוץ</summary><p class="small muted">בכל מקום שמפרסמים, משתמשים בקישור של אותו ערוץ. הקישורים מובילים לאתר, ומשם לאפליקציה.</p><ul class="list">'+CH.map(c=>linkRow(c[0],c[1])).join('')+'</ul>'+
+  '<label class="field" for="adm-src-name" style="margin-top:10px">ערוץ חדש (באנגלית, בלי רווחים, למשל yoga-studio)<input id="adm-src-name" type="text" dir="ltr" data-adm-src value="'+esc(S.admSrcName||'')+'" autocomplete="off"></label>'+
+  '<ul class="list" id="adm-src-custom" aria-live="polite">'+(custom?linkRow(custom,'הערוץ החדש: '+custom):'')+'</ul></details></section>';
  const contacts='<section class="card adm-card" id="adm-contact"><h2>פניות אלייך מ"נעים להכיר" ('+nf(cts.length)+')</h2>'+(cts.length?'<ul class="list">'+cts.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.role?' · '+esc(f.role):'')+(f.signed_in?' · משתמש/ת רשום/ה':'')+'</p><p style="white-space:pre-wrap">'+esc(f.message||'')+'</p>'+(f.contact?'<p class="small">לחזור אל: <span dir="auto">'+esc(f.contact)+'</span></p>':'<p class="small muted">לא השאירו פרטים לחזרה</p>')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין פניות. הן יגיעו לכאן מהמסך "נעים להכיר" באפליקציה.</p>')+'</section>';
  const fb=card('adm-fb','משובים ('+nf(fbi.length)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
   (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
- return head+people+contacts+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
+ return head+people+contacts+sources+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
   '<p class="note">"פעילים" = תיעדו משהו או פתחו את האפליקציה כשהם מחוברים. משתמשות שעובדות בלי חשבון לא נספרות. מדידת המסכים והמכשירים פועלת רק אצל משתמשים מחוברים.</p>';
 }
 function viewInstall(){
@@ -1763,7 +1826,7 @@ function viewFamily(){
  sec(X.foodPrefs,'<p class="small" style="font-weight:600">'+esc(X.style)+'</p><div class="chips" role="group" aria-label="'+esc(X.style)+'">'+F.styles.map(s=>'<button type="button" class="chip" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'">'+esc(s[1])+'</button>').join('')+'</div>'+
   (b?'<p class="small" style="font-weight:600;margin-top:8px">'+esc(X.allergy)+'</p>'+(bs.length>1?babySwitch():'<p class="small muted">'+esc(X.allergyFor(b.name))+'</p>')+'<div class="chips" role="group" aria-label="'+esc(X.allergy)+'">'+ALLERGENS.map(a=>'<label class="chip check-chip"><input type="checkbox" data-allergen="'+a[0]+'" data-k="avoid"'+((as[a[0]]||{}).avoid?' checked':'')+'><span aria-hidden="true">'+a[1]+'</span> '+esc(a[lix()])+'</label>').join('')+'</div>':''))+
  '<a class="opt" href="#install" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📲</span><span class="opt-tx"><span class="opt-t">'+esc(X.install)+'</span><span class="opt-h">'+esc(isStandalone()?X.already:X.installSub)+'</span></span></a>'+
- '<a class="opt" href="/welcome" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">💬</span><span class="opt-tx"><span class="opt-t">'+(S.lang==='en'?'About the app & feedback':S.lang==='ar'?'عن التطبيق والملاحظات':'על האפליקציה ומשוב')+'</span><span class="opt-h">'+(S.lang==='en'?'This is a trial version. Tell us what to improve':S.lang==='ar'?'هذه نسخة تجريبية. أخبرينا بما يجب تحسينه':'זו גרסת ניסיון. ספרו לנו מה לשפר')+'</span></span></a>'+
+ '<a class="opt" href="/welcome" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">💬</span><span class="opt-tx"><span class="opt-t">'+(S.lang==='en'?'About the app & feedback':S.lang==='ar'?'عن التطبيق والملاحظات':'על האפליקציה ומשוב')+'</span><span class="opt-h">'+(S.lang==='en'?'This is a trial version. Tell us what to improve':S.lang==='ar'?'هذه نسخة تجريبية. أخبرينا بما يجب تحسينه':'זו גרסת ניסיון. ספרו לנו מה לשפר')+'</span></span></a>'+legalLinks()+
  (isAdmin()?'<a class="opt" href="#admin" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📊</span><span class="opt-tx"><span class="opt-t">לוח נתונים</span><span class="opt-h">כמה נרשמו, כמה פעילים ובמה משתמשים. רק את רואה</span></span></a>':'')+
  sec(X.familyT,(mem?'<p class="small" style="font-weight:600">'+esc(L.members)+'</p>'+mem:'')+'<p class="small">'+esc(at().inviteText)+'</p><p class="small muted">'+esc(at().codeLabel)+'</p><p dir="ltr" style="font-size:1.75rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums;text-align:center">'+esc(S.invite||'')+'</p><button type="button" class="btn" data-act="share">'+esc(L.share)+'</button>')+
  sec(X.display,'<p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en','ar'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div><p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>')+
@@ -1902,6 +1965,7 @@ document.addEventListener('click',e=>{
  if(a==='adminrefresh'){ loadAdmin(true); if(S.admUser) loadAdmUser(S.admUser); return; }
  if(a==='admlist'){ S.admList=el.dataset.v; render(); return; }
  if(a==='admuser'){ const id=el.dataset.id||null, prev=S.admUser; S.admUser=id; S.admDetErr=''; if(id&&!(S.admDet&&S.admDet.id===id)) S.admDet=null; if(id) loadAdmUser(id); render(); setTimeout(()=>{ const t2=document.getElementById(id?'adm-detail':'adm-people'); if(t2&&(id?innerWidth<900:true)){ t2.scrollIntoView({behavior:'smooth',block:'start'}); } if(t2&&id) t2.focus({preventScroll:true}); else if(!id&&prev){ const b=document.querySelector('[data-act=admuser][data-id="'+prev+'"]'); if(b) b.focus(); } },30); return; }
+ if(a==='admcopy'){ const v=el.dataset.v; const done=()=>{ el.textContent='הועתק ✓'; say('הקישור הועתק'); setTimeout(()=>{ el.textContent='העתקה'; },2000); }; try{ navigator.clipboard.writeText(v).then(done,()=>{ prompt('העתיקי את הקישור:',v); }); }catch(e){ prompt('העתיקי את הקישור:',v); } return; }
  if(a==='admex'){ ls.set('gp-adm-ex',!!el.checked); loadAdmin(true); return; }
  if(a==='admjump'){ const t2=document.getElementById(el.dataset.v); if(t2) t2.scrollIntoView({behavior:'smooth',block:'start'}); return; }
  if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','ליצירת קשר':f.contact||''}))); return; }
@@ -1930,6 +1994,13 @@ document.addEventListener('click',e=>{
  if(a==='fcat'){ S.foodCat=el.dataset.v; render(); return; }
  if(a==='recipe'){ const i=el.dataset.i; S.openRecipe=S.openRecipe===i?null:i; render(); return; }
  if(a==='past'){ openSheet({mode:'past',type:'feed',when:15}); return; }
+ if(a==='firststep'){ const v=el.dataset.v, F=FS[S.lang]||FS.he;
+  if(v==='skip'){ ls.set('gp-first-skip','1'); render(); return; }
+  try{ Usage.add('view',{screen:'firststep:'+v}); }catch(e){}
+  if(location.hash!=='#today') location.hash='#today';
+  setTimeout(()=>{ if(v==='pump') openSheet({mode:'now',type:'pump'}); else if(v==='past') openSheet({mode:'past',type:'feed',when:15});
+   else { say(F.tip); const c=document.querySelector('.circle button,.circle [data-act=start]'); if(c){ c.focus({preventScroll:true}); const cc0=document.querySelector('.circle'); cc0.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); cc0.classList.add('pulse'); setTimeout(()=>{ const cc=document.querySelector('.circle'); if(cc) cc.classList.remove('pulse'); },3200); } } },120);
+  return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
  if(a==='sleep'){ const s=(S.family.sleep||{})[b.id];
   if(s){ const mins=Math.max(1,Math.round((Date.now()-s.start)/60000)); Store.addEvent({baby:b.id,type:'sleep',t:s.start,mins}); Store.fam({sleep:{[b.id]:null}}); say(L.saved); }
@@ -1951,7 +2022,7 @@ document.addEventListener('submit',e=>{
   const A=at(), up=S.authMode!=='login', email=document.getElementById('auth-email').value.trim(), pw=document.getElementById('auth-pw').value;
   const minPw=up?8:6; if(!email||pw.length<minPw){ S.authMsg=pw.length<minPw?A.weakPw:A.authErr; render(); return; }
   S.busy=true; S.authMsg=''; render();
-  (async()=>{ try{ if(up){ const {data,error}=await Store.sb.auth.signUp({email,password:pw}); if(error) throw error; if(!data.session) S.authMsg=A.checkEmail; } else { const {error}=await Store.sb.auth.signInWithPassword({email,password:pw}); if(error) throw error; } }
+  (async()=>{ try{ if(up){ const {data,error}=await Store.sb.auth.signUp({email,password:pw,options:{data:Src.forSignup()}}); if(error) throw error; if(!data.session) S.authMsg=A.checkEmail; } else { const {error}=await Store.sb.auth.signInWithPassword({email,password:pw}); if(error) throw error; } }
    catch(err){ const msg=(err&&err.message)||''; console.warn('auth',msg);
     if(up&&/already|registered|exists/i.test(msg)){ try{ const r=await Store.sb.auth.signInWithPassword({email,password:pw}); if(r.error) throw r.error; }catch(e2){ S.authMode='login'; S.authMsg=A.exists; } }
     else S.authMsg=A.authErr; } S.busy=false; render(); })();
@@ -1993,7 +2064,9 @@ document.addEventListener('change',e=>{
   Store.fam({babies:bs}); say(t().saved);
  }
 });
-document.addEventListener('input',e=>{ const el=e.target; if(el.dataset&&el.dataset.admQ){ S.admQ=el.value; const q=el.value.trim().toLowerCase(); document.querySelectorAll('[data-urow]').forEach(r=>{ r.hidden=!!q&&!r.dataset.urow.includes(q); }); return; } if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
+document.addEventListener('input',e=>{ const el=e.target;
+ if(el.dataset&&el.dataset.admSrc!==undefined){ S.admSrcName=el.value; const k=el.value.toLowerCase().replace(/[^a-z0-9_\-]/g,'').slice(0,40), box=document.getElementById('adm-src-custom'); if(box){ const u=location.origin+'/welcome?src='+k; box.innerHTML=k?'<li class="src-link"><span><b>'+esc('הערוץ החדש: '+k)+'</b><br><span class="small muted" dir="ltr">'+esc(u)+'</span></span><button type="button" class="btn ghost small" data-act="admcopy" data-v="'+esc(u)+'" aria-label="'+esc('העתקת הקישור של '+k)+'">העתקה</button></li>':''; } return; }
+ if(el.dataset&&el.dataset.admQ){ S.admQ=el.value; const q=el.value.trim().toLowerCase(); document.querySelectorAll('[data-urow]').forEach(r=>{ r.hidden=!!q&&!r.dataset.urow.includes(q); }); return; } if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
 const VIEWS=['about','admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
