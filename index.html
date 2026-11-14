@@ -334,7 +334,7 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 <div id="sheet-root"></div>
 <p id="live" class="sr" aria-live="polite"></p>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" crossorigin="anonymous"></script>
+<script src="/vendor/sb/supabase.js"></script>
 <script>
 (function(){
 'use strict';
@@ -1685,7 +1685,7 @@ const Usage={q:[],timer:0,lastView:'',lastOpen:0,
   this.add('error',{detail:m.slice(0,290)}); }
 };
 document.addEventListener('click',e=>{ try{ const el=e.target.closest&&e.target.closest('[data-act],a[href]'); if(el) Usage.lastAct='last tap: '+(el.dataset.act||el.getAttribute('href')||'').slice(0,40); }catch(err){} },true);
-window.addEventListener('error',e=>Usage.err((e.message||'error')+(e.filename?' @'+String(e.filename).split('/').pop()+':'+e.lineno:'')));
+window.addEventListener('error',e=>{ let st=''; try{ st=e.error&&e.error.stack?String(e.error.stack).split('\n').slice(0,3).join(' | ').slice(0,160):''; }catch(_){} Usage.err((e.message||'error')+(e.filename?' @'+String(e.filename).split('/').pop()+':'+e.lineno+':'+(e.colno||0):'')+(st?' · '+st:'')); });
 window.addEventListener('unhandledrejection',e=>Usage.err('promise: '+((e.reason&&(e.reason.message||e.reason))||'')));
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) Usage.flush(); else Usage.view(); });
 window.addEventListener('appinstalled',()=>Usage.add('install'));

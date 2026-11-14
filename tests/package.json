@@ -1,0 +1,7 @@
+{
+  "name": "horut-smoke-tests",
+  "private": true,
+  "description": "Automatic checks that run on every update (GitHub Actions): the app and the site must load and work with zero errors on iPhone (WebKit) and Chrome.",
+  "scripts": { "test": "playwright test" },
+  "devDependencies": { "@playwright/test": "1.63.0" }
+}
