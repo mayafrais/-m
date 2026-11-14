@@ -13,7 +13,8 @@ async function setup(page, { signedIn = true, fresh = true, lang = 'he' } = {}) 
   page.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|favicon|net::ERR/.test(m.text())) errors.push('console: ' + m.text()); });
   // The real database library is replaced by a mock; nothing leaves the test machine.
   await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: signedIn ? MOCK : MOCK_SIGNED_OUT }));
-  await page.route(/supabase\.co|fonts\.(googleapis|gstatic)\.com|wa\.me/, r => r.fulfill({ status: 200, body: '' }));
+  await page.route(/fonts\.googleapis\.com/, r => r.fulfill({ status: 200, contentType: 'text/css', body: '' }));
+  await page.route(/supabase\.co|fonts\.gstatic\.com|wa\.me/, r => r.fulfill({ status: 204, body: '' }));
   await page.addInitScript(([fresh, lang]) => {
     try {
       if (!fresh) { localStorage.setItem('gp-safety-ack', 'true'); localStorage.setItem('gp-install-dismissed', 'true'); }
