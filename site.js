@@ -22,6 +22,7 @@
   if(mb&&mn){
     mb.addEventListener('click',function(){ var open=mb.getAttribute('aria-expanded')!=='true'; mb.setAttribute('aria-expanded',open); mn.classList.toggle('open',open); if(open){ var a=mn.querySelector('a'); if(a) a.focus(); } });
     mn.addEventListener('click',function(e){ if(e.target.closest('a')){ mb.setAttribute('aria-expanded','false'); mn.classList.remove('open'); } });
+    document.addEventListener('click',function(e){ if(mn.classList.contains('open')&&!e.target.closest('.top')){ mb.setAttribute('aria-expanded','false'); mn.classList.remove('open'); } });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&mn.classList.contains('open')){ mb.setAttribute('aria-expanded','false'); mn.classList.remove('open'); mb.focus(); } });
   }
 
