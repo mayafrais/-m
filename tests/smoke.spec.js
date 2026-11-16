@@ -63,6 +63,32 @@ test('logging: diaper from the quick buttons is saved', async ({ page }) => {
   await expectNoErrors(page, errors, 'quick log');
 });
 
+test('first entry: one-tap card on home saves a diaper and shows "saved"', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  // a new family with no entries yet
+  await page.addInitScript(() => { const orig = Object.getOwnPropertyDescriptor(window, 'supabase'); });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK.replace(/let events=\[[\s\S]*?\];\n/, 'let events=[];\n') }));
+  await page.goto('/#home');
+  await expect(page.locator('.first-step')).toBeVisible();
+  await page.locator('.fs-q[data-v="diaper"]').click();
+  await page.locator('.fs-chip[data-v="diaper:wet"]').click();
+  await expect(page.locator('#fs-toast')).toBeVisible();
+  expect(await page.evaluate(() => window.__events().length)).toBe(1);
+  await expect(page.locator('.first-step')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'first entry');
+});
+
+test('first entry: "later" turns the card into a small reminder strip', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK.replace(/let events=\[[\s\S]*?\];\n/, 'let events=[];\n') }));
+  await page.goto('/#home');
+  await page.locator('.fs-links [data-v="skip"]').click();
+  await expect(page.locator('.fs-nudge')).toBeVisible();
+  await page.locator('.fs-nudge-btn').click();
+  await expect(page.locator('.first-step')).toBeVisible();
+  await expectNoErrors(page, errors, 'first entry reminder');
+});
+
 test('recipes: filters, search and opening a recipe', async ({ page }) => {
   const errors = await setup(page, { fresh: false });
   await page.goto('/#foods');

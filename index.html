@@ -309,6 +309,26 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 #adm-contact{margin-top:14px}
 .first-step{gap:10px;border:2px solid var(--dawn);background:color-mix(in srgb,var(--dawn) 9%,var(--surface))}
 .first-step h2{font-size:1.1875rem}
+.fs-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fs-q{min-height:76px;border-radius:20px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600;font-size:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px 6px}
+.fs-q-ic{font-size:1.6rem;line-height:1.2}
+.fs-q.on,.fs-q:focus-visible{border-color:var(--dusk);box-shadow:0 0 0 3px color-mix(in srgb,var(--dusk) 20%,transparent)}
+.fs-pick{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:18px;background:var(--mist)}
+.fs-ask{margin:0;font-weight:600}
+.fs-chips{display:flex;flex-wrap:wrap;gap:8px}
+.fs-chip{min-height:48px;min-width:72px;padding:0 16px;border-radius:999px;border:0;background:var(--dusk);color:var(--on-dusk);font:inherit;font-weight:600}
+.fs-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px}
+.fs-nudge{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--dusk);color:var(--on-dusk)}
+.fs-nudge-ic{font-size:1.4rem}
+.fs-nudge-tx{display:flex;flex-direction:column;line-height:1.35;font-size:.875rem;flex:1;min-width:0}
+.fs-nudge-tx b{font-size:.9375rem}
+.fs-nudge-btn{flex:none;min-height:44px;padding:0 14px;border-radius:999px;border:0;background:var(--surface);color:var(--dusk);font:inherit;font-weight:600;font-size:.875rem}
+.fs-toast{position:fixed;z-index:60;inset-inline:max(16px,calc(50% - 224px));bottom:calc(84px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;padding:14px 48px 14px 16px;border-radius:20px;background:var(--sage-soft);border:1.5px solid var(--sage);color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.14);font-family:var(--font)}
+[dir=rtl] .fs-toast{padding:14px 16px 14px 48px}
+.fs-toast b{color:var(--sage);font-size:1rem}
+.fs-toast a{color:var(--dusk);font-size:.875rem;text-decoration:underline;text-underline-offset:3px;min-height:32px;display:inline-flex;align-items:center}
+.fs-toast-x{position:absolute;top:6px;inset-inline-end:6px;width:40px;height:40px;border:0;background:none;color:var(--ink2);font-size:1.4rem;border-radius:50%}
+.fs-toast[hidden]{display:none}
 .fs-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fs-btns .btn{min-height:52px}
 @media(max-width:340px){.fs-btns{grid-template-columns:1fr}}
@@ -559,8 +579,10 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   if(data){ S.family={babies:data.babies||[],active:data.active||{},sleep:data.sleep||{},milestones:data.milestones||{},allergens:data.allergens||{},prefs:data.prefs||{}}; render(); }
  },
  async addEvent(ev){
+  const wasFirst=!(S.events||[]).length;
   const {baby,type,t:tm}=ev; const rest=Object.assign({},ev); delete rest.baby; delete rest.type; delete rest.t;
   const tmp={id:'tmp'+uid(),baby,type,t:tm,by:S.me}; Object.assign(tmp,rest); S.events=[tmp].concat(S.events).sort((a,b)=>b.t-a.t); render();
+  if(wasFirst){ try{ const F=FS[S.lang]||FS.he, Lx=t(); const nm={feed:F.feed,bottle:F.bottle,diaper:F.diaper,sleep:F.sleep,taste:F.taste,pump:Lx.pump,med:Lx.med}[type]; fsCelebrate(nm?F.at(F.ok+' '+nm,fsHm(tm)):F.ok); }catch(e){} }
   const row={family_id:this.fid,baby,type,t:tm,data:rest}; try{ if(crypto&&crypto.randomUUID) row.id=crypto.randomUUID(); }catch(e){}
   let first=true; const r=await retrySave(async()=>{ const x=await this.sb.from('events').insert(row); if(x.error&&!first&&x.error.code==='23505') return {}; first=false; return x; },'event:'+type);
   if(r&&r.error) saveFailed(r.error,r);
@@ -1204,16 +1226,58 @@ const HT={
 };
 function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
 // ---------- first step after signup: shown on Home until the family logs anything ----------
-const FS={he:{t:'צעד ראשון: בואו נרשום הנקה או שאיבה',h:'רישום אחד מספיק כדי להתחיל. כבר מחר תראו כמה הנקות היו, מתי ומאיזה צד.',feed:'התחלת הנקה',pump:'רישום שאיבה',past:'הנקה שכבר הייתה',skip:'אחר כך',tip:'בחרו צד בעיגול כדי להפעיל את הטיימר'},
- en:{t:'First step: let\u2019s log a feed or a pump',h:'One entry is enough to start. By tomorrow you\u2019ll see how many feeds there were, when, and on which side.',feed:'Start a feed',pump:'Log pumping',past:'A feed that already happened',skip:'Later',tip:'Pick a side in the circle to start the timer'},
- ar:{t:'الخطوة الأولى: لنسجّل رضعة أو شفطًا',h:'تسجيل واحد يكفي للبدء. من الغد سترون كم رضعة كانت، متى ومن أي جهة.',feed:'بدء رضعة',pump:'تسجيل شفط',past:'رضعة حصلت سابقًا',skip:'لاحقًا',tip:'اختاروا الجهة في الدائرة لتشغيل المؤقت'}};
+const FS={he:{t:'צעד ראשון: מה קרה עכשיו?',h:'נגיעה אחת וזה נשמר, בלי טפסים. השעה נרשמת לבד.',age:(m)=>m==null?'':m<1?'מותאם לשבועות הראשונים':'מותאם לגיל '+m+' חודשים',
+  feed:'הנקה',bottle:'בקבוק',taste:'טעימה',sleep:'שינה',diaper:'חיתול',side:'מאיזה צד?',ml:'כמה מ״ל?',other:'אחר',kind:'איזה חיתול?',back:'חזרה',
+  past:'קרה מוקדם יותר? לבחירת שעה',pump:'רישום שאיבה',skip:'אחר כך',tip:'הטיימר רץ. בסיום לוחצים "סיום"',tasteTip:'בחרו מאכל מהרשימה כדי לרשום טעימה',
+  nT:'עוד לא נרשם כלום',nH:'הרישום הראשון לוקח 5 שניות',nBtn:'לרשום עכשיו',
+  ok:'🎉 נשמר!',started:'🎉 נשמר! הטיימר רץ',at:(x,h)=>x+' ב-'+h,invite:'להזמין את בן/בת הזוג',close:'סגירה'},
+ en:{t:'First step: what just happened?',h:'One tap and it’s saved, no forms. The time is logged automatically.',age:(m)=>m==null?'':m<1?'Matched to the first weeks':'Matched to '+m+' months',
+  feed:'Breastfeed',bottle:'Bottle',taste:'Tasting',sleep:'Sleep',diaper:'Diaper',side:'Which side?',ml:'How many ml?',other:'Other',kind:'Which diaper?',back:'Back',
+  past:'Happened earlier? Pick a time',pump:'Log pumping',skip:'Later',tip:'The timer is running. Tap "Finish" when done',tasteTip:'Pick a food from the list to log a tasting',
+  nT:'Nothing logged yet',nH:'The first entry takes 5 seconds',nBtn:'Log now',
+  ok:'🎉 Saved!',started:'🎉 Saved! The timer is running',at:(x,h)=>x+' at '+h,invite:'Invite your partner',close:'Close'},
+ ar:{t:'الخطوة الأولى: ماذا حدث الآن؟',h:'لمسة واحدة ويُحفظ، بلا نماذج. الوقت يُسجَّل تلقائيًا.',age:(m)=>m==null?'':m<1?'مناسب للأسابيع الأولى':'مناسب لعمر '+m+' أشهر',
+  feed:'رضاعة',bottle:'زجاجة',taste:'تذوّق',sleep:'نوم',diaper:'حفاض',side:'من أي جهة؟',ml:'كم مل؟',other:'غير ذلك',kind:'أي حفاض؟',back:'رجوع',
+  past:'حدث قبل ذلك؟ اختاري الوقت',pump:'تسجيل شفط',skip:'لاحقًا',tip:'المؤقت يعمل. اضغطي «إنهاء» عند الانتهاء',tasteTip:'اختاري طعامًا من القائمة لتسجيل التذوّق',
+  nT:'لم يُسجَّل شيء بعد',nH:'التسجيل الأول يستغرق 5 ثوانٍ',nBtn:'سجّلي الآن',
+  ok:'🎉 تم الحفظ!',started:'🎉 تم الحفظ! المؤقت يعمل',at:(x,h)=>x+' في '+h,invite:'دعوة الشريك',close:'إغلاق'}};
+let fsPick=null; // which quick button is open for its one detail (side / ml / diaper kind)
+function fsNoData(){ const b=baby(); if((S.events||[]).length) return false; if(b&&(((S.family.active||{})[b.id])||((S.family.sleep||{})[b.id]))) return false; return true; }
+function fsToday(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 function firstStepCard(){
  if(!S.ready||!(S.mode==='db'||S.mode==='local')) return '';
- if((S.events||[]).length||ls.get('gp-first-skip')) return '';
- const F=FS[S.lang]||FS.he;
- return '<section class="card first-step" aria-labelledby="fs-h"><h2 id="fs-h">'+esc(F.t)+'</h2><p class="muted">'+esc(F.h)+'</p>'+
-  '<div class="fs-btns"><button type="button" class="btn" data-act="firststep" data-v="feed">'+esc(F.feed)+'</button><button type="button" class="btn ghost" data-act="firststep" data-v="pump">'+esc(F.pump)+'</button></div>'+
-  '<div class="between" style="gap:10px;flex-wrap:wrap"><button type="button" class="link" data-act="firststep" data-v="past">'+esc(F.past)+'</button><button type="button" class="link muted" data-act="firststep" data-v="skip">'+esc(F.skip)+'</button></div></section>';
+ if(!fsNoData()) return '';
+ const F=FS[S.lang]||FS.he, L=t(), b=baby();
+ if(ls.get('gp-first-skip')){
+  // gentle reminder after "later": a small strip on up to 3 different days, then it stops
+  const days=ls.get('gp-first-nudge',[])||[], td=fsToday();
+  if(days.indexOf(td)<0){ if(days.length>=3) return ''; days.push(td); ls.set('gp-first-nudge',days); }
+  return '<div class="fs-nudge" role="region" aria-label="'+esc(F.nT)+'"><span class="fs-nudge-ic" aria-hidden="true">⏱️</span><div class="fs-nudge-tx"><b>'+esc(F.nT)+'</b><span>'+esc(F.nH)+'</span></div><button type="button" class="fs-nudge-btn" data-act="firststep" data-v="again">'+esc(F.nBtn)+'</button></div>';
+ }
+ const m=b?ageMonths(b):null, mo=m==null?null:Math.floor(m), older=m!=null&&m>=6;
+ const q=(v,ic,label)=>'<button type="button" class="fs-q'+(fsPick===v?' on':'')+'" data-act="firststep" data-v="'+v+'" aria-expanded="'+(fsPick===v)+'"><span class="fs-q-ic" aria-hidden="true">'+ic+'</span>'+esc(label)+'</button>';
+ const chip=(v,label)=>'<button type="button" class="fs-chip" data-act="firststep" data-v="'+v+'">'+esc(label)+'</button>';
+ let pick='';
+ if(fsPick==='feed') pick='<p class="fs-ask">'+esc(F.side)+'</p><div class="fs-chips">'+chip('feed:R',L.right)+chip('feed:L',L.left)+'</div>';
+ else if(fsPick==='bottle') pick='<p class="fs-ask">'+esc(F.ml)+'</p><div class="fs-chips">'+[60,90,120,150].map(n=>chip('bottle:'+n,n+' '+L.ml)).join('')+chip('bottle:other',F.other)+'</div>';
+ else if(fsPick==='diaper') pick='<p class="fs-ask">'+esc(F.kind)+'</p><div class="fs-chips">'+chip('diaper:wet',L.kinds.wet)+chip('diaper:dirty',L.kinds.dirty)+chip('diaper:both',L.kinds.both)+'</div>';
+ const ag=F.age(mo);
+ return '<section class="card first-step" aria-labelledby="fs-h">'+(ag?'<span class="badge">'+esc(ag)+'</span>':'')+'<h2 id="fs-h">'+esc(F.t)+'</h2><p class="muted">'+esc(F.h)+'</p>'+
+  '<div class="fs-quick">'+q('feed','🤱',F.feed)+(older?q('taste','🥕',F.taste):q('bottle','🍼',F.bottle))+q('sleep','😴',F.sleep)+q('diaper','🧷',F.diaper)+'</div>'+
+  (pick?'<div class="fs-pick">'+pick+'</div>':'')+
+  '<div class="fs-links"><button type="button" class="link" data-act="firststep" data-v="past">'+esc(F.past)+'</button><button type="button" class="link" data-act="firststep" data-v="pump">'+esc(F.pump)+'</button><button type="button" class="link muted" data-act="firststep" data-v="skip">'+esc(F.skip)+'</button></div></section>';
+}
+// "Saved!" moment after the very first entry on this device
+function fsHm(tm){ const d=new Date(tm); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function fsCelebrate(msg){
+ if(ls.get('gp-first-toast')) return; ls.set('gp-first-toast',1);
+ const F=FS[S.lang]||FS.he; let el=document.getElementById('fs-toast'); if(!el){ el=document.createElement('div'); el.id='fs-toast'; el.className='fs-toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+ const solo=S.mode==='db'&&(S.members||[]).length<2;
+ el.innerHTML='<b>'+esc(msg)+'</b>'+(solo?'<a href="#family" data-fs-close>'+esc(F.invite)+'</a>':'')+'<button type="button" class="fs-toast-x" data-fs-close aria-label="'+esc(F.close)+'">×</button>';
+ el.hidden=false; el.dir=document.documentElement.dir||'rtl';
+ el.onclick=e=>{ if(e.target.closest('[data-fs-close]')) el.hidden=true; };
+ clearTimeout(fsCelebrate._t); fsCelebrate._t=setTimeout(()=>{ el.hidden=true; },9000);
+ try{ Usage.add('view',{screen:'firststep:saved'}); }catch(e){}
 }
 function viewHome(){
  const L=t(), H=HT[S.lang]||HT.he, b=baby(); if(!b) return viewSetup();
@@ -2094,12 +2158,23 @@ document.addEventListener('click',e=>{
  if(a==='fcat'){ S.foodCat=el.dataset.v; render(); return; }
  if(a==='recipe'){ const i=el.dataset.i; S.openRecipe=S.openRecipe===i?null:i; render(); return; }
  if(a==='past'){ openSheet({mode:'past',type:'feed',when:15}); return; }
- if(a==='firststep'){ const v=el.dataset.v, F=FS[S.lang]||FS.he;
-  if(v==='skip'){ ls.set('gp-first-skip','1'); render(); return; }
+ if(a==='firststep'){ const v=el.dataset.v, F=FS[S.lang]||FS.he, L=t(), [k,x]=String(v).split(':');
   try{ Usage.add('view',{screen:'firststep:'+v}); }catch(e){}
-  if(location.hash!=='#today') location.hash='#today';
-  setTimeout(()=>{ if(v==='pump') openSheet({mode:'now',type:'pump'}); else if(v==='past') openSheet({mode:'past',type:'feed',when:15});
-   else { say(F.tip); const c=document.querySelector('.circle button,.circle [data-act=start]'); if(c){ c.focus({preventScroll:true}); const cc0=document.querySelector('.circle'); cc0.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); cc0.classList.add('pulse'); setTimeout(()=>{ const cc=document.querySelector('.circle'); if(cc) cc.classList.remove('pulse'); },3200); } } },120);
+  if(v==='skip'){ fsPick=null; ls.set('gp-first-skip','1'); render(); return; }
+  if(v==='again'){ ls.set('gp-first-skip',''); fsPick=null; render(); const c=document.querySelector('.first-step'); if(c) c.scrollIntoView({block:'center'}); return; }
+  if(v==='pump'){ openSheet({mode:'now',type:'pump'}); return; }
+  if(v==='past'){ openSheet({mode:'past',type:fsPick&&fsPick!=='taste'?fsPick:'feed',when:15}); return; }
+  if(!x&&(k==='feed'||k==='bottle'||k==='diaper')){ fsPick=fsPick===k?null:k; render(); const f=document.querySelector('.fs-chip'); if(f) f.focus({preventScroll:true}); return; }
+  if(k==='taste'){ fsPick=null; location.hash='#foods'; setTimeout(()=>say(F.tasteTip),150); return; }
+  const now=Date.now(); fsPick=null;
+  if(k==='sleep'){ Store.fam({sleep:{[b.id]:{start:now,by:S.me||null}}}); fsCelebrate(F.started); render(); return; }
+  if(k==='feed'){ Store.fam({active:{[b.id]:{side:x,start:now,by:S.me||null,first:x}}}); fsCelebrate(F.started);
+   if(location.hash!=='#today') location.hash='#today';
+   setTimeout(()=>{ say(F.tip); const cc=document.querySelector('.circle'); if(cc){ cc.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); cc.classList.add('pulse'); setTimeout(()=>{ const c2=document.querySelector('.circle'); if(c2) c2.classList.remove('pulse'); },3200); } },150);
+   return; }
+  if(k==='bottle'&&x==='other'){ openSheet({mode:'now',type:'bottle'}); return; }
+  if(k==='bottle'){ Store.addEvent({baby:b.id,type:'bottle',t:now,past:false,ml:Number(x)}); return; }
+  if(k==='diaper'){ Store.addEvent({baby:b.id,type:'diaper',t:now,past:false,kind:x}); return; }
   return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
  if(a==='sleep'){ const s=(S.family.sleep||{})[b.id];
