@@ -162,6 +162,11 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .food-head{display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:10px 14px;border:0;background:transparent;color:var(--ink);text-align:start}
 .food-head .chev{flex:none;opacity:.6;transition:transform .2s}
 .food.open .food-head .chev{transform:rotate(180deg)}
+.rec-filt{gap:2px}
+.rec-filt>p.small{line-height:1.25;margin:10px 0 0}
+.rec-filt>p.small.muted:first-child{margin-top:0}
+.rec-filt>.field{margin-top:6px}
+.rec-filt .seg-scroll{padding:2px 2px 2px}
 .rec-top{display:flex;align-items:stretch}
 .rec-top .food-head{flex:1;min-width:0}
 .rec-fav{flex:none;width:56px;border:0;background:transparent;color:var(--ink2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;line-height:1}
@@ -1265,7 +1270,7 @@ function recipesView(){
    (open?'<div class="food-body" lang="he" dir="rtl"><h3>'+esc(F.ingredients)+'</h3><ul class="bul">'+r[6].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><h3>'+esc(F.steps)+'</h3><ol class="bul">'+r[7].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+
     (r[8]?'<p><strong>🥣 '+esc(F.mashed)+':</strong> '+esc(r[8])+'</p>':'')+(r[9]?'<p><strong>🤚 '+esc(F.blwT)+':</strong> '+esc(r[9])+'</p>':'')+'</div>':'')+'</li>'; }).join('');
  const rq=S.recQ||'', rqs=rq.trim().toLowerCase();
- return '<section class="section" style="gap:10px"><p class="small muted">'+esc(F.personal)+'</p>'+
+ return '<section class="section rec-filt"><p class="small muted">'+esc(F.personal)+'</p>'+
   '<label class="field" for="rec-q">'+esc(Q.q)+'<input id="rec-q" type="search" inputmode="search" autocomplete="off" placeholder="'+esc(Q.ph)+'" value="'+esc(rq)+'"></label>'+
   '<p class="small" style="font-weight:600">'+esc(Q.kind)+'</p>'+chips('rkind',(RCATS[S.lang]||RCATS.he).slice(0,1).concat([['fav',R2.chip]],(RCATS[S.lang]||RCATS.he).slice(1)),kind)+
   '<p class="small" style="font-weight:600">'+esc(F.stage)+'</p>'+chips('rstage',F.stages,stg)+(stg==='k'||kind==='sweet'?'<p class="banner small">'+esc(Q.kNote)+'</p>':'')+'<p class="small" style="font-weight:600">'+esc(F.texture)+'</p>'+chips('rtex',F.textures,tex)+
