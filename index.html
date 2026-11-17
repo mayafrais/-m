@@ -13,14 +13,14 @@
 <title>הורות: הנקה, התפתחות, טעימות</title>
 <meta property="og:type" content="website"><meta property="og:site_name" content="הורות"><meta property="og:title" content="הורות: הנקה, התפתחות, טעימות"><meta property="og:description" content="יומן אחד לשני ההורים: הנקה, שינה, טעימות והתפתחות. חינם, בלי חנות אפליקציות."><meta property="og:image" content="https://nursing-motherhood.vercel.app/img/landing/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="he_IL"><meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: one-column phone app, max 480px; nursing circle is the single bold element; bottom tab bar. */
 :root{
   --bg:#FBEFF2; --surface:#FFFFFF; --ink:#261B2E; --ink2:#5C5066; --mist:#F1E1E8; --line:#EBD6DF;
   --dusk:#3B4F86; --on-dusk:#FFFFFF; --dawn:#F2A65A; --on-dawn:#261B2E; --dawn-soft:#FCE6CF; --dawn-text:#7A4210;
   --sage:#2F7A5B; --sage-soft:#E3F2EA; --danger:#8A3226; --danger-soft:#FBEAE7; --on-danger:#FFFFFF; --focus:#F2A65A;
-  --font:'IBM Plex Sans Hebrew','IBM Plex Sans Arabic','IBM Plex Sans',system-ui,sans-serif;
+  --font:'IBM Plex Sans Hebrew','IBM Plex Sans',system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#14111C; --surface:#1F1A2A; --ink:#F1ECF6; --ink2:#B9B0C6; --mist:#2A2338; --line:#342C44;
@@ -88,7 +88,7 @@ p{margin:0}
 .ribbon .track{position:absolute;inset:15px 0 auto;height:4px;border-radius:2px;background:var(--mist)}
 .ribbon .sleep{position:absolute;top:13px;height:8px;border-radius:4px;background:var(--dusk);opacity:.4}
 .ribbon .mark{position:absolute;top:9px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--dawn);border:2px solid var(--bg)}
-.axis{direction:ltr;display:flex;justify-content:space-between;font-size:.6875rem;color:var(--ink2);font-variant-numeric:tabular-nums}
+.axis{direction:ltr;display:flex;justify-content:space-between;font-size:.75rem;color:var(--ink2);font-variant-numeric:tabular-nums}
 .legend{display:flex;gap:16px;font-size:.75rem;color:var(--ink2)}
 .list{list-style:none;margin:0;padding:0}
 .list li{display:flex;gap:14px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
@@ -120,7 +120,7 @@ input[type=text],input[type=email],input[type=password],input[type=time],input[t
 .brand{display:inline-flex;align-items:center;gap:8px;min-height:44px;text-decoration:none;color:var(--ink);font-weight:600;font-size:.9375rem}
 .brand svg{color:var(--dusk)}
 .share-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;border:0;background:var(--dusk);color:var(--on-dusk);font-weight:600;font-size:.875rem}
-.tabs a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;text-decoration:none;font-size:.6875rem;color:var(--ink2)}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;text-decoration:none;font-size:.75rem;color:var(--ink2)}
 .tabs a[aria-current="page"]{color:var(--ink);font-weight:600}
 /* Sheet */
 .scrim{position:fixed;inset:0;background:rgba(20,17,28,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center}
@@ -137,7 +137,7 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .mono{width:44px;height:44px;border-radius:50%;background:var(--mist);color:var(--dusk);display:flex;align-items:center;justify-content:center;font-weight:600;flex:none}
 .mono.warm{background:var(--dawn-soft);color:var(--dawn-text)}
 .stages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
-.stages li{display:flex;flex-direction:column;gap:6px;font-size:.6875rem;opacity:.75}
+.stages li{display:flex;flex-direction:column;gap:6px;font-size:.75rem;opacity:.9}
 .stages li span{height:4px;border-radius:2px;background:currentColor;opacity:.5}
 .stages li[aria-current="step"]{opacity:1;color:var(--dawn);font-weight:600}
 .stages li[aria-current="step"] span{opacity:1}
@@ -279,7 +279,7 @@ img.logo{border-radius:28%;display:block;flex:none;object-fit:cover}
 .heat{display:grid;grid-template-columns:2em repeat(24,minmax(0,1fr));gap:2px;direction:ltr;align-items:center}
 .heat i{display:block;aspect-ratio:1;border-radius:3px}
 .heat .hd{font-size:.75rem;color:var(--ink2);text-align:center}
-.heat .hx{font-size:.6875rem;color:var(--ink2)}
+.heat .hx{font-size:.75rem;color:var(--ink2)}
 .adm-filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
 .adm-filters .field{flex:1;min-width:150px}
 .st{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.75rem;font-weight:600;background:var(--mist);color:var(--ink)}
@@ -435,9 +435,9 @@ const T = {
   stages:['שבוע 1','שבוע 2','שבוע 3','שבועות 4–6','חודשים 2–3'],
   stageTitle:'מה קורה בשלב הזה',
   stageText:['בימים הראשונים תינוקות יונקים לעתים קרובות, לרוב 8 עד 12 פעמים ביממה.','החלב מתבסס. הנקות תכופות עוזרות לגוף לייצר את מה שהתינוק צריך.','הרבה תינוקות מבקשים לינוק לעתים קרובות יותר בתקופה הזו. זה זמני, וזה לא אומר שאין מספיק חלב.','הקצב משתנה מיום ליום. זה תקין כל עוד יש חיתולים רטובים ועלייה במשקל.','הרבה תינוקות אוכלים מהר יותר עכשיו. הנקה קצרה יכולה להספיק.'],
-  draft:'טיוטה לבדיקת יועצת הנקה',topics:'נושאים',soon:'בקרוב',
+  topics:'נושאים',soon:'בקרוב',
   topicList:[['מ','האם הוא אוכל מספיק?','סימנים שאפשר לבדוק בבית','article',1],['א','אחיזה נכונה','איך נראית ומרגישה אחיזה טובה','',0],['כ','כאבים וסדקים','מה נורמלי ומה דורש בדיקה','',0],['ש','שאיבה ואחסון חלב','שמירה, הקפאה וחימום','',0],['ת','הנקת תאומים','תנוחות וסדר','',0],['!','מתי לפנות לעזרה','סימנים שבגללם פונים לרופא','article',1]],
-  guideNote:'התוכן במדריך עובר בדיקה של יועצת הנקה מוסמכת. הוא לא מחליף בדיקה אצל רופא או אחות טיפת חלב.',
+  guideNote:'המידע במדריך כללי. הוא לא מחליף בדיקה אצל רופא או אחות טיפת חלב.',
   artTitle:'איך יודעים שהתינוק אוכל מספיק',artLead:'בהנקה לא רואים כמה מיליליטר נכנסו, וזה מלחיץ. יש סימנים פשוטים שאפשר לבדוק בבית, והיומן כבר אוסף חלק מהם.',
   artYour:(n)=>'לפי היומן של '+n+', ב-24 השעות האחרונות',artWet:(k)=>k+' חיתולים רטובים',artFeeds:(k)=>k+' הנקות',
   artSigns:'מה בודקים בבית',artList:[['חיתולים רטובים.','מהיום החמישי בערך, לרוב 6 ומעלה ביממה.'],['יציאות.','בשבועות הראשונים, צהבהבות ותכופות.'],['בליעה.','בזמן ההנקה שומעים או רואים בליעות קצביות.'],['אחרי ההנקה.','רוב הפעמים התינוק נרגע ומשחרר את השד בעצמו.'],['משקל.','טיפת חלב עוקבת אחרי העלייה במשקל. זה הסימן החשוב ביותר.']],
@@ -474,9 +474,9 @@ const T = {
   stages:['Week 1','Week 2','Week 3','Weeks 4–6','Months 2–3'],
   stageTitle:'What happens at this stage',
   stageText:['In the first days babies feed often, usually 8 to 12 times a day.','Your milk is settling in. Frequent feeds help your body make what your baby needs.','Many babies ask to feed more often around now. It passes, and it does not mean you are low on milk.','The rhythm changes from day to day. That is fine as long as there are wet diapers and weight gain.','Many babies feed faster now. A short feed can be enough.'],
-  draft:'Draft for lactation consultant review',topics:'Topics',soon:'Soon',
+  topics:'Topics',soon:'Soon',
   topicList:[['E','Is my baby getting enough?','Signs you can check at home','article',1],['L','A good latch','How a good latch looks and feels','',0],['P','Pain and cracks','What is normal and what needs a check','',0],['M','Pumping and storing milk','Storing, freezing and warming','',0],['T','Feeding twins','Positions and order','',0],['!','When to get help','Signs that mean calling a doctor','article',1]],
-  guideNote:'Guide content is reviewed by a certified lactation consultant. It does not replace a check-up with your doctor or nurse.',
+  guideNote:'The guide is general information. It does not replace a check-up with your doctor or nurse.',
   artTitle:'How to know your baby is getting enough',artLead:'With breastfeeding you cannot see how many millilitres went in, and that is stressful. There are simple signs you can check at home, and your log already tracks some of them.',
   artYour:(n)=>n+'’s log, last 24 hours',artWet:(k)=>k+' wet diapers',artFeeds:(k)=>k+' feeds',
   artSigns:'What to check at home',artList:[['Wet diapers.','From around day five, usually 6 or more a day.'],['Stools.','In the first weeks, yellowish and frequent.'],['Swallowing.','During a feed you hear or see rhythmic swallows.'],['After the feed.','Most of the time your baby settles and lets go on their own.'],['Weight.','Your clinic tracks weight gain. It is the most important sign.']],
@@ -485,46 +485,7 @@ const T = {
   foodsTitle:'First foods',foodsText:'The first foods module, with the food guide, tasting log and allergens, will be connected here next.',
   familyLink:'Family and settings',appName:'Parenting',appFull:'Parenting: Nursing, Development, First Foods',home:'Home',dev:'Development',twinsQ:'I have twins',twinName:'Second twin\u2019s name',moreQ:'Which fits you?',moreNo:'One baby',moreTwins:'Twins',moreTrip:'Triplets',moreSib:'A child of another age',tripName2:'Second baby\u2019s name',tripName3:'Third baby\u2019s name',sibName:'Other child\u2019s name',sibBorn:'Other child\u2019s date of birth',
   share:'Share',shareTitle:'Share with your partner',shareMsg:(n)=>'Join '+n+'\u2019s log in the Parenting app: ',whatsapp:'Send on WhatsApp',copy:'Copy link',copied:'Link copied',close:'Close'},
- ar:{dir:'rtl',name:'العربية',today:'اليوم',feeding:'الرضاعة',community:'المجتمع',foods:'أول الأطعمة',nav:'التنقل الرئيسي',
-  left:'يسار',right:'يمين',both:'الجهتان',tapStart:'المسي للبدء',endedHere:'هنا انتهت آخر رضعة',nursingNow:'ترضعين الآن',switchHere:'الانتقال لهذه الجهة',
-  finish:'إنهاء وحفظ',forgot:'نسيتِ التسجيل؟ أضيفي رضعة سابقة',noFeedYet:'لم تُسجَّل أي رضعة بعد. المسي إحدى الجهتين لبدء المؤقت.',
-  lastFeed:(ago,side)=>'آخر رضعة '+ago+'، '+side,ago:(m)=>m<1?'الآن':m<60?'قبل '+m+' د':'قبل '+Math.floor(m/60)+' س و'+(m%60)+' د',
-  sideFrom:{L:'من اليسار',R:'من اليمين',B:'من الجهتين'},
-  quick:'تسجيل سريع',bottle:'زجاجة',pump:'شفط',diaper:'حفاض',sleep:'نوم',med:'دواء',sleeping:'نائم',
-  last24:'آخر 24 ساعة',totals:(f,d)=>f+' رضعات، '+d+' حفاضات',legendFeed:'رضعة',legendSleep:'نوم',ribbonAria:(f,s)=>f+' رضعات و'+s+' فترات نوم في آخر 24 ساعة',
-  recent:'السجل',nothingToday:'لا توجد تسجيلات اليوم بعد.',nothingDay:'لا توجد تسجيلات في هذا اليوم.',hrs:'س',dayNames:['اليوم','أمس','قبل يومين'],histAria:'اختيار يوم',daySum:(f,m,b,d,sl)=>[f+' رضعات'+(m?' ('+m+' دقيقة)':''),b?b+' زجاجات':'',d+' حفاضات',sl?'نوم '+sl:''].filter(Boolean).join(' · '),del:'حذف',delQ:'حذف؟',yes:'حذف',no:'إلغاء',
-  ev:{feed:'رضعة',bottle:'زجاجة',pump:'شفط',diaper:'حفاض',sleep:'نوم',med:'دواء'},
-  kinds:{wet:'مبلل',dirty:'متسخ',both:'مبلل ومتسخ'},min:'د',ml:'مل',you:'أنتِ',partner:'الشريك',
-  synced:'متزامن',local:'محفوظ على هذا الجهاز فقط',connecting:'جارٍ الاتصال…',
-  addPast:'إضافة تسجيل سابق',what:'ماذا حدث؟',when:'متى بدأ؟',ago15:'قبل 15 د',ago30:'قبل 30 د',ago60:'قبل ساعة',exact:'أو وقت محدد',
-  whichSide:'أي جهة؟',howLong:'كم من الوقت؟',howMuch:'كم؟',whichKind:'أي نوع؟',save:'حفظ',cancel:'إلغاء',saved:'تم الحفظ',savedBoth:'تم الحفظ والتحديث لدى كل المتصلين',
-  less5:'أقل 5',more5:'أكثر 5',less10:'أقل 10',more10:'أكثر 10',
-  bottleTitle:'زجاجة',pumpTitle:'شفط',diaperTitle:'حفاض',
-  meds:'الأدوية والفيتامينات',medsHint:'يساعد على تذكّر ما أُعطي ومتى، كي لا يُعطى مرتين. التطبيق لا يقترح جرعات: اتبعي الطبيب أو الممرضة أو النشرة.',
-  givenNow:'أُعطي الآن',givenAt:(t,w)=>'أُعطي اليوم الساعة '+t+' ('+w+')',notGiven:'لم يُعطَ اليوم بعد',undo:'إلغاء',
-  addMed:'إضافة دواء أو فيتامين',medName:'الاسم',medNote:'ملاحظة (مثلًا: مرة يوميًا حسب الإرشاد)',add:'إضافة',noMeds:'لا توجد أدوية بعد. أضيفي فيتامين D أو الحديد أو دواء بوصفة.',
-  back:'رجوع',
-  family:'العائلة',familyHint:'الجميع يرى السجل نفسه ويسجّل معًا.',babies:'الأطفال',babyName:'اسم الطفل/ة',born:'تاريخ ولادة الطفل/ة',addBaby:'إضافة طفل',removeBaby:'إزالة',
-  members:'من متصل',invite:'كيف تضيفين الشريك',
-  prefs:'العرض',language:'اللغة',theme:'المظهر',themeSys:'حسب الهاتف',themeLight:'نهار',themeDark:'ليل',
-  setupTitle:'أهلًا بكِ',setupText:'لنبدأ باسم الطفل. لديك طفل آخر؟ يمكن إضافته أيضًا.',start:'ابدئي',
-  babiesLabel:'اختيار الطفل',kidColor:n=>'لون '+n+' في التطبيق',kidFirst:'ألوان التطبيق المعتادة',
-  guideFor:(n,w)=>'مخصّص لـ'+n+(w?'، '+w:''),weeks:(w)=>'الأسبوع '+w,
-  stages:['الأسبوع 1','الأسبوع 2','الأسبوع 3','الأسابيع 4–6','الشهران 2–3'],
-  stageTitle:'ماذا يحدث في هذه المرحلة',
-  stageText:['في الأيام الأولى يرضع الأطفال كثيرًا، عادةً من 8 إلى 12 مرة يوميًا.','الحليب يستقر. الرضعات المتكررة تساعد الجسم على إنتاج ما يحتاجه الطفل.','كثير من الأطفال يطلبون الرضاعة أكثر في هذه الفترة. هذا مؤقت ولا يعني قلة الحليب.','الإيقاع يتغير من يوم لآخر. هذا طبيعي ما دامت هناك حفاضات مبللة وزيادة في الوزن.','كثير من الأطفال يرضعون أسرع الآن. رضعة قصيرة قد تكفي.'],
-  draft:'مسودة لمراجعة مستشارة الرضاعة',topics:'مواضيع',soon:'قريبًا',
-  topicList:[['ك','هل يأكل ما يكفي؟','علامات يمكن فحصها في البيت','article',1],['ا','الالتقام الصحيح','كيف يبدو الالتقام الجيد','',0],['أ','الألم والتشققات','ما الطبيعي وما يحتاج فحصًا','',0],['ش','شفط الحليب وتخزينه','الحفظ والتجميد والتدفئة','',0],['ت','إرضاع التوائم','الوضعيات والترتيب','',0],['!','متى تطلبين المساعدة','علامات تستدعي الاتصال بالطبيب','article',1]],
-  guideNote:'محتوى الدليل تراجعه مستشارة رضاعة معتمدة. وهو لا يغني عن فحص الطبيب أو الممرضة.',
-  artTitle:'كيف تعرفين أن طفلك يأكل ما يكفي',artLead:'في الرضاعة الطبيعية لا يمكن رؤية كمية الحليب، وهذا مقلق. هناك علامات بسيطة يمكن فحصها في البيت، وسجلّك يتابع بعضها.',
-  artYour:(n)=>'حسب سجل '+n+'، آخر 24 ساعة',artWet:(k)=>k+' حفاضات مبللة',artFeeds:(k)=>k+' رضعات',
-  artSigns:'ماذا تفحصين في البيت',artList:[['الحفاضات المبللة.','من اليوم الخامس تقريبًا، عادةً 6 أو أكثر يوميًا.'],['البراز.','في الأسابيع الأولى، مصفرّ ومتكرر.'],['البلع.','أثناء الرضاعة تسمعين أو ترين بلعًا منتظمًا.'],['بعد الرضعة.','غالبًا يهدأ الطفل ويترك الثدي بنفسه.'],['الوزن.','عيادة الأم والطفل تتابع زيادة الوزن. هذه أهم علامة.']],
-  artWhen:'متى تتصلين بالطبيب أو العيادة',artWhenList:['حفاضات مبللة أقل من المعتاد، أو بول داكن','الطفل نعسان جدًا ويصعب إيقاظه للرضاعة','اصفرار الجلد أو العينين يزداد'],artDoubt:'عند الشك، اسألي.',
-  commTitle:'المجتمع',commText:'مجموعات لأمهات في المرحلة نفسها، ومجموعة للتوائم، وأخرى لساعات الليل. المجتمع قيد البناء وسيفتح في النسخة القادمة.',
-  foodsTitle:'أول الأطعمة',foodsText:'سيتم ربط وحدة أول الأطعمة هنا قريبًا، مع دليل الأطعمة وسجل التذوق ومسببات الحساسية.',
-  familyLink:'العائلة والإعدادات',appName:'التربية',appFull:'التربية: رضاعة، نمو، أول الأطعمة',home:'الرئيسية',dev:'النمو',twinsQ:'لديّ توائم',twinName:'اسم التوأم الثاني',moreQ:'ما الذي يناسبكم؟',moreNo:'طفل واحد',moreTwins:'توأم',moreTrip:'ثلاثة توائم',moreSib:'طفل بعمر آخر',tripName2:'اسم الطفل الثاني',tripName3:'اسم الطفل الثالث',sibName:'اسم الطفل الآخر',sibBorn:'تاريخ ولادة الطفل الآخر',
-  share:'مشاركة',shareTitle:'المشاركة مع الشريك',shareMsg:(n)=>'انضم إلى سجل '+n+' في تطبيق التربية: ',whatsapp:'إرسال عبر واتساب',copy:'نسخ الرابط',copied:'تم نسخ الرابط',close:'إغلاق'}
-};
+ };
 
 const APP_URL=location.origin;
 // ---------- helpers ----------
@@ -558,7 +519,7 @@ const IC={
 };
 
 // ---------- state ----------
-const S={lang:ls.get('gp-lang','he'),theme:ls.get('gp-theme2','light'),renderDrafts:false,view:'today',babyId:ls.get('gp-baby',null),me:null,names:{},
+const S={lang:(ls.get('gp-lang','he')==='en'?'en':'he'),theme:ls.get('gp-theme2','light'),renderDrafts:false,view:'today',babyId:ls.get('gp-baby',null),me:null,names:{},
   mode:'connecting',ready:false,draft:{},authMode:'signup',authMsg:'',busy:false,onb:'',fid:null,members:[],invite:'',foodCat:'all',openRecipe:null,foodSub:'info',openFood:null,foodQ:'',foodStyle:null,recStage:'all',recTex:'all',setupMore:'',devAge:null,family:{babies:[],active:{},sleep:{}},events:[],meds:[],confirmDel:null,confirmMed:null};
 const t=()=>T[S.lang]||T.he;
 
@@ -574,11 +535,7 @@ const AT={
   onbTitle:'How do you want to start?',newFamily:'Start a new log',newFamilyHint:'For the parent who starts first',joinFamily:'Join an existing log',joinFamilyHint:'You got a code from your partner',yourName:'What should we call you in the log? (e.g. Mom)',code:'Join code (6 digits)',join:'Join',badCode:'That code wasn’t found. Check all 6 digits.',invited:'You were invited to a shared log. The code is already filled in; just add what to call you.',invitedAuth:'You were invited to a shared log 💕 Sign up or log in and we’ll add you right after.',tooMany:'Too many attempts. Try again in an hour, or ask your partner to resend the code.',
   codeLabel:'Your join code',logout:'Log out',working:'One moment…',shareCode:(c)=>'Join code: '+c,
   inviteText:'Send your partner the personal link. It opens the app with your code already filled in, so after signing up they join with one tap. The code is also in the message, in case they need to type it.',signedAs:(e)=>'Signed in as '+e,notSaved:'Not saved, try again'},
- ar:{signup:'تسجيل',login:'دخول',email:'البريد الإلكتروني',password:'كلمة المرور',pwHint:'8 أحرف على الأقل',authLead:'سجل مشترك للرضاعة والنوم والأدوية وأول الأطعمة، للوالدين معًا.',toLogin:'لديكِ حساب؟ دخول',toSignup:'ليس لديكِ حساب؟ تسجيل',checkEmail:'أرسلنا رسالة تأكيد. بعد التأكيد عودي إلى هنا وادخلي.',authErr:'تعذّر الدخول. تحققي من البريد وكلمة المرور وحاولي مجددًا.',weakPw:'يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل.',exists:'هذا البريد مسجّل مسبقًا. أدخلي كلمة المرور للدخول.',
-  onbTitle:'كيف تبدئين؟',newFamily:'إنشاء سجل جديد',newFamilyHint:'للأم أو الأب الذي يبدأ أولًا',joinFamily:'الانضمام إلى سجل قائم',joinFamilyHint:'وصلك رمز من الشريك',yourName:'ماذا نسميك في السجل؟ (مثلًا: ماما)',code:'رمز الانضمام (6 أرقام)',join:'انضمام',badCode:'لم يُعثر على الرمز. تحققي من الأرقام الستة.',invited:'تمت دعوتك للانضمام إلى سجل مشترك. الرمز مكتوب مسبقًا، بقي أن تكتبي كيف نناديك.',invitedAuth:'تمت دعوتك للانضمام إلى سجل مشترك 💕 سجّلي أو ادخلي وسنضمّك مباشرةً بعد ذلك.',tooMany:'محاولات كثيرة جدًا. حاولي بعد ساعة، أو اطلبي من الشريك إرسال الرمز مجددًا.',
-  codeLabel:'رمز الانضمام الخاص بكم',logout:'تسجيل الخروج',working:'لحظة…',shareCode:(c)=>'رمز الانضمام: '+c,
-  inviteText:'أرسلي للشريك الرابط الشخصي. يفتح التطبيق والرمز مكتوب مسبقًا، وبعد التسجيل ينضم بلمسة واحدة. الرمز موجود في الرسالة أيضًا إذا احتاج لكتابته.',signedAs:(e)=>'متصل باسم '+e,notSaved:'لم يُحفظ، حاولي مجددًا'}
-};
+ };
 const at=()=>AT[S.lang]||AT.he;
 const Store={sb:null,fid:null,channel:null,timer:{},
  async init(){
@@ -653,7 +610,7 @@ const Store={sb:null,fid:null,channel:null,timer:{},
 };
 const LEGAL={he:{agree:['בהרשמה את/ה מסכים/ה ל','תנאי השימוש',' ול','מדיניות הפרטיות','.'],links:'פרטיות, תנאים ונגישות',privacy:'מדיניות פרטיות',terms:'תנאי שימוש',acc:'הצהרת נגישות'},
  en:{agree:['By signing up you agree to the ','Terms of use',' and the ','Privacy policy',' (in Hebrew).'],links:'Privacy, terms & accessibility',privacy:'Privacy policy',terms:'Terms of use',acc:'Accessibility statement'},
- ar:{agree:['بالتسجيل أنتِ توافقين على ','شروط الاستخدام',' و','سياسة الخصوصية',' (بالعبرية).'],links:'الخصوصية والشروط وإمكانية الوصول',privacy:'سياسة الخصوصية',terms:'شروط الاستخدام',acc:'بيان إمكانية الوصول'}};
+ };
 function legalLinks(){ const G=LEGAL[S.lang]||LEGAL.he; return '<p class="small muted legal-links"><a href="/privacy?from=app" lang="he">'+esc(G.privacy)+'</a> · <a href="/terms?from=app" lang="he">'+esc(G.terms)+'</a> · <a href="/accessibility?from=app" lang="he">'+esc(G.acc)+'</a></p>'; }
 function viewAuth(){
  const A=at(), up=S.authMode!=='login';
@@ -752,8 +709,7 @@ function deepMerge(a,b){ const r=Object.assign({},a); for(const k in b){ const v
 const SBT={
  he:{one:'רישום אחד עוד לא נשמר. הוא שמור בטלפון שלך וישלח שוב לבד כשיהיה חיבור.',many:(n)=>n+' רישומים עוד לא נשמרו. הם שמורים בטלפון שלך וישלחו שוב לבד כשיהיה חיבור.',retry:'נסי שוב עכשיו',bad:'לא נשמר. נסי שוב.',close:'סגירה',ok:'הכול נשמר'},
  en:{one:'One entry is not saved yet. It is kept on your phone and will be sent again by itself when you are connected.',many:(n)=>n+' entries are not saved yet. They are kept on your phone and will be sent again by itself when you are connected.',retry:'Try again now',bad:'Not saved. Please try again.',close:'Close',ok:'Everything is saved'},
- ar:{one:'تسجيل واحد لم يُحفظ بعد. هو محفوظ على هاتفك وسيُرسل مجددًا تلقائيًا عند عودة الاتصال.',many:(n)=>n+' تسجيلات لم تُحفظ بعد. هي محفوظة على هاتفك وستُرسل مجددًا تلقائيًا عند عودة الاتصال.',retry:'حاولي الآن',bad:'لم يُحفظ. حاولي مجددًا.',close:'إغلاق',ok:'تم حفظ كل شيء'}
-};
+ };
 const Pend={
  list:(()=>{ const v=ls.get('gp-pending',[]); return Array.isArray(v)?v:[]; })(), busy:false, bad:false,
  save(){ ls.set('gp-pending',this.list); },
@@ -870,9 +826,7 @@ const WK={he:{t:'סיכום השבוע',sub:'7 הימים האחרונים',none
  en:{t:'Weekly summary',sub:'Last 7 days',none:'Not enough entries for a summary yet.',feeds:'Breastfeeds',bottles:'Bottles',pumps:'Pumping',diapers:'Diapers',sleep:'Sleep',night:'At night (7 pm to 7 am)',nightFeeds:'feeds',perDay:'per day on average',perNight:'per night on average',total:'Total',
   copy:'Copy',copied:'Copied ✓',save:'Save or share',saved:'Saved',hrs:'h',min:'min',ml:'ml',file:'weekly-summary',
   line:(n,a)=>a==null?String(n):n+' (about '+a+' a day)',sleepNote:'based on the sleep that was logged',head:(nm,a,b)=>'Weekly summary: '+nm+'\n'+a+' to '+b},
- ar:{t:'ملخص الأسبوع',sub:'آخر 7 أيام',none:'لا توجد تسجيلات كافية للملخص بعد.',feeds:'رضعات',bottles:'زجاجات',pumps:'شفط',diapers:'حفاضات',sleep:'النوم',night:'ليلًا (7 مساءً حتى 7 صباحًا)',nightFeeds:'تغذيات',perDay:'في المتوسط يوميًا',perNight:'في المتوسط كل ليلة',total:'المجموع',
-  copy:'نسخ',copied:'تم النسخ ✓',save:'حفظ أو مشاركة',saved:'تم الحفظ',hrs:'س',min:'د',ml:'مل',file:'ملخص-أسبوعي',
-  line:(n,a)=>a==null?String(n):n+' (حوالي '+a+' يوميًا)',sleepNote:'حسب النوم المسجَّل',head:(nm,a,b)=>'ملخص أسبوعي: '+nm+'\n'+a+' حتى '+b}};
+ };
 function weekStats(b){
  const from=dayStart(6), now=Date.now(), all=S.events.filter(e=>e.baby===b.id&&e.t>=from&&e.t<=now);
  if(!all.length) return null;
@@ -945,7 +899,7 @@ function viewGuide(){
  const days=ageWeeks(b), si=stageIndex(days);
  const wk=days==null?'':L.weeks(Math.floor(days/7)+1);
  return '<header class="section" style="gap:2px"><h1>'+esc((HT[S.lang]||HT.he).guide[0])+'</h1><p class="muted small">'+esc(L.guideFor(b.name,wk))+'</p></header>'+
- '<section class="dark-card" aria-labelledby="stage-h"><span class="badge">'+esc(L.draft)+'</span><h2 id="stage-h" style="font-size:1.25rem">'+esc(L.stageTitle)+'</h2>'+
+ '<section class="dark-card" aria-labelledby="stage-h"><h2 id="stage-h" style="font-size:1.25rem">'+esc(L.stageTitle)+'</h2>'+
  '<ol class="stages">'+L.stages.map((s,i)=>'<li'+(i===si?' aria-current="step"':'')+'><span></span>'+esc(s)+'</li>').join('')+'</ol>'+
  '<p style="font-size:1rem;line-height:1.65">'+esc(L.stageText[si])+'</p></section>'+
  '<section class="section" style="gap:0"><h2 style="margin-bottom:4px">'+esc(L.topics)+'</h2>'+L.topicList.filter((x,i)=>i!==4||hasTwins()).map(x=>{
@@ -960,7 +914,7 @@ function viewArticle(){
  const from=Date.now()-864e5, day=evs().filter(e=>e.t>=from);
  const wet=day.filter(e=>e.type==='diaper'&&(e.kind==='wet'||e.kind==='both')).length;
  const feeds=day.filter(e=>e.type==='feed').length;
- return '<header class="section" style="gap:10px"><span class="badge" style="align-self:flex-start">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem">'+esc(L.artTitle)+'</h1></header>'+
+ return '<header class="section" style="gap:10px"><h1 style="font-size:1.75rem">'+esc(L.artTitle)+'</h1></header>'+
  '<p class="prose">'+esc(L.artLead)+'</p>'+
  '<section class="dark-card"><h2 style="color:var(--dawn)">'+esc(L.artYour(b.name))+'</h2><ul class="section" style="list-style:none;margin:0;padding:0;gap:8px"><li class="row">'+IC.check+esc(L.artWet(wet))+'</li><li class="row">'+IC.check+esc(L.artFeeds(feeds))+'</li></ul></section>'+
  '<section class="section prose"><h2 style="font-size:1.25rem">'+esc(L.artSigns)+'</h2><ul>'+L.artList.map(x=>'<li><strong style="font-weight:600">'+esc(x[0])+'</strong> '+esc(x[1])+'</li>').join('')+'</ul></section>'+
@@ -1186,23 +1140,7 @@ const FT={
   logEmpty:'Nothing tasted yet. Pick a food and tap "Tasted".',toFoods:'Go to foods',reactionEv:'reaction',tasteEv:'Tasting',
   style:'How would you like to serve?',styles:[['mashed','Mashed (spoon)','Spoon-feeding mashed food'],['blw','Baby-led weaning','Baby feeds themselves with their hands'],['combined','Combined','Both spoon and self-feeding']],styleNote:'There is no single right method. What matters is what suits your baby, as long as food is served safely.',
   langNote:'Food descriptions and recipes are in Hebrew for now. English is on the way.',disclaimer:'Information in this app is not medical advice. For any question, ask your paediatrician or baby clinic.'},
- ar:{title:'أول الأطعمة',hub:'أول الأطعمة',sub:{foods:'الأطعمة',allergens:'مسببات الحساسية',recipes:'وصفات',log:'تذوّقنا',info:'التغذية الذاتية ومعلومات'},
-  tasted:(n)=>n+' أطعمة تذوقها',all:'الكل',search:'ابحثي عن طعام',noResults:'لا يوجد طعام بهذا الاسم',
-  soft:'يحتاج تليينًا',blw:'مناسب للتغذية الذاتية',allergen:'مسبب حساسية',blwWarn:'في التغذية الذاتية: تُليَّن وتُقطَّع بطريقة آمنة كما هو مذكور أعلاه',newMorning:'طعام جديد؟ الأفضل صباحًا.',
-  mashed:'مهروس',blwT:'تغذية ذاتية',tasteBtn:'تذوّقنا',tastedTimes:(n)=>n===1?'تذوقه مرة واحدة':'تذوقه '+n+' مرات',notYet:'لم يتذوقه بعد',
-  prepTitle:'طريقة التحضير',prepText:'على البخار أو بالسلق أو بالخَبز حتى يلين تمامًا (يُهرس بسهولة بالشوكة). دون ملح أو توابل حارة في البداية.',
-  untaste:'سجّلتِه بالخطأ؟ إلغاء آخر تذوق',untasteQ:'حذف آخر تذوق لهذا الطعام؟',untasteYes:'نعم، احذفي',logTitle:(f)=>'تذوق: '+f,howServed:'كيف قُدِّم؟',liked:'كيف كان؟',likes:[['yes','أحبه'],['meh','عادي'],['no','لم يعجبه']],
-  reactionQ:'هل حدث تفاعل غير عادي؟',reactionTypes:[['rash','طفح أو احمرار'],['vomit','تقيؤ'],['diarrhea','إسهال'],['swelling','تورم الوجه أو الشفتين'],['breathing','صفير أو صعوبة في التنفس'],['other','غير ذلك']],
-  notes:'ملاحظات (اختياري)',notDiagnosis:'هذا ليس تشخيصًا طبيًا، بل توثيق لما حدث.',
-  emergency:'صعوبة في التنفس، أو تورم الوجه أو اللسان أو الحلق، أو ضعف غير عادي: اتصلي فورًا بالإسعاف 101.',
-  alIntro:'هنا تسجّلين التعرّض والاشتباه بتفاعل. هذا ليس تشخيصًا طبيًا.',alTip:'الأفضل تجربة مسبب حساسية جديد صباحًا، طعامًا واحدًا كل مرة، مع المراقبة.',alTip2:'نصيحة شائعة: كمية صغيرة (نحو ربع ملعقة صغيرة) كل صباح لثلاثة أيام متتالية.',
-  alNot:'لم يُقدَّم بعد',alOk:'قُدِّم، استمري بتقديمه',alBad:'حدث تفاعل أو اشتباه',exposed:'قُدِّم',hadReaction:'تفاعل أو اشتباه',avoid:'إخفاء في الوصفات',fromLog:'سُجِّل تلقائيًا من سجل التذوق',
-  stage:'المرحلة',texture:'القوام',stages:[['all','الكل'],['b','البداية'],['a','متقدم'],['k','من عمر سنة وللعائلة']],textures:[['all','الكل'],['m','مهروس'],['b','تغذية ذاتية'],['c','مدمج']],
-  hidden:(x)=>'وصفات مخفية تحتوي على: '+x,noRecipes:'لا توجد وصفات مناسبة لهذا الاختيار',ingredients:'المكونات',steps:'طريقة التحضير',personal:'مطابق لمسببات الحساسية التي حددتِها',
-  logEmpty:'لم يتذوق شيئًا بعد. اختاري طعامًا واضغطي "تذوّقنا".',toFoods:'إلى قائمة الأطعمة',reactionEv:'تفاعل',tasteEv:'تذوق',
-  style:'كيف تحبين التقديم؟',styles:[['mashed','مهروس (بالملعقة)','الإطعام بالملعقة بطعام مهروس'],['blw','التغذية الذاتية','الطفل يأكل وحده بيديه'],['combined','مدمج','الملعقة والأكل الذاتي معًا']],styleNote:'لا توجد طريقة واحدة صحيحة. المهم ما يناسب طفلك، ما دام التقديم آمنًا.',
-  langNote:'أوصاف الأطعمة والوصفات بالعبرية حاليًا. الترجمة إلى العربية قادمة.',disclaimer:'المعلومات في التطبيق ليست استشارة طبية. لأي سؤال توجهي إلى طبيب الأطفال أو عيادة الأم والطفل.'}
-};
+ };
 // Info / BLW content (Hebrew, from the Lovable app, lightly edited)
 const FINFO=[
  ['intro','טעימות ראשונות לקטנטנים',['התחלת טעימות היא שלב מרגש, וגם קצת מלחיץ. פתאום החלב כבר לא מספיק, ויש עולם שלם של טעמים, מרקמים וריחות להכיר. המטרה כאן היא לעשות סדר, להוריד לחץ, ולתת לכם דרך פשוטה, רגועה ובטוחה להתחיל, בלי למהר ובלי ציפיות לא ריאליות.','זכרו: אוכל בגיל הזה הוא חוויה, משחק ולמידה. לא מבחן.']],
@@ -1288,13 +1226,13 @@ function allergensView(){
 }
 const RCATS={he:[['all','הכול'],['first','טעימות ראשונות'],['breakfast','ארוחת בוקר'],['main','ארוחות ותוספות'],['snack','נשנושים'],['baking','מאפים ומאפינס'],['sweet','מתוקים ומשקאות']],
  en:[['all','All'],['first','First tastes'],['breakfast','Breakfast'],['main','Meals & sides'],['snack','Snacks'],['baking','Baking & muffins'],['sweet','Sweets & drinks']],
- ar:[['all','الكل'],['first','التذوق الأول'],['breakfast','الفطور'],['main','وجبات وأطباق جانبية'],['snack','وجبات خفيفة'],['baking','مخبوزات ومافن'],['sweet','حلويات ومشروبات']]};
+ };
 const RQ={he:{kind:'סוג מנה',q:'חיפוש מתכון',ph:'למשל: מאפינס, בטטה, טונה',none:'לא נמצא מתכון. נסו מילה אחרת.',count:n=>n+' מתכונים',kNote:'מתכונים "מגיל שנה ולכל המשפחה" יכולים לכלול מלח, סוכר או דבש. לתינוקות מתחת לגיל שנה, בדקו את ההערה בכל מתכון.'},
  en:{kind:'Type of dish',q:'Search recipes',ph:'e.g. muffins, sweet potato, tuna',none:'No recipe found. Try another word.',count:n=>n+' recipes',kNote:'"From 1 year & family" recipes may include salt, sugar or honey. For babies under one, check the note in each recipe.'},
- ar:{kind:'نوع الطبق',q:'البحث عن وصفة',ph:'مثلًا: مافن، بطاطا حلوة، تونة',none:'لم يتم العثور على وصفة. جرّبوا كلمة أخرى.',count:n=>n+' وصفات',kNote:'وصفات "من عمر سنة وللعائلة" قد تحتوي على ملح أو سكر أو عسل. للرضّع دون السنة، راجعوا الملاحظة في كل وصفة.'}};
+ };
 const RF={he:{chip:'❤️ אהבנו',add:'סימון כמתכון שאהבנו',del:'הסרה מהמתכונים שאהבנו',none:'עוד לא סימנתם מתכונים. לוחצים על הלב ליד מתכון, והוא יעלה לראש הרשימה ויישמר לשני ההורים.',saved:'נשמר בין המתכונים שאהבנו',removed:'הוסר מהמתכונים שאהבנו'},
  en:{chip:'❤️ Our favorites',add:'Mark as a favorite',del:'Remove from favorites',none:'No favorites yet. Tap the heart next to a recipe and it moves to the top of the list, shared by both parents.',saved:'Added to favorites',removed:'Removed from favorites'},
- ar:{chip:'❤️ المفضلة لدينا',add:'إضافة إلى المفضلة',del:'إزالة من المفضلة',none:'لا توجد وصفات مفضلة بعد. اضغطي على القلب بجانب الوصفة لتظهر في أعلى القائمة ويراها الوالدان.',saved:'أُضيفت إلى المفضلة',removed:'أُزيلت من المفضلة'}};
+ };
 const recFav=()=>((S.family&&S.family.prefs&&S.family.prefs.recFav)||{});
 const isFav=r=>!!recFav()[r[0]];
 function recipesView(){
@@ -1334,7 +1272,7 @@ const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נות
 function safetyBox(){ const X=FSAFE; return '<details class="safety safety-acc" lang="he" dir="rtl"'+(S.safetyOpen?' open':'')+'><summary data-act="safetytoggle"><span>⚠️ '+esc(X.title)+'</span><span class="small" style="font-weight:500">דבש, חנק, אלרגיה, 101</span></summary><div class="safety-body"><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></div></details>'; }
 function safetyModal(){ const X=FSAFE; if(ls.get('gp-safety-ack',false)) return ''; return '<div class="modal-back"><div class="modal safety" role="dialog" aria-modal="true" aria-labelledby="safety-t" lang="he" dir="rtl"><h2 id="safety-t">⚠️ '+esc(X.title)+'</h2><p class="small">לפני שמתחילים טעימות, כמה דברים חשובים. תמיד אפשר לחזור אליהם בלשונית "בייבילד ומידע".</p><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><button type="button" class="btn block" data-act="safetyack">קראתי, הבנתי</button></div></div>'; }
 function sosPill(){ return '<a class="sos-pill" href="tel:101" aria-label="חירום: התקשרות למד״א 101">📞 101</a>'; }
-const RPR={he:['מתכונים לתינוקות ולכל המשפחה','ארוחות, נשנושים ומאפים, עם סינון לפי גיל ומרקם'],en:['Recipes for babies and the whole family','Meals, snacks and baking, filtered by age and texture'],ar:['وصفات للرضّع ولكل العائلة','وجبات ووجبات خفيفة ومخبوزات، مع تصفية حسب العمر والقوام']};
+const RPR={he:['מתכונים לתינוקות ולכל המשפחה','ארוחות, נשנושים ומאפים, עם סינון לפי גיל ומרקם'],en:['Recipes for babies and the whole family','Meals, snacks and baking, filtered by age and texture'],};
 function infoView(){
  const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
  const styles='<section class="card"><h2>'+esc(F.style)+'</h2><div class="section" style="gap:8px">'+F.styles.map(s=>'<button type="button" class="opt'+(pref===s[0]?' primary':'')+'" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'" style="min-height:72px"><span class="opt-tx"><span class="opt-t">'+esc(s[1])+'</span><span class="opt-h">'+esc(s[2])+'</span></span>'+(pref===s[0]?IC.check:'')+'</button>').join('')+'</div><p class="small muted">'+esc(F.styleNote)+'</p></section>';
@@ -1362,9 +1300,7 @@ const HT={
   lastFeed:'הנקה אחרונה',noFeed:'עוד לא תועדה הנקה',tasted:(n)=>n+' מאכלים נטעמו',more:'עוד',ageLine:(n,s)=>n+(s?', '+s:'')},
  en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers, bottles, medicines and guides'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Recipes, foods, allergens and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Settings & family','My profile, babies, allergies, language and saving as an app'],
   lastFeed:'Last feed',noFeed:'No feeds logged yet',tasted:(n)=>n+' foods tasted',more:'More',ageLine:(n,s)=>n+(s?', '+s:'')},
- ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات والأدوية والأدلة'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','وصفات، أطعمة، مسببات حساسية وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['الإعدادات والعائلة','ملفي، الأطفال، الحساسية، اللغة والحفظ كتطبيق'],
-  lastFeed:'آخر رضعة',noFeed:'لم تُسجَّل أي رضعة بعد',tasted:(n)=>n+' أطعمة تذوقها',more:'المزيد',ageLine:(n,s)=>n+(s?'، '+s:'')}
-};
+ };
 function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
 // ---------- first step after signup: shown on Home until the family logs anything ----------
 const FS={he:{t:'צעד ראשון: מה קרה עכשיו?',h:'נגיעה אחת וזה נשמר, בלי טפסים. השעה נרשמת לבד.',age:(m)=>m==null?'':m<1?'מותאם לשבועות הראשונים':'מותאם לגיל '+m+' חודשים',
@@ -1377,11 +1313,7 @@ const FS={he:{t:'צעד ראשון: מה קרה עכשיו?',h:'נגיעה אח�
   past:'Happened earlier? Pick a time',pump:'Log pumping',skip:'Later',tip:'The timer is running. Tap "Finish" when done',tasteTip:'Pick a food from the list to log a tasting',
   nT:'Nothing logged yet',nH:'The first entry takes 5 seconds',nBtn:'Log now',
   ok:'🎉 Saved!',started:'🎉 Saved! The timer is running',at:(x,h)=>x+' at '+h,invite:'Invite your partner',close:'Close'},
- ar:{t:'الخطوة الأولى: ماذا حدث الآن؟',h:'لمسة واحدة ويُحفظ، بلا نماذج. الوقت يُسجَّل تلقائيًا.',age:(m)=>m==null?'':m<1?'مناسب للأسابيع الأولى':'مناسب لعمر '+m+' أشهر',
-  feed:'رضاعة',bottle:'زجاجة',taste:'تذوّق',sleep:'نوم',diaper:'حفاض',side:'من أي جهة؟',ml:'كم مل؟',other:'غير ذلك',kind:'أي حفاض؟',back:'رجوع',
-  past:'حدث قبل ذلك؟ اختاري الوقت',pump:'تسجيل شفط',skip:'لاحقًا',tip:'المؤقت يعمل. اضغطي «إنهاء» عند الانتهاء',tasteTip:'اختاري طعامًا من القائمة لتسجيل التذوّق',
-  nT:'لم يُسجَّل شيء بعد',nH:'التسجيل الأول يستغرق 5 ثوانٍ',nBtn:'سجّلي الآن',
-  ok:'🎉 تم الحفظ!',started:'🎉 تم الحفظ! المؤقت يعمل',at:(x,h)=>x+' في '+h,invite:'دعوة الشريك',close:'إغلاق'}};
+ };
 let fsPick=null; // which quick button is open for its one detail (side / ml / diaper kind)
 function fsNoData(){ const b=baby(); if((S.events||[]).length) return false; if(b&&(((S.family.active||{})[b.id])||((S.family.sleep||{})[b.id]))) return false; return true; }
 function fsToday(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
@@ -1423,7 +1355,7 @@ function fsCelebrate(msg){
 }
 
 // ---------- short "today so far" summary on Home + a sample of it in the first-step card ----------
-const HD={he:{t:'היום עד עכשיו',sample:'כך זה ייראה אחרי יום של רישומים:'},en:{t:'Today so far',sample:'This is how it looks after a day of entries:'},ar:{t:'اليوم حتى الآن',sample:'هكذا يبدو بعد يوم من التسجيلات:'}};
+const HD={he:{t:'היום עד עכשיו',sample:'כך זה ייראה אחרי יום של רישומים:'},en:{t:'Today so far',sample:'This is how it looks after a day of entries:'},};
 function homeDayText(b){
  const L=t(), d0=dayStart(0), dl=(S.events||[]).filter(e=>e.baby===b.id&&e.t>=d0);
  if(!dl.length) return '';
@@ -1549,12 +1481,7 @@ const DT={
   pace:'Every child develops at their own pace. The list shows what most children do by this age. It is not a test.',
   when:'When it’s worth asking',whenList:['Your baby has lost a skill they already had','Something worries you, even if it isn’t on the list'],whenNote:'Haven’t ticked some milestones? That’s usually completely fine. Every baby has their own pace, and there’s no need to rush to the doctor over it. If you like, just mention it at your next routine baby-clinic visit.',
   source:'Based on the CDC developmental milestones (2022 revision). Hebrew and Arabic translations await professional review.',noBorn:'Add a date of birth in the Family screen so this page matches your baby’s age.'},
- ar:{title:'النمو',domains:{s:'اجتماعي وعاطفي',l:'اللغة والتواصل',c:'التعلّم والتفكير',m:'الحركة'},age:(m)=>m<24?'عمر '+m+' أشهر':'عمر سنتين',
-  intro:(n,a)=>'ما يفعله معظم الأطفال حتى '+a+'. ضعي علامة على ما رأيتِه لدى '+n+'.',seen:'رأيته',progress:(k,n)=>k+' من '+n+' محددة',
-  pace:'كل طفل ينمو بإيقاعه الخاص. القائمة تُظهر ما يفعله معظم الأطفال حتى هذا العمر، وليست اختبارًا.',
-  when:'متى يستحق أن تسألي',whenList:['الطفل يفقد مهارة كانت لديه','شيء يقلقك، حتى لو لم يكن في القائمة'],whenNote:'لم تحددي بعض المعالم؟ هذا عادةً طبيعي تمامًا. لكل طفل إيقاعه، ولا حاجة للركض إلى الطبيب بسبب ذلك. يمكنك ببساطة ذكره في الزيارة الروتينية القادمة للعيادة.',
-  source:'مبني على معالم النمو من CDC (تحديث 2022). الترجمة إلى العبرية والعربية بانتظار مراجعة مهنية.',noBorn:'أضيفي تاريخ الولادة في شاشة العائلة كي تتلاءم الصفحة مع عمر الطفل.'}
-};
+ };
 // ---------- development by month (Hebrew content; general, well-known information) ----------
 // month cards: [month, title, text]
 const MONTHS=[
@@ -1589,11 +1516,7 @@ const DX={
   nowTag:'Now',spurtTitle:'Growth spurt',spurtNow:'Maybe a growth spurt right now',spurtNext:(x)=>'The next common growth spurt: '+x,spurtText:'',spurtList:'When it is common',spurtNote:'Every baby has their own pace; dates are approximate.',
   leapTitle:'Developmental leaps ("Wonder Weeks")',leapNow:(n,w)=>'Per the book, around week '+w+': leap '+n,leapNext:(n,w)=>'Next leap per the book: week '+w+', '+n,leapText:'',
   checklist:(a)=>'Milestones by '+a,langNote:'The monthly descriptions, growth spurts and leaps are in Hebrew for now. The milestone checklist below is available in English.',sources:'Sources: CDC milestones (2022); growth spurt timing per KellyMom and common breastfeeding resources. General information, not a substitute for your baby clinic.'},
- ar:{months:'حسب الأشهر',ageIs:(m,w)=>m<1?'عمره '+w+' أسابيع':'عمره '+m+' أشهر'+(w?' و'+w+' أسابيع':''),monthChip:(m)=>m===12?'سنة':m===24?'سنتان':m===18?'سنة ونصف':'الشهر '+m,
-  nowTag:'الآن',spurtTitle:'طفرة نمو',spurtNow:'ربما طفرة نمو الآن',spurtNext:(x)=>'طفرة النمو الشائعة التالية: '+x,spurtText:'',spurtList:'متى تكون شائعة',spurtNote:'لكل طفل إيقاعه، والتواريخ تقريبية.',
-  leapTitle:'القفزات النمائية ("أسابيع العجائب")',leapNow:(n,w)=>'حسب الكتاب، حول الأسبوع '+w+': القفزة '+n,leapNext:(n,w)=>'القفزة التالية حسب الكتاب: الأسبوع '+w+'، '+n,leapText:'',
-  checklist:(a)=>'معالم النمو حتى '+a,langNote:'أوصاف الأشهر وطفرات النمو والقفزات بالعبرية حاليًا. قائمة معالم النمو أدناه متوفرة بالعربية.',sources:'المصادر: معالم النمو من CDC (2022)؛ توقيت طفرات النمو حسب KellyMom ومصادر رضاعة شائعة. معلومات عامة لا تغني عن متابعة العيادة.'}
-};
+ };
 function ageMonths(b){ const d=ageWeeks(b); return d==null?null:d/30.44; }
 function monthIndex(b){ const m=ageMonths(b); if(m==null) return 0; const mm=Math.max(1,Math.ceil(m)); const i=MONTHS.findIndex(x=>x[0]>=mm); return i<0?MONTHS.length-1:i; }
 function devStageFor(month){ const i=DEV.findIndex(s=>s[0]>=month); return i<0?DEV.length-1:i; }
@@ -1674,7 +1597,7 @@ const PUMP={
  go:'בדרך או למעון: תיק קירור עם קרחום צמוד לבקבוק, עד 24 שעות, ובהגעה מעבירים למקרר. במעון החלב נשמר על מדף (לא בדלת) ב-4°C ומטה.',
  source:'מבוסס על ההנחיות של משרד הבריאות באתר "הורות והורים" (אחסון, הפשרה והובלה של חלב אם). התוכן כללי. בכל שאלה פונים ליועצת הנקה או לטיפת חלב.'
 };
-function artHead(title,back){ const L=t(); return '<header class="section" style="gap:10px"><span class="badge" style="align-self:flex-start">'+esc(L.draft)+'</span><h1 style="font-size:1.75rem" lang="he" dir="rtl">'+esc(title)+'</h1></header>'+(S.lang==='en'?'<p class="banner">This article is in Hebrew for now. English is on the way.</p>':S.lang==='ar'?'<p class="banner">هذا المقال بالعبرية حاليًا. الترجمة إلى العربية قادمة.</p>':''); }
+function artHead(title,back){ const L=t(); return '<header class="section" style="gap:10px"><h1 style="font-size:1.75rem" lang="he" dir="rtl">'+esc(title)+'</h1></header>'+(S.lang==='en'?'<p class="banner">This article is in Hebrew for now. English is on the way.</p>':S.lang==='ar'?'<p class="banner">هذا المقال بالعبرية حاليًا. الترجمة إلى العربية قادمة.</p>':''); }
 function viewLatch(){
  const X=LATCH;
  return artHead('אחיזה נכונה ותנוחות הנקה')+
@@ -1743,10 +1666,7 @@ const SF={
  en:{btn:'Share with friends',sub:'Know someone this would help? Send them a link',title:'Share with friends',small:'Share with a friend',
   msg:{app:'I found a free app for parents of babies: a feeding log shared by both parents, first foods and baby-led weaning, and development by month. Worth a try 💕',latch:'A clear guide to latching and breastfeeding positions, in the Parenting app:',pump:'A clear table for pumping and storing breast milk, in the Parenting app:',foods:'A handy guide to first foods and baby-led weaning, in the Parenting app:',dev:'A month-by-month development guide, including growth spurts, in the Parenting app:',pacifier:'A clear guide to pacifiers while breastfeeding, in the Parenting app:',firstdays:'A clear guide to the first days of breastfeeding (colostrum, amounts, diapers), in the Parenting app:'},
   preview:'Your message',more:'Share another way',note:'The link leads to sign-up. Whoever gets it starts their own log; your data is not shared with them.'},
- ar:{btn:'شاركي مع الصديقات',sub:'تعرفين من قد يفيدها هذا؟ أرسلي لها الرابط',title:'المشاركة مع الأصدقاء',small:'شاركي مع صديقة',
-  msg:{app:'وجدت تطبيقًا مجانيًا لأهالي الرضّع: سجل رضاعة مشترك للوالدين، أول الأطعمة والتغذية الذاتية، والنمو حسب الأشهر. يستحق التجربة 💕',latch:'شرح واضح للالتقام الصحيح ووضعيات الرضاعة في تطبيق التربية:',pump:'جدول واضح لشفط حليب الأم وتخزينه في تطبيق التربية:',foods:'دليل عملي لأول الأطعمة والتغذية الذاتية في تطبيق التربية:',dev:'دليل النمو حسب الأشهر، مع طفرات النمو، في تطبيق التربية:',pacifier:'شرح واضح عن اللهاية خلال فترة الرضاعة في تطبيق التربية:',firstdays:'شرح واضح عن الأيام الأولى للرضاعة (اللبأ والكميات والحفاضات) في تطبيق التربية:'},
-  preview:'هكذا ستبدو الرسالة',more:'مشاركة بطريقة أخرى',note:'الرابط يقود إلى التسجيل. من تستلمه تبدأ سجلًا خاصًا بها، ولا تتم مشاركة بياناتكم معها.'}
-};
+ };
 const IC_HEART='<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
 function shareInfo(kind){ const X=SF[S.lang]||SF.he; const k=X.msg[kind]?kind:'app'; const url=APP_URL+'/'+(k==='app'?'':'#'+k); return {text:X.msg[k],url,full:X.msg[k]+'\n'+url}; }
 function shareLink(kind){ const X=SF[S.lang]||SF.he; return '<button type="button" class="link small share-friends" data-act="sharefriends" data-v="'+kind+'">'+IC_HEART+' '+esc(X.small)+'</button>'; }
@@ -1851,7 +1771,7 @@ function viewCalm(){
 }
 function viewPacifier(){
  const X=PACI;
- return '<header class="section" style="gap:10px"><span class="badge" style="align-self:flex-start">'+esc(t().draft)+'</span><h1 style="font-size:1.75rem" lang="he" dir="rtl">מוצץ בתקופת ההנקה</h1></header>'+hebOnly()+
+ return '<header class="section" style="gap:10px"><h1 style="font-size:1.75rem" lang="he" dir="rtl">מוצץ בתקופת ההנקה</h1></header>'+hebOnly()+
  '<div lang="he" dir="rtl" class="section" style="gap:20px"><p class="prose">'+esc(X.lead)+'</p>'+
  '<section class="dark-card"><h2 style="color:var(--dawn)">מתי מתחילים</h2><p style="line-height:1.7">'+esc(X.when)+'</p></section>'+
  '<section class="section prose"><h2 style="font-size:1.25rem">איך משתמשים נכון</h2>'+ul(X.how)+'</section>'+
@@ -1876,14 +1796,7 @@ const ST={
   galaxy:'Galaxy & Android (Chrome)',gSteps:['Open the app in Chrome','Tap the three dots ⋮ in the top corner','Choose “Add to Home screen” or “Install app”','Confirm “Install”','The icon appears on your home screen and in the app drawer'],
   samsung:'In Samsung Internet',sSteps:['Tap the ☰ menu at the bottom','Choose “Add page to”, then “Home screen”'],
   homeCard:'Save to your home screen?',homeCardSub:'Keep the app one tap away. Here’s how',dismiss:'Not now'},
- ar:{title:'الإعدادات والعائلة',me:'ملفي',myName:'اسمي في السجل',myNameHint:'يظهر بجانب ما تسجّلينه (مثلًا: ماما، بابا)',babiesT:'الأطفال',foodPrefs:'تفضيلات أول الأطعمة',style:'طريقة التقديم المفضلة',allergy:'الحساسية: لن تظهر وصفات تحتوي على هذه',allergyFor:(n)=>'لـ'+n,familyT:'العائلة والمشاركة',display:'العرض',install:'الحفظ كتطبيق في الشاشة الرئيسية',installSub:'يُفتح بلمسة واحدة مثل أي تطبيق',
-  instTitle:'الحفظ كتطبيق',instLead:'يمكن حفظ التطبيق في الشاشة الرئيسية للهاتف. يُفتح بشاشة كاملة وبأيقونته، دون شريط عنوان ودون تنزيل من متجر التطبيقات.',
-  already:'التطبيق محفوظ في شاشتك الرئيسية 🎉',installBtn:'التثبيت الآن',
-  iphone:'آيفون (سفاري)',iSteps:['افتحي التطبيق في سفاري','اضغطي على النقاط الثلاث ⋯ بجانب شريط العنوان ثم «مشاركة». في إصدارات iOS الأقدم زر المشاركة موجود مباشرة في أسفل الشاشة','مرّري للأسفل واختاري «إضافة إلى الشاشة الرئيسية»','اضغطي «إضافة» في الزاوية العلوية','تظهر الأيقونة الوردية في الشاشة الرئيسية'],
-  galaxy:'جالاكسي وأندرويد (كروم)',gSteps:['افتحي التطبيق في كروم','اضغطي النقاط الثلاث ⋮ في الزاوية العلوية','اختاري «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق»','أكّدي «تثبيت»','تظهر الأيقونة في الشاشة الرئيسية'],
-  samsung:'في متصفح سامسونج',sSteps:['اضغطي القائمة ☰ في الأسفل','اختاري «إضافة الصفحة إلى» ثم «الشاشة الرئيسية»'],
-  homeCard:'الحفظ في الشاشة الرئيسية؟',homeCardSub:'ليبقى التطبيق في متناول يدك. إليكِ الطريقة',dismiss:'ليس الآن'}
-};
+ };
 const isStandalone=()=>{ try{ return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true; }catch(e){ return false; } };
 const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let installEvt=null;
@@ -1934,15 +1847,7 @@ const AB={
   sent:'Thank you! Your message reached me.',fail:'The message wasn\'t sent. Check your connection and try again.',empty:'Write something before sending.',
   wa:'Or on WhatsApp',waBtn:'Message me on WhatsApp',waAria:'Message me on WhatsApp (opens WhatsApp)',waText:'Hi Maya, I use the Parenting app and wanted to write to you:',
   note:'The information in the app is general and does not replace advice from a doctor, nurse or lactation consultant.'},
- ar:{tile:['تشرفنا','من تقف وراء التطبيق، وكيف تتواصلون معي'],title:'تشرفنا',
-  hi:'مرحبًا، أنا مايا 👋',
-  body:['أنا أم لتوأم ولطفل صغير :)','من الأشياء التي افتقدتها أثناء تربية أطفالي، بنيت هذا التطبيق: مكان واحد بسيط وسهل الوصول للأهل، مع معلومات وأدوات للأشهر الأولى: الرضاعة، النوم، الأطعمة الأولى والتطور.','ما زلت أطوّر التطبيق وأحسّنه، وكل سؤال أو فكرة أو خلل تشاركونني به يساعدني على صنع شيء أكثر فائدة للأهل.'],alt:'مايا وأطفالها بجانب بحيرة في الجبال',
-  talk:'تريد/ين التحدث معي؟',talkSub:'لديك سؤال، فكرة للتحسين، شيء لم يعمل، أو ببساطة تودّ/ين المشاركة؟ أنا هنا ويسعدني أن أسمع منك شخصيًا!',
-  name:'الاسم',contact:'البريد الإلكتروني',badMail:'تحققوا من صحة عنوان البريد الإلكتروني.',needName:'اكتبوا اسمكم.',msg:'ماذا تريدون أن تكتبوا؟',send:'إرسال',sending:'جارٍ الإرسال...',
-  sent:'شكرًا! وصلتني رسالتكم.',fail:'لم تُرسل الرسالة. تحققوا من الاتصال بالإنترنت وحاولوا مرة أخرى.',empty:'اكتبوا شيئًا قبل الإرسال.',
-  wa:'أو عبر واتساب',waBtn:'راسلوني عبر واتساب',waAria:'راسلوني عبر واتساب (يُفتح في واتساب)',waText:'مرحبًا مايا، أستخدم تطبيق الأبوّة وأردت أن أكتب لك:',
-  note:'المعلومات في التطبيق عامة ولا تغني عن استشارة طبيب/ة أو ممرضة أو مستشارة رضاعة.'}
-};
+ };
 function viewAbout(){
  const A=AB[S.lang]||AB.he, dv=id=>esc((S.draft||{})[id]||'');
  const st=S.aboutSt||'';
@@ -1988,11 +1893,7 @@ const FB={he:{card:'איך האפליקציה עובדת בשבילך?',cardSub:
   liked:'What helps you most?',improve:'What’s missing or didn’t work?',send:'Send',sending:'Sending...',empty:'Pick a rating or write a few words before sending.',fail:'Couldn’t send. Check your connection and try again.',
   thanks:'Thank you! This really helps me improve.',home:'Back to home',of:(n)=>n+' out of 5',clear:'Tap again to clear',
   sec:{today:'Feeding & tracking',foods:'First foods',routine:'Daily routine & sleep',dev:'Development',family:'Family & sharing',about:'Nice to meet you'}},
- ar:{card:'كيف يعمل التطبيق معك؟',cardSub:'أبنيه بنفسي وأقرأ كل إجابة. يستغرق نصف دقيقة تقريبًا.',badge:'نصف دقيقة',yes:'يسعدني الرد',close:'إغلاق',
-  title:'كيف يعمل التطبيق معك؟',intro:'ليس عليك ملء كل شيء. يكفي تقييم واحد أو بضع كلمات.',overall:'ما مدى فائدة التطبيق؟',secs:'قيّمي كل قسم في التطبيق',secsSub:'اختياري. اضغطي على نجمة.',
-  liked:'ما الذي يساعدك أكثر؟',improve:'ما الذي ينقص أو لم يعمل؟',send:'إرسال',sending:'جارٍ الإرسال...',empty:'اختاري تقييمًا أو اكتبي بضع كلمات قبل الإرسال.',fail:'تعذّر الإرسال. تحققي من الاتصال وحاولي مرة أخرى.',
-  thanks:'شكرًا جزيلًا! هذا يساعدني فعلًا على التحسين.',home:'العودة إلى الرئيسية',of:(n)=>n+' من 5',clear:'اضغطي مرة أخرى للإلغاء',
-  sec:{today:'الرضاعة والمتابعة',foods:'أول الأطعمة',routine:'الروتين اليومي والنوم',dev:'التطور',family:'العائلة والمشاركة',about:'تشرفنا'}}};
+ };
 const FB_KEYS=['today','foods','routine','dev','family','about'];
 function fbState(){ return S.fb||(S.fb={all:0,sec:{},liked:'',improve:'',st:''}); }
 // show the card: signed in, at least 5 entries over 3+ days, never answered, closed fewer than 2 times, 14 days apart
@@ -2001,8 +1902,7 @@ function fbState(){ return S.fb||(S.fb={all:0,sec:{},liked:'',improve:'',st:''})
 const PC={
  he:{badge:'בשביל שניכם',t:'כדאי שגם בן או בת הזוג יראו',h:(n)=>'כל אחד יכול לרשום, ושניכם רואים הכול במקום אחד: האכלות, שינה וחיתולים של '+n+'. שלחי קישור אחד, והוא מצטרף בלחיצה.',send:'שליחה בוואטסאפ',more:'עוד דרכים להזמין',close:'סגירה'},
  en:{badge:'For both of you',t:'Let your partner see it too',h:(n)=>'Either of you can log, and you both see everything in one place: feeds, sleep and diapers for '+n+'. Send one link and they join with one tap.',send:'Send on WhatsApp',more:'More ways to invite',close:'Close'},
- ar:{badge:'لكما معًا',t:'ليرى الشريك أيضًا',h:(n)=>'يستطيع كل منكما التسجيل، وترون كل شيء في مكان واحد: الرضعات والنوم والحفاضات لـ'+n+'. أرسلي رابطًا واحدًا وينضم بلمسة واحدة.',send:'إرسال عبر واتساب',more:'طرق أخرى للدعوة',close:'إغلاق'}
-};
+ };
 function partnerEligible(){
  if(!S.ready||S.mode!=='db'||!Store.sb||!S.invite) return false;
  if((S.members||[]).length!==1) return false;
@@ -2239,7 +2139,7 @@ function viewFamily(){
  '<a class="opt" href="/welcome?from=app" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">💬</span><span class="opt-tx"><span class="opt-t">'+(S.lang==='en'?'About the app & feedback':S.lang==='ar'?'عن التطبيق والملاحظات':'על האפליקציה ומשוב')+'</span><span class="opt-h">'+(S.lang==='en'?'This is a trial version. Tell us what to improve':S.lang==='ar'?'هذه نسخة تجريبية. أخبرينا بما يجب تحسينه':'זו גרסת ניסיון. ספרו לנו מה לשפר')+'</span></span></a>'+legalLinks()+
  (isAdmin()?'<a class="opt" href="#admin" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📊</span><span class="opt-tx"><span class="opt-t">לוח נתונים</span><span class="opt-h">כמה נרשמו, כמה פעילים ובמה משתמשים. רק את רואה</span></span></a>':'')+
  sec(X.familyT,(mem?'<p class="small" style="font-weight:600">'+esc(L.members)+'</p>'+mem:'')+'<p class="small">'+esc(at().inviteText)+'</p><p class="small muted">'+esc(at().codeLabel)+'</p><p dir="ltr" style="font-size:1.75rem;font-weight:700;letter-spacing:6px;font-variant-numeric:tabular-nums;text-align:center">'+esc(S.invite||'')+'</p><button type="button" class="btn" data-act="share">'+esc(L.share)+'</button>')+
- sec(X.display,'<p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en','ar'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div><p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>')+
+ sec(X.display,'<p class="small muted">'+esc(L.language)+'</p><div class="chips" role="group" aria-label="'+esc(L.language)+'">'+['he','en'].map(k=>'<button type="button" class="chip" lang="'+k+'" data-act="lang" data-v="'+k+'" aria-pressed="'+(S.lang===k)+'">'+esc(T[k].name)+'</button>').join('')+'</div><p class="small muted">'+esc(L.theme)+'</p><div class="chips" role="group" aria-label="'+esc(L.theme)+'">'+[['system',L.themeSys],['light',L.themeLight],['dark',L.themeDark]].map(o=>'<button type="button" class="chip" data-act="theme" data-v="'+o[0]+'" aria-pressed="'+(S.theme===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>')+
  '<button type="button" class="opt friends" data-act="sharefriends" data-v="app"><span class="opt-ic">'+IC_HEART+'</span><span class="opt-tx"><span class="opt-t">'+esc((SF[S.lang]||SF.he).btn)+'</span><span class="opt-h">'+esc((SF[S.lang]||SF.he).sub)+'</span></span></button>';
 }
 
@@ -2264,7 +2164,7 @@ function enhanceAcc(root){
 // ---------- nursing section tabs ----------
 const NT={he:[['today','מעקב יומי'],['meds','תרופות וויטמינים'],['firstdays','הימים הראשונים'],['feeding','מה קורה בכל שלב'],['latch','אחיזה ותנוחות'],['article','האם אוכל/ת מספיק?'],['pump','שאיבה ואחסון'],['pacifier','מוצץ בהנקה']],
  en:[['today','Daily log'],['meds','Medicines & vitamins'],['firstdays','The first days'],['feeding','Stage by stage'],['latch','Latch & positions'],['article','Getting enough?'],['pump','Pumping & storage'],['pacifier','Pacifier & breastfeeding']],
- ar:[['today','المتابعة اليومية'],['meds','الأدوية والفيتامينات'],['firstdays','الأيام الأولى'],['feeding','حسب المرحلة'],['latch','الالتقام والوضعيات'],['article','هل يأكل ما يكفي؟'],['pump','الشفط والتخزين'],['pacifier','اللهاية والرضاعة']]};
+ };
 const NURSING_VIEWS=['today','meds','firstdays','feeding','latch','article','pump','pacifier'];
 function nursingTabs(){ const list=NT[S.lang]||NT.he; return '<nav class="seg-scroll ntabs" aria-label="'+esc(t().feeding)+'">'+list.map(x=>'<a class="chip" href="#'+x[0]+'"'+(S.view===x[0]?' aria-current="page"':'')+'>'+esc(x[1])+'</a>').join('')+'</nav>'; }
 function withNursingTabs(html){ if(!NURSING_VIEWS.includes(S.view)) return html; const i=html.indexOf('</header>'); return i<0?nursingTabs()+html:html.slice(0,i+9)+nursingTabs()+html.slice(i+9); }
