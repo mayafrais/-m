@@ -89,6 +89,35 @@ test('first entry: "later" turns the card into a small reminder strip', async ({
   await expectNoErrors(page, errors, 'first entry reminder');
 });
 
+test('recipes: heart moves a recipe to the top and the "favorites" filter shows it', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.goto('/#foods');
+  await page.locator('[data-act="fsub"][data-v="recipes"]').click();
+  const hearts = page.locator('[data-act="recfav"]');
+  const last = hearts.nth((await hearts.count()) - 1);
+  const id = await last.getAttribute('data-i');
+  await last.click();
+  await expect(page.locator('#rec-list > li').first().locator('[data-act="recfav"]')).toHaveAttribute('data-i', id);
+  await expect(page.locator(`[data-act="recfav"][data-i="${id}"]`)).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('[data-act="rkind"][data-v="fav"]').click();
+  await expect(page.locator('#rec-list > li')).toHaveCount(1);
+  await page.locator(`[data-act="recfav"][data-i="${id}"]`).click();
+  await expect(page.locator('#rec-list')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'recipe hearts');
+});
+
+test('weekly summary: opens, shows numbers, copy works', async ({ page, context }) => {
+  const errors = await setup(page, { fresh: false });
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']).catch(() => {});
+  await page.goto('/#today');
+  await page.locator('[data-act="wktoggle"]').click();
+  await expect(page.locator('.wk-rows li').first()).toBeVisible();
+  await expect(page.locator('.wk-rows')).toContainText('הנקות');
+  await page.locator('[data-act="wkcopy"]').click();
+  await expect(page.locator('[data-act="wkcopy"]')).toContainText('הועתק');
+  await expectNoErrors(page, errors, 'weekly summary');
+});
+
 test('recipes: filters, search and opening a recipe', async ({ page }) => {
   const errors = await setup(page, { fresh: false });
   await page.goto('/#foods');

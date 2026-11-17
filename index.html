@@ -156,6 +156,11 @@ legend{padding:0;margin-bottom:10px;font-weight:600}
 .food-head{display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:10px 14px;border:0;background:transparent;color:var(--ink);text-align:start}
 .food-head .chev{flex:none;opacity:.6;transition:transform .2s}
 .food.open .food-head .chev{transform:rotate(180deg)}
+.rec-top{display:flex;align-items:stretch}
+.rec-top .food-head{flex:1;min-width:0}
+.rec-fav{flex:none;width:56px;border:0;background:transparent;color:var(--ink2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;line-height:1}
+.rec-fav[aria-pressed=true]{color:#C2185B}
+.rec-fav:focus-visible{outline:3px solid var(--dusk);outline-offset:-3px;border-radius:16px}
 .food-body{padding:0 14px 16px;display:flex;flex-direction:column;gap:12px}
 .food-body h3{margin:4px 0 0;font-size:.9375rem}
 .thumb{width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none;background:var(--mist)}
@@ -329,6 +334,16 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 .fs-toast a{color:var(--dusk);font-size:.875rem;text-decoration:underline;text-underline-offset:3px;min-height:32px;display:inline-flex;align-items:center}
 .fs-toast-x{position:absolute;top:6px;inset-inline-end:6px;width:40px;height:40px;border:0;background:none;color:var(--ink2);font-size:1.4rem;border-radius:50%}
 .fs-toast[hidden]{display:none}
+.wk-card{gap:10px}
+.wk-head{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:48px;border:0;background:none;color:var(--ink);font:inherit;text-align:start;padding:0}
+.wk-head h2{margin:0}
+.wk-rows{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.wk-rows li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.wk-rows li:last-child{border-bottom:0}
+.wk-rows b{font-weight:600}
+.wk-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wk-btns .btn{min-height:52px}
+@media(max-width:340px){.wk-btns{grid-template-columns:1fr}}
 .fs-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fs-btns .btn{min-height:52px}
 @media(max-width:340px){.fs-btns{grid-template-columns:1fr}}
@@ -783,8 +798,64 @@ function viewToday(){
  '<section class="section rule" aria-label="'+esc(L.last24+(multi&&kb?', '+kb.name:''))+'"><div class="between"><h2>'+esc(L.last24)+ktag+'</h2><span class="small muted">'+esc(L.totals(feeds.length,diapers.length))+'</span></div>'+ribbon+axis+
  '<div class="legend"><span class="row" style="gap:6px"><span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:var(--dawn)"></span>'+esc(L.legendFeed)+'</span><span class="row" style="gap:6px"><span aria-hidden="true" style="width:16px;height:6px;border-radius:3px;background:var(--dusk);opacity:.4"></span>'+esc(L.legendSleep)+'</span></div></section>'+
  '<section class="section" aria-label="'+esc(L.recent+(multi&&kb?', '+kb.name:''))+'"><div class="between" style="gap:8px"><h2>'+esc(L.recent)+'</h2>'+ktag+'</div>'+dayChips+daySummary+rows+'</section>'+
+ weekCard(kb)+
  '<a class="opt" href="#feeding" style="text-decoration:none;min-height:72px"><span class="opt-ic">'+IC.guide+'</span><span class="opt-tx"><span class="opt-t">'+esc((HT[S.lang]||HT.he).guide[0])+'</span><span class="opt-h">'+esc((HT[S.lang]||HT.he).guide[1])+'</span></span></a>';
 }
+// ---------- weekly summary (last 7 days), with copy / save ----------
+const WK={he:{t:'סיכום השבוע',sub:'7 הימים האחרונים',none:'עוד אין מספיק רישומים לסיכום.',feeds:'הנקות',bottles:'בקבוקים',pumps:'שאיבות',diapers:'חיתולים',sleep:'שינה',night:'בלילה (19:00 עד 07:00)',nightFeeds:'האכלות',perDay:'בממוצע ביום',perNight:'בממוצע בלילה',total:'סך הכול',
+  copy:'העתקה',copied:'הועתק ✓',save:'שמירה או שליחה',saved:'נשמר',hrs:'ש׳',min:'דק׳',ml:'מ״ל',file:'סיכום-שבועי',
+  line:(n,a)=>a==null?String(n):n+' (כ-'+a+' ביום)',sleepNote:'לפי השינה שנרשמה',head:(nm,a,b)=>'סיכום שבועי: '+nm+'\n'+a+' עד '+b},
+ en:{t:'Weekly summary',sub:'Last 7 days',none:'Not enough entries for a summary yet.',feeds:'Breastfeeds',bottles:'Bottles',pumps:'Pumping',diapers:'Diapers',sleep:'Sleep',night:'At night (7 pm to 7 am)',nightFeeds:'feeds',perDay:'per day on average',perNight:'per night on average',total:'Total',
+  copy:'Copy',copied:'Copied ✓',save:'Save or share',saved:'Saved',hrs:'h',min:'min',ml:'ml',file:'weekly-summary',
+  line:(n,a)=>a==null?String(n):n+' (about '+a+' a day)',sleepNote:'based on the sleep that was logged',head:(nm,a,b)=>'Weekly summary: '+nm+'\n'+a+' to '+b},
+ ar:{t:'ملخص الأسبوع',sub:'آخر 7 أيام',none:'لا توجد تسجيلات كافية للملخص بعد.',feeds:'رضعات',bottles:'زجاجات',pumps:'شفط',diapers:'حفاضات',sleep:'النوم',night:'ليلًا (7 مساءً حتى 7 صباحًا)',nightFeeds:'تغذيات',perDay:'في المتوسط يوميًا',perNight:'في المتوسط كل ليلة',total:'المجموع',
+  copy:'نسخ',copied:'تم النسخ ✓',save:'حفظ أو مشاركة',saved:'تم الحفظ',hrs:'س',min:'د',ml:'مل',file:'ملخص-أسبوعي',
+  line:(n,a)=>a==null?String(n):n+' (حوالي '+a+' يوميًا)',sleepNote:'حسب النوم المسجَّل',head:(nm,a,b)=>'ملخص أسبوعي: '+nm+'\n'+a+' حتى '+b}};
+function weekStats(b){
+ const from=dayStart(6), now=Date.now(), all=S.events.filter(e=>e.baby===b.id&&e.t>=from&&e.t<=now);
+ if(!all.length) return null;
+ const first=Math.min.apply(null,all.map(e=>e.t)), d=new Date(first); d.setHours(0,0,0,0);
+ const days=Math.max(1,Math.min(7,Math.round((dayStart(0)-d.getTime())/864e5)+1));
+ const isNight=e=>{ const h=new Date(e.t).getHours(); return h>=19||h<7; };
+ const feeds=all.filter(e=>e.type==='feed'), bottles=all.filter(e=>e.type==='bottle'), pumps=all.filter(e=>e.type==='pump'), dia=all.filter(e=>e.type==='diaper'), sl=all.filter(e=>e.type==='sleep');
+ const nf=all.filter(e=>(e.type==='feed'||e.type==='bottle')&&isNight(e)).length, nd=dia.filter(isNight).length;
+ const sum=(a,k)=>a.reduce((x,e)=>x+(+e[k]||0),0);
+ return {days,from:d.getTime(),feeds:feeds.length,feedMins:sum(feeds,'mins'),bottles:bottles.length,bottleMl:sum(bottles,'ml'),pumps:pumps.length,pumpMl:sum(pumps,'ml'),diapers:dia.length,wet:dia.filter(e=>e.kind==='wet'||e.kind==='both').length,dirty:dia.filter(e=>e.kind==='dirty'||e.kind==='both').length,sleepMins:sum(sl,'mins'),sleeps:sl.length,nightFeeds:nf,nightDiapers:nd};
+}
+function weekRows(b){
+ const W=WK[S.lang]||WK.he, L=t(), st=weekStats(b); if(!st) return null;
+ const avg=n=>{ const v=n/st.days; return (Math.round(v*10)/10).toString().replace('.',S.lang==='en'?'.':'.'); };
+ const hm=m=>{ const h=Math.floor(m/60), r=m%60; return (h?h+' '+W.hrs+' ':'')+(r||!h?r+' '+W.min:''); };
+ const rows=[];
+ if(st.feeds) rows.push([W.feeds,W.line(st.feeds,avg(st.feeds))+(st.feedMins?', '+hm(st.feedMins):'')]);
+ if(st.bottles) rows.push([W.bottles,W.line(st.bottles,avg(st.bottles))+(st.bottleMl?', '+st.bottleMl+' '+W.ml:'')]);
+ if(st.pumps) rows.push([W.pumps,String(st.pumps)+(st.pumpMl?', '+st.pumpMl+' '+W.ml:'')]);
+ if(st.diapers) rows.push([W.diapers,W.line(st.diapers,avg(st.diapers))+' · '+(L.kinds.wet)+' '+st.wet+', '+(L.kinds.dirty)+' '+st.dirty]);
+ if(st.sleepMins) rows.push([W.sleep,hm(Math.round(st.sleepMins/st.days))+' '+W.perDay+' ('+W.sleepNote+')']);
+ rows.push([W.night,st.nightFeeds+' '+W.nightFeeds+' ('+avg(st.nightFeeds)+' '+W.perNight+'), '+st.nightDiapers+' '+W.diapers]);
+ return {rows,st};
+}
+function weekText(b){
+ const W=WK[S.lang]||WK.he, r=weekRows(b); if(!r) return '';
+ const loc=S.lang==='ar'?'ar-u-nu-latn':S.lang==='en'?'en-GB':'he-IL', f=ms=>{ try{ return new Date(ms).toLocaleDateString(loc,{day:'numeric',month:'numeric'}); }catch(e){ return ''; } };
+ return W.head(b.name,f(r.st.from),f(Date.now()))+'\n\n'+r.rows.map(x=>x[0]+': '+x[1]).join('\n');
+}
+function weekCard(b){
+ if(!b) return '';
+ const W=WK[S.lang]||WK.he, r=weekRows(b), open=!!S.wkOpen;
+ const head='<button type="button" class="wk-head" data-act="wktoggle" aria-expanded="'+open+'" aria-controls="wk-body"><span class="section" style="gap:2px"><h2>'+esc(W.t)+'</h2><span class="small muted">'+esc(W.sub)+'</span></span><span aria-hidden="true">'+(open?'▲':'▼')+'</span></button>';
+ let body='';
+ if(open){
+  body=r?'<div id="wk-body"><ul class="wk-rows">'+r.rows.map(x=>'<li><span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b></li>').join('')+'</ul></div><div class="wk-btns"><button type="button" class="btn ghost" data-act="wkcopy">'+esc(W.copy)+'</button><button type="button" class="btn" data-act="wksave">'+esc(W.save)+'</button></div>'
+   :'<p class="empty" id="wk-body">'+esc(W.none)+'</p>';
+ }
+ return '<section class="card wk-card" aria-label="'+esc(W.t)+'">'+head+body+'</section>';
+}
+function weekCopy(txt){
+ try{ if(navigator.clipboard&&navigator.clipboard.writeText) return navigator.clipboard.writeText(txt); }catch(e){}
+ return new Promise((ok,no)=>{ try{ const ta=document.createElement('textarea'); ta.value=txt; ta.setAttribute('readonly',''); ta.style.cssText='position:fixed;opacity:0;top:0'; document.body.appendChild(ta); ta.select(); const done=document.execCommand('copy'); ta.remove(); done?ok():no(new Error('copy')); }catch(e){ no(e); } });
+}
+function weekDownload(txt,name){ const u=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'})), a=document.createElement('a'); a.href=u; a.download=name+'.txt'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); }
 function qb(type,label){ return '<button type="button" class="qbtn" data-act="quick" data-type="'+type+'"><span class="ic">'+IC[type]+'</span>'+esc(label)+'</button>'; }
 function clock(start){ const s=Math.max(0,Math.floor((Date.now()-start)/1000)); const h=Math.floor(s/3600); return (h?h+':':'')+pad(Math.floor(s/60)%60)+':'+pad(s%60); }
 
@@ -1159,26 +1230,32 @@ const RCATS={he:[['all','הכול'],['first','טעימות ראשונות'],['br
 const RQ={he:{kind:'סוג מנה',q:'חיפוש מתכון',ph:'למשל: מאפינס, בטטה, טונה',none:'לא נמצא מתכון. נסו מילה אחרת.',count:n=>n+' מתכונים',kNote:'מתכונים "מגיל שנה ולכל המשפחה" יכולים לכלול מלח, סוכר או דבש. לתינוקות מתחת לגיל שנה, בדקו את ההערה בכל מתכון.'},
  en:{kind:'Type of dish',q:'Search recipes',ph:'e.g. muffins, sweet potato, tuna',none:'No recipe found. Try another word.',count:n=>n+' recipes',kNote:'"From 1 year & family" recipes may include salt, sugar or honey. For babies under one, check the note in each recipe.'},
  ar:{kind:'نوع الطبق',q:'البحث عن وصفة',ph:'مثلًا: مافن، بطاطا حلوة، تونة',none:'لم يتم العثور على وصفة. جرّبوا كلمة أخرى.',count:n=>n+' وصفات',kNote:'وصفات "من عمر سنة وللعائلة" قد تحتوي على ملح أو سكر أو عسل. للرضّع دون السنة، راجعوا الملاحظة في كل وصفة.'}};
+const RF={he:{chip:'❤️ אהבנו',add:'סימון כמתכון שאהבנו',del:'הסרה מהמתכונים שאהבנו',none:'עוד לא סימנתם מתכונים. לוחצים על הלב ליד מתכון, והוא יעלה לראש הרשימה ויישמר לשני ההורים.',saved:'נשמר בין המתכונים שאהבנו',removed:'הוסר מהמתכונים שאהבנו'},
+ en:{chip:'❤️ Our favorites',add:'Mark as a favorite',del:'Remove from favorites',none:'No favorites yet. Tap the heart next to a recipe and it moves to the top of the list, shared by both parents.',saved:'Added to favorites',removed:'Removed from favorites'},
+ ar:{chip:'❤️ المفضلة لدينا',add:'إضافة إلى المفضلة',del:'إزالة من المفضلة',none:'لا توجد وصفات مفضلة بعد. اضغطي على القلب بجانب الوصفة لتظهر في أعلى القائمة ويراها الوالدان.',saved:'أُضيفت إلى المفضلة',removed:'أُزيلت من المفضلة'}};
+const recFav=()=>((S.family&&S.family.prefs&&S.family.prefs.recFav)||{});
+const isFav=r=>!!recFav()[r[0]];
 function recipesView(){
  const F=FT[S.lang]||FT.he, as=allergenState(), stg=S.recStage||'all', tex=S.recTex||'all', kind=S.recKind||'all', Q=RQ[S.lang]||RQ.he;
  const avoid=ALLERGENS.filter(a=>as[a[0]].avoid||as[a[0]].reaction).map(a=>a[0]);
- const list=RECIPES.filter(r=>(stg==='all'||r[3]===stg)&&(tex==='all'||r[4]===tex)&&(kind==='all'||recCat(r)===kind)&&!r[5].some(x=>avoid.includes(x)));
+ const R2=RF[S.lang]||RF.he, fav=recFav();
+ const list=RECIPES.filter(r=>(stg==='all'||r[3]===stg)&&(tex==='all'||r[4]===tex)&&(kind==='all'||(kind==='fav'?!!fav[r[0]]:recCat(r)===kind))&&!r[5].some(x=>avoid.includes(x))).map((r,i)=>[r,i]).sort((x,y)=>(fav[y[0][0]]?1:0)-(fav[x[0][0]]?1:0)||x[1]-y[1]).map(x=>x[0]);
  const hiddenN=RECIPES.filter(r=>r[5].some(x=>avoid.includes(x))).length;
  const chips=(act,opts,val)=>'<div class="seg-scroll">'+opts.map(o=>'<button type="button" class="chip" data-act="'+act+'" data-v="'+o[0]+'" aria-pressed="'+(val===o[0])+'">'+esc(o[1])+'</button>').join('')+'</div>';
  const texName=(x)=>(F.textures.find(o=>o[0]===x)||['',''])[1], stName=(x)=>(F.stages.find(o=>o[0]===x)||['',''])[1];
  const rows=list.map(r=>{ const open=S.openRecipe===r[0];
   const rqv=(S.recQ||'').trim().toLowerCase(), rtx=(r[1]+' '+r[2]+' '+r[6].join(' ')).toLowerCase();
-  return '<li class="food'+(open?' open':'')+'" data-rq="'+esc(rtx)+'"'+(rqv&&!rtx.includes(rqv)?' hidden':'')+'><button type="button" class="food-head" data-act="recipe" data-i="'+r[0]+'" aria-expanded="'+open+'"><span class="grow section" style="gap:4px"><span style="font-weight:600" lang="he" dir="rtl">'+esc(r[1])+'</span><span class="small muted" lang="he" dir="rtl">'+esc(r[2])+'</span><span class="tags"><span class="tag">'+esc(stName(r[3]))+'</span><span class="tag">'+esc(texName(r[4]))+'</span>'+r[5].map(a=>'<span class="tag warm">'+esc(alName(a))+'</span>').join('')+'</span></span><svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
+  return '<li class="food'+(open?' open':'')+'" data-rq="'+esc(rtx)+'"'+(rqv&&!rtx.includes(rqv)?' hidden':'')+'><div class="rec-top"><button type="button" class="food-head" data-act="recipe" data-i="'+r[0]+'" aria-expanded="'+open+'"><span class="grow section" style="gap:4px"><span style="font-weight:600" lang="he" dir="rtl">'+esc(r[1])+'</span><span class="small muted" lang="he" dir="rtl">'+esc(r[2])+'</span><span class="tags"><span class="tag">'+esc(stName(r[3]))+'</span><span class="tag">'+esc(texName(r[4]))+'</span>'+r[5].map(a=>'<span class="tag warm">'+esc(alName(a))+'</span>').join('')+'</span></span><svg class="chev" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><button type="button" class="rec-fav" data-act="recfav" data-i="'+r[0]+'" aria-pressed="'+(!!fav[r[0]])+'" aria-label="'+esc((fav[r[0]]?R2.del:R2.add)+': '+r[1])+'"><span aria-hidden="true">'+(fav[r[0]]?'\u2764\uFE0F':'\u2661')+'</span></button></div>'+
    (open?'<div class="food-body" lang="he" dir="rtl"><h3>'+esc(F.ingredients)+'</h3><ul class="bul">'+r[6].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><h3>'+esc(F.steps)+'</h3><ol class="bul">'+r[7].map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+
     (r[8]?'<p><strong>🥣 '+esc(F.mashed)+':</strong> '+esc(r[8])+'</p>':'')+(r[9]?'<p><strong>🤚 '+esc(F.blwT)+':</strong> '+esc(r[9])+'</p>':'')+'</div>':'')+'</li>'; }).join('');
  const rq=S.recQ||'', rqs=rq.trim().toLowerCase();
  return '<section class="section" style="gap:10px"><p class="small muted">'+esc(F.personal)+'</p>'+
   '<label class="field" for="rec-q">'+esc(Q.q)+'<input id="rec-q" type="search" inputmode="search" autocomplete="off" placeholder="'+esc(Q.ph)+'" value="'+esc(rq)+'"></label>'+
-  '<p class="small" style="font-weight:600">'+esc(Q.kind)+'</p>'+chips('rkind',RCATS[S.lang]||RCATS.he,kind)+
+  '<p class="small" style="font-weight:600">'+esc(Q.kind)+'</p>'+chips('rkind',(RCATS[S.lang]||RCATS.he).slice(0,1).concat([['fav',R2.chip]],(RCATS[S.lang]||RCATS.he).slice(1)),kind)+
   '<p class="small" style="font-weight:600">'+esc(F.stage)+'</p>'+chips('rstage',F.stages,stg)+(stg==='k'||kind==='sweet'?'<p class="banner small">'+esc(Q.kNote)+'</p>':'')+'<p class="small" style="font-weight:600">'+esc(F.texture)+'</p>'+chips('rtex',F.textures,tex)+
   '<p class="small muted" id="rec-count" aria-live="polite">'+esc(Q.count(rqs?list.filter(r=>(r[1]+' '+r[2]+' '+r[6].join(' ')).toLowerCase().includes(rqs)).length:list.length))+'</p>'+
   (hiddenN?'<p class="banner">🚫 '+esc(F.hidden(avoid.map(alName).join(', ')))+'</p>':'')+'</section>'+
-  (rows?'<ul class="foods" id="rec-list">'+rows+'</ul><p class="empty" id="rec-none"'+(rqs&&!list.some(r=>(r[1]+' '+r[2]+' '+r[6].join(' ')).toLowerCase().includes(rqs))?'':' hidden')+'>'+esc(Q.none)+'</p>':'<p class="empty">'+esc(F.noRecipes)+'</p>');
+  (rows?'<ul class="foods" id="rec-list">'+rows+'</ul><p class="empty" id="rec-none"'+(rqs&&!list.some(r=>(r[1]+' '+r[2]+' '+r[6].join(' ')).toLowerCase().includes(rqs))?'':' hidden')+'>'+esc(Q.none)+'</p>':'<p class="empty">'+esc(kind==='fav'?R2.none:F.noRecipes)+'</p>');
 }
 function tasteLog(){
  const F=FT[S.lang]||FT.he, L=t(); const list=evs().filter(e=>e.type==='taste');
@@ -2152,6 +2229,7 @@ document.addEventListener('click',e=>{
  if(a==='untasteyes'){ const fid=el.dataset.food; const e=evs().find(x=>x.type==='taste'&&(LEGACY_FOOD[x.food]||x.food)===fid); if(e) Store.delEvent(e.id); S.confirmUntaste=null; say(t().saved); render(); return; }
  if(a==='fstyle'){ S.foodStyle=el.dataset.v; render(); return; }
  if(a==='rstage'){ S.recStage=el.dataset.v; render(); return; }
+ if(a==='recfav'){ const id=el.dataset.i, on=!recFav()[id], R2=RF[S.lang]||RF.he; Store.fam({prefs:{recFav:{[id]:on}}}); say(on?R2.saved:R2.removed); try{ Usage.add('view',{screen:'recfav:'+(on?'add':'del')}); }catch(x){} requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.querySelector('[data-act=recfav][data-i="'+id+'"]'); if(n) n.focus({preventScroll:true}); })); return; }
  if(a==='rkind'){ S.recKind=el.dataset.v; render(); return; }
  if(a==='rtex'){ S.recTex=el.dataset.v; render(); return; }
  if(a==='feedstyle'){ Store.fam({prefs:{feedingStyle:el.dataset.v}}); S.foodStyle=null; say(L.saved); return; }
@@ -2175,6 +2253,12 @@ document.addEventListener('click',e=>{
   if(k==='bottle'&&x==='other'){ openSheet({mode:'now',type:'bottle'}); return; }
   if(k==='bottle'){ Store.addEvent({baby:b.id,type:'bottle',t:now,past:false,ml:Number(x)}); return; }
   if(k==='diaper'){ Store.addEvent({baby:b.id,type:'diaper',t:now,past:false,kind:x}); return; }
+  return; }
+ if(a==='wktoggle'){ S.wkOpen=!S.wkOpen; try{ Usage.add('view',{screen:'weekly:'+(S.wkOpen?'open':'close')}); }catch(e){} render(); return; }
+ if(a==='wkcopy'){ const W=WK[S.lang]||WK.he, txt=b?weekText(b):''; if(!txt) return; weekCopy(txt).then(()=>{ el.textContent=W.copied; say(W.copied); setTimeout(()=>{ try{ el.textContent=W.copy; }catch(x){} },2500); try{ Usage.add('view',{screen:'weekly:copy'}); }catch(x){} }).catch(()=>{ weekDownload(txt,W.file); }); return; }
+ if(a==='wksave'){ const W=WK[S.lang]||WK.he, txt=b?weekText(b):''; if(!txt) return; try{ Usage.add('view',{screen:'weekly:save'}); }catch(x){}
+  if(navigator.share){ navigator.share({title:W.t,text:txt}).catch(err=>{ if(err&&err.name==='AbortError') return; weekDownload(txt,W.file); }); }
+  else { weekDownload(txt,W.file); say(W.saved); }
   return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
  if(a==='sleep'){ const s=(S.family.sleep||{})[b.id];
