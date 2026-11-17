@@ -89,10 +89,72 @@ test('first entry: "later" turns the card into a small reminder strip', async ({
   await expectNoErrors(page, errors, 'first entry reminder');
 });
 
+const MOCK_VETERAN = MOCK.replace('let events=[', "let events=[{id:'o1',baby:'b1',type:'feed',t:now-5*864e5,data:{side:'R',mins:9},by_user:'u1'},{id:'o2',baby:'b1',type:'diaper',t:now-4*864e5,data:{kind:'wet'},by_user:'u1'},{id:'o3',baby:'b1',type:'sleep',t:now-4*864e5,data:{mins:60},by_user:'u1'},");
+
+test('feedback: card appears after a few days, the X closes it, and it stays closed', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_VETERAN }));
+  await page.goto('/#home');
+  await expect(page.locator('.fb-home')).toBeVisible();
+  await expect(page.locator('.fb-home')).not.toContainText('אל תשאלו');
+  await page.locator('[data-act="fbclose"]').click();
+  await expect(page.locator('.fb-home')).toHaveCount(0);
+  await page.reload();
+  await page.waitForSelector('#view');
+  await expect(page.locator('.fb-home')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'feedback card close');
+});
+
+test('feedback: form with stars per section is sent and the card disappears for good', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_VETERAN }));
+  await page.goto('/#home');
+  await page.locator('[data-act="fbopen"]').click();
+  await expect(page.locator('.fb-star').first()).toBeVisible();
+  // no community in the list of sections
+  await expect(page.locator('.fb-sec')).toHaveCount(7);
+  await expect(page.locator('#view')).not.toContainText('קהילה');
+  await page.locator('[data-act="fbstar"][data-k="all"][data-v="4"]').click();
+  await page.locator('[data-act="fbstar"][data-k="foods"][data-v="5"]').click();
+  await page.locator('[data-act="fbstar"][data-k="today"][data-v="3"]').click();
+  await page.locator('#fb-improve').fill('תזכורת לוויטמין');
+  await page.locator('[data-act="fbsend"]').click();
+  await expect(page.locator('#view')).toContainText('תודה');
+  const sent = await page.evaluate(() => window.__fb);
+  expect(sent.length).toBe(1);
+  expect(sent[0].rating).toBe(4);
+  expect(sent[0].section_ratings).toEqual({ foods: 5, today: 3 });
+  expect(sent[0].improve).toBe('תזכורת לוויטמין');
+  await page.goto('/#home');
+  await expect(page.locator('.fb-home')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'feedback form');
+});
+
+test('feedback: empty form shows a message and sends nothing', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.goto('/#feedback');
+  await page.locator('[data-act="fbsend"]').click();
+  await expect(page.locator('[role="alert"]')).toBeVisible();
+  expect(await page.evaluate(() => (window.__fb || []).length)).toBe(0);
+  await expectNoErrors(page, errors, 'feedback empty');
+});
+
+test('first foods: recipes tab comes right after "BLW & info" and has a promo at the top', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.goto('/#foods');
+  const tabs = await page.locator('.chip[data-act="fsub"]').allTextContents();
+  expect(tabs[0]).toContain('בייבילד');
+  expect(tabs[1]).toContain('מתכונים');
+  await expect(page.locator('.rec-promo')).toBeVisible();
+  await page.locator('.rec-promo').click();
+  await expect(page.locator('#rec-list')).toBeVisible();
+  await expectNoErrors(page, errors, 'recipes promo');
+});
+
 test('recipes: heart moves a recipe to the top and the "favorites" filter shows it', async ({ page }) => {
   const errors = await setup(page, { fresh: false });
   await page.goto('/#foods');
-  await page.locator('[data-act="fsub"][data-v="recipes"]').click();
+  await page.locator('.chip[data-act="fsub"][data-v="recipes"]').click();
   const hearts = page.locator('[data-act="recfav"]');
   const last = hearts.nth((await hearts.count()) - 1);
   const id = await last.getAttribute('data-i');
@@ -121,7 +183,7 @@ test('weekly summary: opens, shows numbers, copy works', async ({ page, context 
 test('recipes: filters, search and opening a recipe', async ({ page }) => {
   const errors = await setup(page, { fresh: false });
   await page.goto('/#foods');
-  await page.locator('[data-act="fsub"][data-v="recipes"]').click();
+  await page.locator('.chip[data-act="fsub"][data-v="recipes"]').click();
   await page.locator('[data-act="rkind"][data-v="baking"]').click();
   await page.locator('[data-act="rstage"][data-v="k"]').click();
   await page.locator('[data-act="rkind"][data-v="all"]').click();

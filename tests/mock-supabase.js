@@ -13,7 +13,7 @@
   const st={table,filters:[]};
   const api={select(){return api},eq(){return api},order(){return api},limit(){return api},
    maybeSingle(){ return Promise.resolve({data:table==='families'?{state,invite_code:'123456'}:null}); },
-   insert(row){ if(table==='events'){ events.unshift({id:'e'+(nextId++),baby:row.baby,type:row.type,t:row.t,data:row.data,by_user:'u1'}); } return Promise.resolve({error:null}); },
+   insert(row){ if(table==='feedback'){ (window.__fb=window.__fb||[]).push(row); } if(table==='events'){ events.unshift({id:'e'+(nextId++),baby:row.baby,type:row.type,t:row.t,data:row.data,by_user:'u1'}); } return Promise.resolve({error:null}); },
    update(row){ window.__upd=row; const c={eq(){return c},then(r){return Promise.resolve({error:null}).then(r)}}; return c; },
    delete(){ return {eq(_,id){ events=events.filter(e=>e.id!==id); return Promise.resolve({error:null}); }}; },
    then(res){ let data=[]; if(table==='family_members') data=[{family_id:'f1',user_id:'u1',display_name:'אמא'},{family_id:'f1',user_id:'u2',display_name:'אבא'}];

@@ -60,6 +60,12 @@ p{margin:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:500}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.hot:not([aria-pressed="true"]){border:1.5px solid var(--dawn);background:color-mix(in srgb,var(--dawn) 16%,var(--surface));font-weight:700}
+.rec-promo{display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:12px 16px;border-radius:20px;border:1.5px solid var(--dawn);background:color-mix(in srgb,var(--dawn) 12%,var(--surface));color:var(--ink);font:inherit;text-align:start}
+.rec-promo .opt-ic{font-size:1.6rem}
+.rec-promo b{display:block;font-size:1.0625rem}
+.rec-promo span.small{display:block}
+
 /* Nursing circle */
 .feed{display:flex;flex-direction:column;align-items:center;gap:14px}
 .circle{direction:ltr;display:flex;gap:8px;width:min(256px,72vw);aspect-ratio:1;max-width:100%}
@@ -344,6 +350,16 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 .wk-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .wk-btns .btn{min-height:52px}
 @media(max-width:340px){.wk-btns{grid-template-columns:1fr}}
+.fb-card{gap:12px}
+.fb-x{position:absolute;top:6px;inset-inline-end:6px;width:44px;height:44px;border:0;background:none;color:var(--ink2);font-size:1.5rem;border-radius:50%}
+.fb-home{position:relative}
+.fb-stars{display:flex;flex-wrap:nowrap;gap:2px}
+.fb-star{width:48px;height:48px;border:0;background:none;font-size:1.9rem;line-height:1;color:var(--line);padding:0}
+.fb-star.on{color:#E8A317}
+.fb-star:focus-visible{outline:3px solid var(--dusk);border-radius:12px}
+.fb-sec{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-bottom:1px solid var(--line)}
+.fb-sec:last-child{border-bottom:0}
+.fb-sec-t{font-weight:600}
 .fs-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fs-btns .btn{min-height:52px}
 @media(max-width:340px){.fs-btns{grid-template-columns:1fr}}
@@ -1174,7 +1190,7 @@ function allergenState(){
  return out;
 }
 function foodsSub(){ const F=FT[S.lang]||FT.he; const cur=S.foodSub||'info';
- return '<div class="seg-scroll wrap-tabs" role="group" aria-label="'+esc(F.title)+'">'+['info','foods','allergens','recipes','log'].map(k=>'<button type="button" class="chip" data-act="fsub" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+esc(F.sub[k])+'</button>').join('')+'</div>'; }
+ return '<div class="seg-scroll wrap-tabs" role="group" aria-label="'+esc(F.title)+'">'+['info','recipes','foods','allergens','log'].map(k=>'<button type="button" class="chip'+(k==='recipes'?' hot':'')+'" data-act="fsub" data-v="'+k+'" aria-pressed="'+(cur===k)+'">'+(k==='recipes'?'🍳 ':'')+esc(F.sub[k])+'</button>').join('')+'</div>'; }
 function tagRow(f){ const F=FT[S.lang]||FT.he; const t=[];
  if(f[10]) t.push('<span class="tag warm">'+esc(F.allergen+': '+alName(f[10]))+'</span>');
  if(f[8]) t.push('<span class="tag">'+esc(F.soft)+'</span>');
@@ -1272,12 +1288,14 @@ const FSAFE={title:'חשוב לבטיחות',items:[['🍯','דבש: לא נות
 function safetyBox(){ const X=FSAFE; return '<details class="safety safety-acc" lang="he" dir="rtl"'+(S.safetyOpen?' open':'')+'><summary data-act="safetytoggle"><span>⚠️ '+esc(X.title)+'</span><span class="small" style="font-weight:500">דבש, חנק, אלרגיה, 101</span></summary><div class="safety-body"><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><a class="btn sos" href="tel:101">📞 '+esc(X.call)+'</a></div></details>'; }
 function safetyModal(){ const X=FSAFE; if(ls.get('gp-safety-ack',false)) return ''; return '<div class="modal-back"><div class="modal safety" role="dialog" aria-modal="true" aria-labelledby="safety-t" lang="he" dir="rtl"><h2 id="safety-t">⚠️ '+esc(X.title)+'</h2><p class="small">לפני שמתחילים טעימות, כמה דברים חשובים. תמיד אפשר לחזור אליהם בלשונית "בייבילד ומידע".</p><ul>'+X.items.map(i=>{ const k=i[1].indexOf(':'); const txt=k>0?'<strong>'+esc(i[1].slice(0,k+1))+'</strong>'+esc(i[1].slice(k+1)):esc(i[1]); return '<li><span aria-hidden="true">'+i[0]+'</span><span>'+txt+'</span></li>'; }).join('')+'</ul><p>💊 <strong>'+esc(X.meds.split(':')[0])+':</strong>'+esc(X.meds.split(':').slice(1).join(':'))+'</p><p>'+esc(X.cpr)+'</p><button type="button" class="btn block" data-act="safetyack">קראתי, הבנתי</button></div></div>'; }
 function sosPill(){ return '<a class="sos-pill" href="tel:101" aria-label="חירום: התקשרות למד״א 101">📞 101</a>'; }
+const RPR={he:['מתכונים לתינוקות ולכל המשפחה','ארוחות, נשנושים ומאפים, עם סינון לפי גיל ומרקם'],en:['Recipes for babies and the whole family','Meals, snacks and baking, filtered by age and texture'],ar:['وصفات للرضّع ولكل العائلة','وجبات ووجبات خفيفة ومخبوزات، مع تصفية حسب العمر والقوام']};
 function infoView(){
  const F=FT[S.lang]||FT.he, pref=(S.family.prefs||{}).feedingStyle||'';
  const styles='<section class="card"><h2>'+esc(F.style)+'</h2><div class="section" style="gap:8px">'+F.styles.map(s=>'<button type="button" class="opt'+(pref===s[0]?' primary':'')+'" data-act="feedstyle" data-v="'+s[0]+'" aria-pressed="'+(pref===s[0])+'" style="min-height:72px"><span class="opt-tx"><span class="opt-t">'+esc(s[1])+'</span><span class="opt-h">'+esc(s[2])+'</span></span>'+(pref===s[0]?IC.check:'')+'</button>').join('')+'</div><p class="small muted">'+esc(F.styleNote)+'</p></section>';
  const blocks=FINFO.map(x=>'<section class="section prose" lang="he" dir="rtl"><h2 style="font-size:1.25rem">'+esc(x[1])+'</h2>'+x[2].map(p=>'<p>'+esc(p)+'</p>').join('')+(x[3]?'<ul>'+x[3].map(li=>'<li>'+esc(li)+'</li>').join('')+'</ul>':'')+'</section>').join('');
  const blwImgs='<div class="img-pair" aria-hidden="true">'+['sweet-potato','banana','egg','avocado'].map(id=>'<img src="'+fimg(id)+'" alt="" loading="lazy" width="256" height="256">').join('')+'</div>';
- return safetyBox()+styles+blwImgs+blocks+shareLink('foods')+'<section class="warn"><p style="font-weight:600;color:var(--danger)">'+telify(F.emergency)+'</p></section>';
+ const rp=RPR[S.lang]||RPR.he, recPromo='<button type="button" class="rec-promo" data-act="fsub" data-v="recipes"><span class="opt-ic" aria-hidden="true">🍳</span><span class="grow"><b>'+esc(rp[0])+' ('+RECIPES.length+')</b><span class="small muted">'+esc(rp[1])+'</span></span></button>';
+ return safetyBox()+recPromo+styles+blwImgs+blocks+shareLink('foods')+'<section class="warn"><p style="font-weight:600;color:var(--danger)">'+telify(F.emergency)+'</p></section>';
 }
 function tasteSheetBody(){
  const F=FT[S.lang]||FT.he, f=fobj(sheet.food);
@@ -1294,11 +1312,11 @@ function tasteSheetBody(){
 
 // ---------- home menu ----------
 const HT={
- he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים, בקבוקים, תרופות ומדריכים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מאכלים, אלרגנים, מתכונים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['הגדרות ומשפחה','הפרופיל שלי, תינוקות, אלרגיות, שפה ושמירה כאפליקציה'],
+ he:{hello:'שלום',menu:'לאן נכנסים?',feeding:['הנקה ומעקב','הנקות, שינה, חיתולים, בקבוקים, תרופות ומדריכים'],guide:['מדריך הנקה','מה קורה בכל שלב, ומתי לפנות לעזרה'],foods:['טעימות','מתכונים, מאכלים, אלרגנים ובייבילד'],dev:['התפתחות התינוק','לפי חודשים, קפיצות גדילה ואבני דרך'],meds:['תרופות וויטמינים','מה ניתן היום ומתי'],community:['קהילה','אמהות באותו שלב'],family:['הגדרות ומשפחה','הפרופיל שלי, תינוקות, אלרגיות, שפה ושמירה כאפליקציה'],
   lastFeed:'הנקה אחרונה',noFeed:'עוד לא תועדה הנקה',tasted:(n)=>n+' מאכלים נטעמו',more:'עוד',ageLine:(n,s)=>n+(s?', '+s:'')},
- en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers, bottles, medicines and guides'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Foods, allergens, recipes and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Settings & family','My profile, babies, allergies, language and saving as an app'],
+ en:{hello:'Hello',menu:'Where to?',feeding:['Feeding & tracking','Feeds, sleep, diapers, bottles, medicines and guides'],guide:['Breastfeeding guide','What happens at each stage, and when to get help'],foods:['First foods','Recipes, foods, allergens and BLW'],dev:['Baby’s development','By month, growth spurts and milestones'],meds:['Medicines & vitamins','What was given today, and when'],community:['Community','Mothers at the same stage'],family:['Settings & family','My profile, babies, allergies, language and saving as an app'],
   lastFeed:'Last feed',noFeed:'No feeds logged yet',tasted:(n)=>n+' foods tasted',more:'More',ageLine:(n,s)=>n+(s?', '+s:'')},
- ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات والأدوية والأدلة'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','أطعمة، مسببات حساسية، وصفات وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['الإعدادات والعائلة','ملفي، الأطفال، الحساسية، اللغة والحفظ كتطبيق'],
+ ar:{hello:'مرحبًا',menu:'إلى أين؟',feeding:['الرضاعة والمتابعة','الرضعات والنوم والحفاضات والزجاجات والأدوية والأدلة'],guide:['دليل الرضاعة','ماذا يحدث في كل مرحلة ومتى تطلبين المساعدة'],foods:['أول الأطعمة','وصفات، أطعمة، مسببات حساسية وتغذية ذاتية'],dev:['نمو الطفل','حسب الأشهر، طفرات النمو ومعالم النمو'],meds:['الأدوية والفيتامينات','ما أُعطي اليوم ومتى'],community:['المجتمع','أمهات في المرحلة نفسها'],family:['الإعدادات والعائلة','ملفي، الأطفال، الحساسية، اللغة والحفظ كتطبيق'],
   lastFeed:'آخر رضعة',noFeed:'لم تُسجَّل أي رضعة بعد',tasted:(n)=>n+' أطعمة تذوقها',more:'المزيد',ageLine:(n,s)=>n+(s?'، '+s:'')}
 };
 function statusPill(){ const L=t(); const status=S.mode==='db'?'<span class="dot"></span>'+esc(L.synced):S.mode==='local'?esc(L.local):esc(L.connecting); return '<a class="pill" href="#family" aria-label="'+esc(L.familyLink)+'">'+status+'</a>'; }
@@ -1369,7 +1387,7 @@ function viewHome(){
  const tile=(href,ic,tt,sub,cls,extra)=>'<a class="opt'+(cls||'')+'" href="#'+href+'" style="text-decoration:none"><span class="opt-ic">'+ic+'</span><span class="opt-tx"><span class="opt-t">'+esc(tt)+'</span><span class="opt-h">'+esc(sub)+'</span>'+(extra?'<span class="small" style="font-weight:600">'+esc(extra)+'</span>':'')+'</span>'+chev+'</a>';
  const soon='<div class="opt" style="opacity:.7" aria-disabled="true"><span class="opt-ic">'+IC.comm+'</span><span class="opt-tx"><span class="opt-t">'+esc(H.community[0])+'</span><span class="opt-h">'+esc(H.community[1])+'</span></span><span class="badge">'+esc(L.soon)+'</span></div>';
  return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(H.hello)+'</h1><p class="muted small">'+esc(H.ageLine(b.name,age))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
- firstStepCard()+installHomeCard()+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
+ firstStepCard()+(installHomeCard()||feedbackCard())+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
   tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
   tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, תנומות, טקס ערב והרגעה':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
@@ -1893,6 +1911,70 @@ async function sendContact(){
  render();
 }
 
+// ---------- in-app feedback: a card on Home after a few days of use, then a short form with stars per section ----------
+const FB={he:{card:'איך האפליקציה עובדת בשבילך?',cardSub:'אני בונה אותה בעצמי וקוראת כל תשובה. זה לוקח כחצי דקה.',badge:'חצי דקה',yes:'אשמח לענות',close:'סגירה',
+  title:'איך האפליקציה עובדת בשבילך?',intro:'לא חייבים למלא הכול. מספיק דירוג אחד או כמה מילים.',overall:'כמה האפליקציה עוזרת לך?',secs:'דרגו כל חלק באפליקציה',secsSub:'לא חובה. לוחצים על כוכב.',
+  liked:'מה הכי עוזר לך?',improve:'מה חסר או לא עבד?',send:'שליחה',sending:'שולחת...',empty:'בחרו דירוג או כתבו כמה מילים לפני השליחה.',fail:'השליחה לא הצליחה. בדקו את החיבור ונסו שוב.',
+  thanks:'תודה רבה! זה באמת עוזר לי לשפר.',home:'חזרה לבית',of:(n)=>n+' מתוך 5',clear:'לחיצה נוספת מבטלת',
+  sec:{today:'הנקה ומעקב',foods:'טעימות',routine:'סדר יום ושינה',dev:'התפתחות',family:'משפחה ושיתוף',about:'נעים להכיר'}},
+ en:{card:'How is the app working for you?',cardSub:'I build it myself and read every answer. It takes about half a minute.',badge:'30 seconds',yes:'Happy to answer',close:'Close',
+  title:'How is the app working for you?',intro:'You don’t have to fill everything. One rating or a few words is enough.',overall:'How helpful is the app?',secs:'Rate each part of the app',secsSub:'Optional. Tap a star.',
+  liked:'What helps you most?',improve:'What’s missing or didn’t work?',send:'Send',sending:'Sending...',empty:'Pick a rating or write a few words before sending.',fail:'Couldn’t send. Check your connection and try again.',
+  thanks:'Thank you! This really helps me improve.',home:'Back to home',of:(n)=>n+' out of 5',clear:'Tap again to clear',
+  sec:{today:'Feeding & tracking',foods:'First foods',routine:'Daily routine & sleep',dev:'Development',family:'Family & sharing',about:'Nice to meet you'}},
+ ar:{card:'كيف يعمل التطبيق معك؟',cardSub:'أبنيه بنفسي وأقرأ كل إجابة. يستغرق نصف دقيقة تقريبًا.',badge:'نصف دقيقة',yes:'يسعدني الرد',close:'إغلاق',
+  title:'كيف يعمل التطبيق معك؟',intro:'ليس عليك ملء كل شيء. يكفي تقييم واحد أو بضع كلمات.',overall:'ما مدى فائدة التطبيق؟',secs:'قيّمي كل قسم في التطبيق',secsSub:'اختياري. اضغطي على نجمة.',
+  liked:'ما الذي يساعدك أكثر؟',improve:'ما الذي ينقص أو لم يعمل؟',send:'إرسال',sending:'جارٍ الإرسال...',empty:'اختاري تقييمًا أو اكتبي بضع كلمات قبل الإرسال.',fail:'تعذّر الإرسال. تحققي من الاتصال وحاولي مرة أخرى.',
+  thanks:'شكرًا جزيلًا! هذا يساعدني فعلًا على التحسين.',home:'العودة إلى الرئيسية',of:(n)=>n+' من 5',clear:'اضغطي مرة أخرى للإلغاء',
+  sec:{today:'الرضاعة والمتابعة',foods:'أول الأطعمة',routine:'الروتين اليومي والنوم',dev:'التطور',family:'العائلة والمشاركة',about:'تشرفنا'}}};
+const FB_KEYS=['today','foods','routine','dev','family','about'];
+function fbState(){ return S.fb||(S.fb={all:0,sec:{},liked:'',improve:'',st:''}); }
+// show the card: signed in, at least 5 entries over 3+ days, never answered, closed fewer than 2 times, 14 days apart
+function fbEligible(){
+ if(!S.ready||S.mode!=='db'||!Store.sb) return false;
+ const m=ls.get('gp-fb',null)||{}; if(m.done) return false;
+ const n=m.closed||0, now=Date.now(); if(n>=2||(n>0&&now-(m.at||0)<14*864e5)) return false;
+ const ev=S.events||[]; if(ev.length<5) return false;
+ const first=Math.min.apply(null,ev.map(e=>e.t)); return now-first>=3*864e5;
+}
+function feedbackCard(){
+ if(!fbEligible()) return '';
+ const X=FB[S.lang]||FB.he;
+ return '<section class="card first-step fb-home" aria-labelledby="fb-h"><button type="button" class="fb-x" data-act="fbclose" aria-label="'+esc(X.close)+'"><span aria-hidden="true">×</span></button><span class="badge" style="align-self:flex-start">'+esc(X.badge)+'</span><h2 id="fb-h" style="padding-inline-end:36px">'+esc(X.card)+'</h2><p class="muted">'+esc(X.cardSub)+'</p><button type="button" class="btn" data-act="fbopen">'+esc(X.yes)+'</button></section>';
+}
+function fbStars(key,val,label){
+ const X=FB[S.lang]||FB.he;
+ return '<div class="fb-stars" role="radiogroup" aria-label="'+esc(label)+'">'+[1,2,3,4,5].map(n=>'<button type="button" class="fb-star'+(n<=val?' on':'')+'" role="radio" aria-checked="'+(n===val)+'" data-act="fbstar" data-k="'+key+'" data-v="'+n+'" aria-label="'+esc(label+': '+X.of(n))+'"><span aria-hidden="true">'+(n<=val?'★':'☆')+'</span></button>').join('')+'</div>';
+}
+function viewFeedback(){
+ const X=FB[S.lang]||FB.he, f=fbState(), L=t();
+ const back='<header class="section" style="gap:6px"><a class="link" href="#home" style="align-self:flex-start">'+esc(L.back)+'</a><h1>'+esc(X.title)+'</h1></header>';
+ if(f.st==='sent') return back+'<section class="card" role="status"><h2>'+esc(X.thanks)+'</h2><a class="btn" href="#home" style="text-decoration:none;text-align:center">'+esc(X.home)+'</a></section>';
+ const secs=FB_KEYS.map(k=>'<div class="fb-sec"><span class="fb-sec-t">'+esc(X.sec[k])+'</span>'+fbStars(k,f.sec[k]||0,X.sec[k])+'</div>').join('');
+ return back+'<section class="card fb-card"><p class="muted">'+esc(X.intro)+'</p>'+
+  '<div class="fb-sec"><span class="fb-sec-t">'+esc(X.overall)+'</span>'+fbStars('all',f.all||0,X.overall)+'</div>'+
+  '<h2 style="font-size:1.0625rem;margin-top:6px">'+esc(X.secs)+'</h2><p class="small muted" style="margin:0">'+esc(X.secsSub)+'</p>'+secs+
+  '<label class="field" for="fb-liked">'+esc(X.liked)+'<textarea id="fb-liked" data-fb="liked" rows="3" maxlength="1000">'+esc(f.liked)+'</textarea></label>'+
+  '<label class="field" for="fb-improve">'+esc(X.improve)+'<textarea id="fb-improve" data-fb="improve" rows="3" maxlength="1000">'+esc(f.improve)+'</textarea></label>'+
+  (f.st==='empty'?'<p class="small" role="alert" style="color:var(--danger);font-weight:600">'+esc(X.empty)+'</p>':'')+(f.st==='fail'?'<p class="small" role="alert" style="color:var(--danger);font-weight:600">'+esc(X.fail)+'</p>':'')+
+  '<button type="button" class="btn" data-act="fbsend"'+(f.st==='sending'?' disabled':'')+'>'+esc(f.st==='sending'?X.sending:X.send)+'</button></section>';
+}
+async function sendFeedback(){
+ const f=fbState(), X=FB[S.lang]||FB.he;
+ try{ const ae=document.activeElement; if(ae&&ae.blur) ae.blur(); }catch(e){}
+ const sec={}; FB_KEYS.forEach(k=>{ if(f.sec[k]) sec[k]=f.sec[k]; });
+ const liked=(f.liked||'').trim(), improve=(f.improve||'').trim();
+ if(!f.all&&!Object.keys(sec).length&&!liked&&!improve){ f.st='empty'; render(); return; }
+ if(!Store.sb){ f.st='fail'; render(); return; }
+ f.st='sending'; render();
+ const row={source:'app'}; if(f.all) row.rating=f.all; if(liked) row.liked=liked.slice(0,1000); if(improve) row.improve=improve.slice(0,1000); if(Object.keys(sec).length) row.section_ratings=sec;
+ let ok=false;
+ try{ const r=await retrySave(()=>Store.sb.from('feedback').insert(row),'feedback'); ok=!r.error; if(!ok) try{ Usage.add('save_fail',{detail:r.saveDetail}); }catch(e){} }catch(e){ ok=false; }
+ if(ok){ f.st='sent'; ls.set('gp-fb',{done:true,at:Date.now()}); say(X.thanks); try{ Usage.add('view',{screen:'feedback:sent'}); }catch(e){} }
+ else f.st='fail';
+ render();
+}
+
 // ---------- admin dashboard (owner only; data from admin_stats RPC, which checks the email server-side) ----------
 const ADMIN_EMAIL='mayafrais@gmail.com';
 const isAdmin=()=>S.mode==='db'&&(S.email||'').toLowerCase()===ADMIN_EMAIL;
@@ -2036,9 +2118,11 @@ function viewAdmin(){
   '<label class="field" for="adm-src-name" style="margin-top:10px">ערוץ חדש (באנגלית, בלי רווחים, למשל yoga-studio)<input id="adm-src-name" type="text" dir="ltr" data-adm-src value="'+esc(S.admSrcName||'')+'" autocomplete="off"></label>'+
   '<ul class="list" id="adm-src-custom" aria-live="polite">'+(custom?linkRow(custom,'הערוץ החדש: '+custom):'')+'</ul></details></section>';
  const contacts='<section class="card adm-card" id="adm-contact"><h2>פניות אלייך מ"נעים להכיר" ('+nf(cts.length)+')</h2>'+(cts.length?'<ul class="list">'+cts.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.role?' · '+esc(f.role):'')+(f.signed_in?' · משתמש/ת רשום/ה':'')+'</p><p style="white-space:pre-wrap">'+esc(f.message||'')+'</p>'+(f.contact?'<p class="small">לחזור אל: <span dir="auto">'+esc(f.contact)+'</span></p>':'<p class="small muted">לא השאירו פרטים לחזרה</p>')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין פניות. הן יגיעו לכאן מהמסך "נעים להכיר" באפליקציה.</p>')+'</section>';
+ const SECL={today:'הנקה ומעקב',foods:'טעימות',routine:'סדר יום ושינה',dev:'התפתחות',family:'משפחה ושיתוף',about:'נעים להכיר'}, secAvg=(F.sections||[]);
+ const secCard=secAvg.length?'<section class="card adm-card" id="adm-sec"><h2>דירוג לכל חלק באפליקציה</h2><p class="small muted">ממוצע של הדירוגים (1 עד 5) שנתנו המשתמשות לכל חלק.</p><div class="uwrap" tabindex="0" role="region" aria-label="דירוג לכל חלק"><table class="utable"><caption class="sr">דירוג לכל חלק באפליקציה</caption><thead><tr><th scope="col">חלק</th><th scope="col">ממוצע</th><th scope="col">מספר דירוגים</th></tr></thead><tbody>'+secAvg.map(x=>'<tr><th scope="row" style="text-align:right;font-weight:600">'+esc(SECL[x.k]||x.k)+'</th><td>'+esc(String(x.avg))+' ★</td><td>'+nf(x.n)+'</td></tr>').join('')+'</tbody></table></div></section>':'';
  const fb=card('adm-fb','משובים ('+nf(fbi.length)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
-  (f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
- return head+people+contacts+sources+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
+  (f.section_ratings&&typeof f.section_ratings==='object'?'<p class="small">'+Object.keys(f.section_ratings).map(k=>esc(SECL[k]||k)+': '+'★'.repeat(+f.section_ratings[k]||0)).join(' · ')+'</p>':'')+(f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
+ return head+people+contacts+secCard+sources+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
   '<p class="note">"פעילים" = תיעדו משהו או פתחו את האפליקציה כשהם מחוברים. משתמשות שעובדות בלי חשבון לא נספרות. מדידת המסכים והמכשירים פועלת רק אצל משתמשים מחוברים.</p>';
 }
 function viewInstall(){
@@ -2114,7 +2198,7 @@ function draw(){
  const ae=document.activeElement;
  const keepQ=ae&&ae.id==='food-q'?[ae.selectionStart,ae.selectionEnd]:null;
  if(!keepQ&&ae&&v.contains(ae)&&(ae.tagName==='INPUT')&&!['button','checkbox','radio','search'].includes(ae.type)){ } else {
-  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'about':return viewAbout(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump(); case 'firstdays':return viewFirstDays();
+  const build=()=>{ if(!S.ready) return '<p class="empty" role="status" style="margin-top:24px">'+esc(L.connecting)+'</p>'; if(S.mode==='error') return '<p class="banner" role="alert">'+esc(at().notSaved)+'</p>'; if(S.mode==='auth') return viewAuth(); if(S.mode==='onboard') return viewOnboard(); return withNursingTabs((()=>{ switch(S.view){ case 'meds':return viewMeds(); case 'family':return viewFamily(); case 'feeding':return viewGuide(); case 'article':return viewArticle(); case 'latch':return viewLatch(); case 'routine':return viewRoutine(); case 'calm':return viewCalm(); case 'install':return viewInstall(); case 'admin':return viewAdmin(); case 'feedback':return viewFeedback();case 'about':return viewAbout(); case 'pacifier':return viewPacifier(); case 'pump':return viewPump(); case 'firstdays':return viewFirstDays();
    case 'dev':return viewDev(); case 'community':return viewSimple(L.commTitle,L.commText); case 'foods':return viewFoods(); case 'today':return viewToday(); default:return viewHome(); } })());  };
   // compare structure without typed drafts, so typing never causes a redraw
   S.renderDrafts=false; const key=S.view+'|'+build();
@@ -2208,7 +2292,7 @@ document.addEventListener('click',e=>{
  if(a==='admcopy'){ const v=el.dataset.v; const done=()=>{ el.textContent='הועתק ✓'; say('הקישור הועתק'); setTimeout(()=>{ el.textContent='העתקה'; },2000); }; try{ navigator.clipboard.writeText(v).then(done,()=>{ prompt('העתיקי את הקישור:',v); }); }catch(e){ prompt('העתיקי את הקישור:',v); } return; }
  if(a==='admex'){ ls.set('gp-adm-ex',!!el.checked); loadAdmin(true); return; }
  if(a==='admjump'){ const t2=document.getElementById(el.dataset.v); if(t2) t2.scrollIntoView({behavior:'smooth',block:'start'}); return; }
- if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','ליצירת קשר':f.contact||''}))); return; }
+ if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','דירוג לחלקים':f.section_ratings?Object.keys(f.section_ratings).map(k=>k+'='+f.section_ratings[k]).join(' '):'','ליצירת קשר':f.contact||''}))); return; }
  if(a==='hday'){ S.histDay=Number(el.dataset.v); S.confirmDel=null; render(); return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
@@ -2260,6 +2344,10 @@ document.addEventListener('click',e=>{
   if(navigator.share){ navigator.share({title:W.t,text:txt}).catch(err=>{ if(err&&err.name==='AbortError') return; weekDownload(txt,W.file); }); }
   else { weekDownload(txt,W.file); say(W.saved); }
   return; }
+ if(a==='fbopen'){ S.fb=null; try{ Usage.add('view',{screen:'feedback:open'}); }catch(x){} location.hash='#feedback'; return; }
+ if(a==='fbclose'){ const m=ls.get('gp-fb',null)||{}; ls.set('gp-fb',{closed:(m.closed||0)+1,at:Date.now()}); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; }
+ if(a==='fbstar'){ const f=fbState(), k=el.dataset.k, v=+el.dataset.v; if(k==='all') f.all=f.all===v?0:v; else f.sec[k]=f.sec[k]===v?0:v; f.st=''; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.querySelector('[data-act=fbstar][data-k="'+k+'"][data-v="'+v+'"]'); if(n) n.focus({preventScroll:true}); })); return; }
+ if(a==='fbsend'){ sendFeedback(); return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
  if(a==='sleep'){ const s=(S.family.sleep||{})[b.id];
   if(s){ const mins=Math.max(1,Math.round((Date.now()-s.start)/60000)); Store.addEvent({baby:b.id,type:'sleep',t:s.start,mins}); Store.fam({sleep:{[b.id]:null}}); say(L.saved); }
@@ -2324,13 +2412,14 @@ document.addEventListener('change',e=>{
  }
 });
 document.addEventListener('input',e=>{ const el=e.target;
+ if(el.dataset&&el.dataset.fb){ const f=fbState(); f[el.dataset.fb]=el.value; if(f.st==='empty') f.st=''; return; }
  if(el.id==='rec-q'){ S.recQ=el.value; const q=el.value.trim().toLowerCase(); let n=0; document.querySelectorAll('#rec-list [data-rq]').forEach(li=>{ const m=!q||li.dataset.rq.includes(q); li.hidden=!m; if(m) n++; }); const c=document.getElementById('rec-count'); if(c) c.textContent=(RQ[S.lang]||RQ.he).count(n); const no=document.getElementById('rec-none'); if(no) no.hidden=n>0; return; }
  if(el.dataset&&el.dataset.admSrc!==undefined){ S.admSrcName=el.value; const k=el.value.toLowerCase().replace(/[^a-z0-9_\-]/g,'').slice(0,40), box=document.getElementById('adm-src-custom'); if(box){ const u=location.origin+'/welcome?src='+k; box.innerHTML=k?'<li class="src-link"><span><b>'+esc('הערוץ החדש: '+k)+'</b><br><span class="small muted" dir="ltr">'+esc(u)+'</span></span><button type="button" class="btn ghost small" data-act="admcopy" data-v="'+esc(u)+'" aria-label="'+esc('העתקת הקישור של '+k)+'">העתקה</button></li>':''; } return; }
  if(el.dataset&&el.dataset.admQ){ S.admQ=el.value; const q=el.value.trim().toLowerCase(); document.querySelectorAll('[data-urow]').forEach(r=>{ r.hidden=!!q&&!r.dataset.urow.includes(q); }); return; } if(el.id==='food-q'){ S.foodQ=el.value; render(); return; } if(el.id&&el.closest('#view')) S.draft[el.id]=el.value; });
 
 // ---------- routing ----------
-const VIEWS=['about','admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
-function route(){ const h=(location.hash||'').slice(1); if(h!=='about'&&S.aboutSt) S.aboutSt=''; S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
+const VIEWS=['feedback','about','admin','firstdays','install','calm','pacifier','routine','latch','pump','home','today','feeding','article','meds','family','community','foods','dev'];
+function route(){ const h=(location.hash||'').slice(1); if(h!=='about'&&S.aboutSt) S.aboutSt=''; if(h!=='feedback'&&S.fb&&S.fb.st==='sent') S.fb=null; S.view=VIEWS.includes(h)?h:'home'; S.confirmDel=null; S.confirmMed=null; draw(); const v=document.getElementById('view'); if(h) v.focus({preventScroll:true}); window.scrollTo(0,0); }
 window.addEventListener('hashchange',route);
 route();
 Store.init();
