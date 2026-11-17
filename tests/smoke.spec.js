@@ -216,3 +216,82 @@ for (const p of ['welcome', 'faq', 'privacy', 'terms', 'accessibility']) {
     await expectNoErrors(page, errors, '/' + p);
   });
 }
+
+
+test('save failure: a visible message appears, the entry is kept, and it is sent again by itself', async ({ page }) => {
+  test.setTimeout(60000);
+  const errors = await setup(page, { fresh: false });
+  await page.goto('/#home');
+  await page.waitForSelector('#view');
+  await page.evaluate(() => { window.__failIns = true; });
+  await page.goto('/#today');
+  await page.locator('[data-act="quick"][data-type="diaper"]').click();
+  const save = page.locator('#sheet-root [data-sh="save"]');
+  if (await save.count()) await save.click();
+  await expect(page.locator('#savebar')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('#savebar')).toContainText('עוד לא נשמר');
+  const queued = await page.evaluate(() => JSON.parse(localStorage.getItem('gp-pending') || '[]').length);
+  expect(queued).toBeGreaterThan(0);
+  const before = await page.evaluate(() => window.__events().length);
+  await page.evaluate(() => { window.__failIns = false; });
+  await page.locator('[data-act="pendretry"]').click();
+  await expect(page.locator('#savebar')).toBeHidden({ timeout: 10000 });
+  const after = await page.evaluate(() => window.__events().length);
+  expect(after).toBe(before + queued);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('gp-pending') || '[]').length)).toBe(0);
+  await expectNoErrors(page, errors, 'save failure');
+});
+
+
+const MOCK_EMPTY = MOCK.replace(/let events=\[[\s\S]*?\];\n/, 'let events=[];\n');
+const MOCK_SOLO = MOCK_VETERAN.replace("{family_id:'f1',user_id:'u1',display_name:'אמא'},{family_id:'f1',user_id:'u2',display_name:'אבא'}", "{family_id:'f1',user_id:'u1',display_name:'אמא'}");
+
+test('partner card: shown to a single parent, one WhatsApp link, X closes it for two weeks', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_SOLO }));
+  await page.goto('/#home');
+  const card = page.locator('.partner-home');
+  await expect(card).toBeVisible();
+  expect(await card.locator('a[data-act="partnersend"]').getAttribute('href')).toContain('wa.me');
+  await page.locator('[data-act="partnerclose"]').click();
+  await expect(card).toHaveCount(0);
+  await page.reload();
+  await page.waitForSelector('#view');
+  await expect(page.locator('.partner-home')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'partner card');
+});
+
+test('partner card: not shown when two parents are already in the family', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_VETERAN }));
+  await page.goto('/#home');
+  await page.waitForSelector('#view');
+  await page.waitForTimeout(400);
+  await expect(page.locator('.partner-home')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'partner card hidden');
+});
+
+test('install card: not on the very first visit with no entries, appears after the first entry', async ({ page }) => {
+  const errors = await setup(page, { fresh: true });
+  await page.addInitScript(() => { try { localStorage.setItem('gp-safety-ack', 'true'); } catch (e) {} });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_EMPTY }));
+  await page.goto('/#home');
+  await page.waitForSelector('#view');
+  await expect(page.locator('.install-card')).toHaveCount(0);
+  await page.locator('[data-act="firststep"][data-v="diaper"]').click();
+  await page.locator('[data-act="firststep"][data-v="diaper:wet"]').click();
+  await expect(page.locator('.install-card')).toBeVisible();
+  await expectNoErrors(page, errors, 'install timing');
+});
+
+test('home: short "today so far" summary shows after an entry, and the first-step card has a sample', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_EMPTY }));
+  await page.goto('/#home');
+  await expect(page.locator('.fs-sample')).toContainText('חיתולים');
+  await expect(page.locator('.home-day')).toHaveCount(0);
+  await page.locator('[data-act="firststep"][data-v="diaper"]').click();
+  await page.locator('[data-act="firststep"][data-v="diaper:wet"]').click();
+  await expect(page.locator('.home-day')).toContainText('חיתול אחד');
+  await expectNoErrors(page, errors, 'home summary');
+});

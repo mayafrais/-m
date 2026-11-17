@@ -129,6 +129,10 @@ fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px
 legend{padding:0;margin-bottom:10px;font-weight:600}
 .banner{font-size:.8125rem;padding:10px 14px;border-radius:14px;background:var(--dawn-soft);color:var(--dawn-text)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.savebar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px;padding:10px 14px;border-radius:14px;background:var(--dawn-soft);color:var(--dawn-text);font-size:.875rem;line-height:1.45;border:1px solid var(--dawn-text)}
+.savebar[hidden]{display:none}
+.savebar span{flex:1 1 200px}
+.savebar button{min-height:44px;padding:8px 14px;border-radius:12px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer}
 .topic{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);background:none;border-inline:0;border-top:0;width:100%;text-align:start}
 .mono{width:44px;height:44px;border-radius:50%;background:var(--mist);color:var(--dusk);display:flex;align-items:center;justify-content:center;font-weight:600;flex:none}
 .mono.warm{background:var(--dawn-soft);color:var(--dawn-text)}
@@ -384,6 +388,7 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 <a class="adm-fab" id="adm-fab" href="#admin" aria-label="לוח נתונים" title="לוח נתונים" hidden><span aria-hidden="true">📊</span></a>
 <div class="app" id="app" dir="rtl" lang="he">
   <div class="topbar" id="topbar"></div>
+  <div id="savebar" class="savebar" hidden></div>
   <main id="view" class="view" tabindex="-1"></main>
 </div>
 <nav class="tabs" id="tabs" aria-label=""></nav>
@@ -599,32 +604,31 @@ const Store={sb:null,fid:null,channel:null,timer:{},
   this.channel=ch; render();
  },
  soon(what){ clearTimeout(this.timer[what]); this.timer[what]=setTimeout(()=>this['load_'+what](),150); },
- async refetchAll(){ await Promise.all([this.load_family(),this.load_events(),this.load_meds(),this.load_members()]); },
- async load_family(){ const {data}=await this.sb.from('families').select('state,invite_code').eq('id',this.fid).maybeSingle(); if(data){ const s=data.state||{}; S.family={babies:s.babies||[],active:s.active||{},sleep:s.sleep||{},milestones:s.milestones||{},allergens:s.allergens||{},prefs:s.prefs||{}}; S.invite=data.invite_code; render(); } },
- async load_events(){ const {data}=await this.sb.from('events').select('id,baby,type,t,data,by_user').eq('family_id',this.fid).order('t',{ascending:false}).limit(3000); if(data){ S.events=data.map(r=>Object.assign({},r.data||{},{id:r.id,baby:r.baby,type:r.type,t:Number(r.t),by:r.by_user})); const known=new Set(S.members.map(m=>m.user_id)); if(S.events.some(e=>e.by&&!known.has(e.by))) this.load_members(); render(); } },
+ async refetchAll(){ await Pend.flush(); await Promise.all([this.load_family(),this.load_events(),this.load_meds(),this.load_members()]); },
+ async load_family(){ const {data}=await this.sb.from('families').select('state,invite_code').eq('id',this.fid).maybeSingle(); if(data){ const s=data.state||{}; S.family={babies:s.babies||[],active:s.active||{},sleep:s.sleep||{},milestones:s.milestones||{},allergens:s.allergens||{},prefs:s.prefs||{}}; Pend.patches().forEach(p=>{ S.family=deepMerge(S.family,p); }); S.invite=data.invite_code; render(); } },
+ async load_events(){ const {data}=await this.sb.from('events').select('id,baby,type,t,data,by_user').eq('family_id',this.fid).order('t',{ascending:false}).limit(3000); if(data){ S.events=data.map(r=>Object.assign({},r.data||{},{id:r.id,baby:r.baby,type:r.type,t:Number(r.t),by:r.by_user})); { const have=new Set(S.events.map(e=>e.id)); Pend.events().forEach(w=>{ if(!have.has(w.id)) S.events.push(Object.assign({},w.data||{},{id:'tmp'+w.id,pid:w.id,baby:w.baby,type:w.type,t:Number(w.t),by:S.me})); }); S.events.sort((a,b)=>b.t-a.t); } const known=new Set(S.members.map(m=>m.user_id)); if(S.events.some(e=>e.by&&!known.has(e.by))) this.load_members(); render(); } },
  async load_meds(){ const {data}=await this.sb.from('meds').select('id,baby,name,note').eq('family_id',this.fid).order('created_at'); if(data){ S.meds=data; render(); } },
  async setMyName(n){ if(!this.fid||!S.me) return; await this.sb.from('family_members').update({display_name:n}).eq('family_id',this.fid).eq('user_id',S.me); this.load_members(); },
  async load_members(){ const {data}=await this.sb.from('family_members').select('user_id,display_name').eq('family_id',this.fid); if(data){ S.members=data; render(); } },
  async fam(patch){
-  const deep=(a,b)=>{ const r=Object.assign({},a); for(const k in b){ const v=b[k]; r[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&r[k]&&typeof r[k]==='object')?deep(r[k],v):v; } return r; };
-  S.family=deep(S.family,patch); render();
+  S.family=deepMerge(S.family,patch); render();
   if(!this.fid) return;
   const rr=await retrySave(()=>this.sb.rpc('patch_family_state',{p_family:this.fid,p_patch:patch}),'family:'+Object.keys(patch||{}).join('+'));
   const {data,error}=rr;
-  if(error){ saveFailed(error,rr); this.load_family(); return; }
+  if(error){ const q=isTransient(errInfo(error,rr.status)); if(q) Pend.add({k:'fam',patch}); saveFailed(error,rr,q); if(!q) this.load_family(); return; }
   if(data){ S.family={babies:data.babies||[],active:data.active||{},sleep:data.sleep||{},milestones:data.milestones||{},allergens:data.allergens||{},prefs:data.prefs||{}}; render(); }
  },
  async addEvent(ev){
   const wasFirst=!(S.events||[]).length;
   const {baby,type,t:tm}=ev; const rest=Object.assign({},ev); delete rest.baby; delete rest.type; delete rest.t;
-  const tmp={id:'tmp'+uid(),baby,type,t:tm,by:S.me}; Object.assign(tmp,rest); S.events=[tmp].concat(S.events).sort((a,b)=>b.t-a.t); render();
+  const rid=uuid4(); const tmp={id:'tmp'+uid(),pid:rid,baby,type,t:tm,by:S.me}; Object.assign(tmp,rest); S.events=[tmp].concat(S.events).sort((a,b)=>b.t-a.t); render();
   if(wasFirst){ try{ const F=FS[S.lang]||FS.he, Lx=t(); const nm={feed:F.feed,bottle:F.bottle,diaper:F.diaper,sleep:F.sleep,taste:F.taste,pump:Lx.pump,med:Lx.med}[type]; fsCelebrate(nm?F.at(F.ok+' '+nm,fsHm(tm)):F.ok); }catch(e){} }
-  const row={family_id:this.fid,baby,type,t:tm,data:rest}; try{ if(crypto&&crypto.randomUUID) row.id=crypto.randomUUID(); }catch(e){}
+  const row={id:rid,family_id:this.fid,baby,type,t:tm,data:rest};
   let first=true; const r=await retrySave(async()=>{ const x=await this.sb.from('events').insert(row); if(x.error&&!first&&x.error.code==='23505') return {}; first=false; return x; },'event:'+type);
-  if(r&&r.error) saveFailed(r.error,r);
+  if(r&&r.error){ const q=isTransient(errInfo(r.error,r.status)); if(q) Pend.add({k:'ev',row}); saveFailed(r.error,r,q); }
   this.load_events();
  },
- async delEvent(id){ S.events=S.events.filter(e=>e.id!==id); render(); if(String(id).startsWith('tmp')) return; await this.sb.from('events').delete().eq('id',id); this.load_events(); },
+ async delEvent(id){ const ev=S.events.find(e=>e.id===id); S.events=S.events.filter(e=>e.id!==id); render(); if(ev&&ev.pid) Pend.drop(ev.pid); if(String(id).startsWith('tmp')) return; await this.sb.from('events').delete().eq('id',id); this.load_events(); },
  async addMed(m){ const r=await retrySave(()=>this.sb.from('meds').insert({family_id:this.fid,baby:m.baby,name:m.name,note:m.note||''}),'med'); if(r.error) saveFailed(r.error,r); this.load_meds(); },
  async delMed(id){ S.meds=S.meds.filter(m=>m.id!==id); render(); await this.sb.from('meds').delete().eq('id',id); this.load_meds(); },
  async createFamily(name,babies){
@@ -736,7 +740,38 @@ async function retrySave(fn,what){ const t0=Date.now(); let info=null;
   const transient=info.reason==='network'||info.reason==='timeout'||/^server (502|503|504|520|522|524)$/.test(info.reason);
   if(!transient||i===2){ r.saveDetail=saveDetail(what,info,i+1,Date.now()-t0); return r; }
   await new Promise(z=>setTimeout(z,[900,2500][i])); } }
-function saveFailed(err,r){ try{ Usage.add('save_fail',{detail:(r&&r.saveDetail)||saveDetail('save',errInfo(err),1,0)}); }catch(e){} say(at().notSaved); }
+function isTransient(info){ return info.reason==='network'||info.reason==='timeout'||/^server (502|503|504|520|522|524)$/.test(info.reason); }
+function uuid4(){ try{ if(crypto&&crypto.randomUUID) return crypto.randomUUID(); }catch(e){} return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{ const r=Math.random()*16|0; return (c==='x'?r:(r&3|8)).toString(16); }); }
+function deepMerge(a,b){ const r=Object.assign({},a); for(const k in b){ const v=b[k]; r[k]=(v&&typeof v==='object'&&!Array.isArray(v)&&r[k]&&typeof r[k]==='object')?deepMerge(r[k],v):v; } return r; }
+const SBT={
+ he:{one:'רישום אחד עוד לא נשמר. הוא שמור בטלפון שלך וישלח שוב לבד כשיהיה חיבור.',many:(n)=>n+' רישומים עוד לא נשמרו. הם שמורים בטלפון שלך וישלחו שוב לבד כשיהיה חיבור.',retry:'נסי שוב עכשיו',bad:'לא נשמר. נסי שוב.',close:'סגירה',ok:'הכול נשמר'},
+ en:{one:'One entry is not saved yet. It is kept on your phone and will be sent again by itself when you are connected.',many:(n)=>n+' entries are not saved yet. They are kept on your phone and will be sent again by itself when you are connected.',retry:'Try again now',bad:'Not saved. Please try again.',close:'Close',ok:'Everything is saved'},
+ ar:{one:'تسجيل واحد لم يُحفظ بعد. هو محفوظ على هاتفك وسيُرسل مجددًا تلقائيًا عند عودة الاتصال.',many:(n)=>n+' تسجيلات لم تُحفظ بعد. هي محفوظة على هاتفك وستُرسل مجددًا تلقائيًا عند عودة الاتصال.',retry:'حاولي الآن',bad:'لم يُحفظ. حاولي مجددًا.',close:'إغلاق',ok:'تم حفظ كل شيء'}
+};
+const Pend={
+ list:(()=>{ const v=ls.get('gp-pending',[]); return Array.isArray(v)?v:[]; })(), busy:false, bad:false,
+ save(){ ls.set('gp-pending',this.list); },
+ mine(){ return this.list.filter(x=>x.fid===Store.fid); },
+ add(item){ item.fid=Store.fid; item.at=Date.now(); this.list.push(item); this.save(); this.bad=false; this.paint(); },
+ drop(pid){ const n=this.list.length; this.list=this.list.filter(x=>!(x.k==='ev'&&x.row&&x.row.id===pid)); if(this.list.length!==n){ this.save(); this.paint(); } },
+ patches(){ return this.mine().filter(x=>x.k==='fam').map(x=>x.patch); },
+ events(){ return this.mine().filter(x=>x.k==='ev').map(x=>x.row); },
+ paint(){ const el=document.getElementById('savebar'); if(!el) return; const T=SBT[S.lang]||SBT.he; const n=this.mine().length; let h='';
+  if(n) h='<span>'+esc(n>1?T.many(n):T.one)+'</span><button type="button" data-act="pendretry">'+esc(T.retry)+'</button>';
+  else if(this.bad) h='<span>'+esc(T.bad)+'</span><button type="button" data-act="pendclose">'+esc(T.close)+'</button>';
+  el.dir=(S.lang==='en')?'ltr':'rtl'; el.lang=S.lang; if(el.dataset.h!==h){ el.innerHTML=h; el.dataset.h=h; } el.hidden=!h; if(h) el.setAttribute('role','alert'); else el.removeAttribute('role'); },
+ async flush(){ if(this.busy||!Store.fid||!this.mine().length) return; this.busy=true; let sent=0;
+  try{ for(const it of this.mine()){ let r; try{ r=it.k==='ev'?await Store.sb.from('events').insert(it.row):await Store.sb.rpc('patch_family_state',{p_family:it.fid,p_patch:it.patch}); }catch(e){ r={error:e}; }
+   if(r&&r.error&&!(it.k==='ev'&&r.error.code==='23505')){ const info=errInfo(r.error,r.status); if(isTransient(info)) break; try{ Usage.add('save_fail',{detail:saveDetail('pending:'+it.k,info,1,0)}); }catch(e){} this.bad=true; }
+   this.list=this.list.filter(x=>x!==it); this.save(); sent++; }
+  }finally{ this.busy=false; }
+  this.paint();
+  if(sent){ if(!this.mine().length){ if(!this.bad) say((SBT[S.lang]||SBT.he).ok); try{ Usage.add('save_retry_ok',{detail:'pending queue sent '+sent}); }catch(e){} } try{ await Store.load_events(); await Store.load_family(); }catch(e){} } }
+};
+window.addEventListener('online',()=>Pend.flush());
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) Pend.flush(); });
+setInterval(()=>Pend.flush(),30000);
+function saveFailed(err,r,queued){ try{ Usage.add('save_fail',{detail:(r&&r.saveDetail)||saveDetail('save',errInfo(err),1,0)}); }catch(e){} if(!queued) Pend.bad=true; Pend.paint(); say(queued?(SBT[S.lang]||SBT.he).one:at().notSaved); }
 function say(msg){ const el=document.getElementById('live'); el.textContent=''; setTimeout(()=>{el.textContent=msg;},30); }
 
 // ---------- views ----------
@@ -1365,6 +1400,7 @@ function firstStepCard(){
  return '<section class="card first-step" aria-labelledby="fs-h">'+(ag?'<span class="badge">'+esc(ag)+'</span>':'')+'<h2 id="fs-h">'+esc(F.t)+'</h2><p class="muted">'+esc(F.h)+'</p>'+
   '<div class="fs-quick">'+q('feed','🤱',F.feed)+(older?q('taste','🥕',F.taste):q('bottle','🍼',F.bottle))+q('sleep','😴',F.sleep)+q('diaper','🧷',F.diaper)+'</div>'+
   (pick?'<div class="fs-pick">'+pick+'</div>':'')+
+  '<p class="fs-sample small muted"><span>'+esc((HD[S.lang]||HD.he).sample)+'</span> <b>'+esc(L.daySum(5,0,0,4,homeHours(130)))+'</b></p>'+
   '<div class="fs-links"><button type="button" class="link" data-act="firststep" data-v="past">'+esc(F.past)+'</button><button type="button" class="link" data-act="firststep" data-v="pump">'+esc(F.pump)+'</button><button type="button" class="link muted" data-act="firststep" data-v="skip">'+esc(F.skip)+'</button></div></section>';
 }
 // "Saved!" moment after the very first entry on this device
@@ -1379,6 +1415,22 @@ function fsCelebrate(msg){
  clearTimeout(fsCelebrate._t); fsCelebrate._t=setTimeout(()=>{ el.hidden=true; },9000);
  try{ Usage.add('view',{screen:'firststep:saved'}); }catch(e){}
 }
+
+// ---------- short "today so far" summary on Home + a sample of it in the first-step card ----------
+const HD={he:{t:'היום עד עכשיו',sample:'כך זה ייראה אחרי יום של רישומים:'},en:{t:'Today so far',sample:'This is how it looks after a day of entries:'},ar:{t:'اليوم حتى الآن',sample:'هكذا يبدو بعد يوم من التسجيلات:'}};
+function homeDayText(b){
+ const L=t(), d0=dayStart(0), dl=(S.events||[]).filter(e=>e.baby===b.id&&e.t>=d0);
+ if(!dl.length) return '';
+ const f=dl.filter(e=>e.type==='feed'), mins=f.reduce((a,e)=>a+(e.mins||0),0), sl=dl.filter(e=>e.type==='sleep').reduce((a,e)=>a+(e.mins||0),0);
+ return L.daySum(f.length,mins,dl.filter(e=>e.type==='bottle').length,dl.filter(e=>e.type==='diaper').length,homeHours(sl)).split(' · ').filter(x=>!/^0[^0-9]/.test(x)).join(' · ');
+}
+function homeHours(m){ const L=t(); return m?(Math.floor(m/60)?Math.floor(m/60)+':'+String(m%60).padStart(2,'0')+' '+(L.hrs||'h'):m+' '+L.min):''; }
+function homeDayCard(b){
+ if(!b||!S.ready||(S.mode!=='db'&&S.mode!=='local')) return '';
+ const txt=homeDayText(b); if(!txt) return '';
+ const X=HD[S.lang]||HD.he;
+ return '<a class="opt home-day" href="#today" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">📋</span><span class="opt-tx"><span class="opt-t">'+esc(X.t)+'</span><span class="opt-h">'+esc(txt)+'</span></span></a>';
+}
 function viewHome(){
  const L=t(), H=HT[S.lang]||HT.he, b=baby(); if(!b) return viewSetup();
  const X=DX[S.lang]||DX.he, days=ageWeeks(b);
@@ -1392,7 +1444,7 @@ function viewHome(){
  const tile=(href,ic,tt,sub,cls,extra)=>'<a class="opt'+(cls||'')+'" href="#'+href+'" style="text-decoration:none"><span class="opt-ic">'+ic+'</span><span class="opt-tx"><span class="opt-t">'+esc(tt)+'</span><span class="opt-h">'+esc(sub)+'</span>'+(extra?'<span class="small" style="font-weight:600">'+esc(extra)+'</span>':'')+'</span>'+chev+'</a>';
  const soon='<div class="opt" style="opacity:.7" aria-disabled="true"><span class="opt-ic">'+IC.comm+'</span><span class="opt-tx"><span class="opt-t">'+esc(H.community[0])+'</span><span class="opt-h">'+esc(H.community[1])+'</span></span><span class="badge">'+esc(L.soon)+'</span></div>';
  return '<header class="section" style="gap:14px"><div class="between"><div class="section" style="gap:2px"><h1>'+esc(H.hello)+'</h1><p class="muted small">'+esc(H.ageLine(b.name,age))+'</p></div>'+statusPill()+'</div>'+babySwitch()+'</header>'+
- firstStepCard()+(installHomeCard()||feedbackCard())+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
+ homeDayCard(b)+firstStepCard()+(installHomeCard()||partnerCard()||feedbackCard())+'<nav class="section" style="gap:12px" aria-label="'+esc(H.menu)+'"><h2 class="sr">'+esc(H.menu)+'</h2>'+
   tile('today',IC.today,H.feeding[0],H.feeding[1],' primary',feedSub)+
   tile('foods',IC.foods,H.foods[0],H.foods[1],'',tastedN?H.tasted(tastedN):'')+
   tile('routine',IC.dev,S.lang==='he'?'סדר יום ושינה':S.lang==='ar'?'الروتين اليومي والنوم':'Daily routine & sleep',S.lang==='he'?'דוגמאות לפי גיל, תנומות, טקס ערב והרגעה':S.lang==='ar'?'أمثلة حسب العمر، القيلولة وروتين المساء':'Examples by age, naps and bedtime','')+
@@ -1831,8 +1883,11 @@ const isIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platfo
 let installEvt=null;
 window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; try{ render(); }catch(_){} });
 window.addEventListener('appinstalled',()=>{ installEvt=null; try{ render(); }catch(_){} });
+// the install card waits until the person has logged something, or came back on a second day
+(function(){ try{ const d=new Date(), k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(), v=ls.get('gp-days',[])||[]; if(v.indexOf(k)<0){ v.push(k); ls.set('gp-days',v.slice(-10)); } }catch(e){} })();
+function installReady(){ return (S.events||[]).length>0||(ls.get('gp-days',[])||[]).length>=2; }
 function installHomeCard(){
- const X=ST[S.lang]||ST.he; if(isStandalone()||ls.get('gp-install-dismissed',false)) return '';
+ const X=ST[S.lang]||ST.he; if(isStandalone()||ls.get('gp-install-dismissed',false)||!installReady()) return '';
  return '<div class="opt install-card"><span class="opt-ic" aria-hidden="true">📲</span><a class="opt-tx" href="#install" style="text-decoration:none;color:inherit"><span class="opt-t">'+esc(X.homeCard)+'</span><span class="opt-h">'+esc(X.homeCardSub)+'</span></a><button type="button" class="link small" data-act="installdismiss">'+esc(X.dismiss)+'</button></div>';
 }
 
@@ -1935,6 +1990,25 @@ const FB={he:{card:'איך האפליקציה עובדת בשבילך?',cardSub:
 const FB_KEYS=['today','foods','routine','dev','family','about'];
 function fbState(){ return S.fb||(S.fb={all:0,sec:{},liked:'',improve:'',st:''}); }
 // show the card: signed in, at least 5 entries over 3+ days, never answered, closed fewer than 2 times, 14 days apart
+
+// ---------- partner invite card on Home (only for families with one parent so far) ----------
+const PC={
+ he:{badge:'בשביל שניכם',t:'כדאי שגם בן או בת הזוג יראו',h:(n)=>'כל אחד יכול לרשום, ושניכם רואים הכול במקום אחד: האכלות, שינה וחיתולים של '+n+'. שלחי קישור אחד, והוא מצטרף בלחיצה.',send:'שליחה בוואטסאפ',more:'עוד דרכים להזמין',close:'סגירה'},
+ en:{badge:'For both of you',t:'Let your partner see it too',h:(n)=>'Either of you can log, and you both see everything in one place: feeds, sleep and diapers for '+n+'. Send one link and they join with one tap.',send:'Send on WhatsApp',more:'More ways to invite',close:'Close'},
+ ar:{badge:'لكما معًا',t:'ليرى الشريك أيضًا',h:(n)=>'يستطيع كل منكما التسجيل، وترون كل شيء في مكان واحد: الرضعات والنوم والحفاضات لـ'+n+'. أرسلي رابطًا واحدًا وينضم بلمسة واحدة.',send:'إرسال عبر واتساب',more:'طرق أخرى للدعوة',close:'إغلاق'}
+};
+function partnerEligible(){
+ if(!S.ready||S.mode!=='db'||!Store.sb||!S.invite) return false;
+ if((S.members||[]).length!==1) return false;
+ const m=ls.get('gp-partner',null)||{}, n=m.closed||0, now=Date.now(); if(n>=3||(n>0&&now-(m.at||0)<14*864e5)) return false;
+ return (S.events||[]).length>=3;
+}
+function partnerCard(){
+ if(!partnerEligible()) return '';
+ const X=PC[S.lang]||PC.he, L=t(), b=baby(), nm=b?b.name:'';
+ const msg=L.shareMsg(nm)+inviteLink()+'\n'+at().shareCode(S.invite||'');
+ return '<section class="card first-step fb-home partner-home" aria-labelledby="pc-h"><button type="button" class="fb-x" data-act="partnerclose" aria-label="'+esc(X.close)+'"><span aria-hidden="true">×</span></button><span class="badge" style="align-self:flex-start">'+esc(X.badge)+'</span><h2 id="pc-h">'+esc(X.t)+'</h2><p class="muted">'+esc(X.h(nm))+'</p><a class="btn block" data-act="partnersend" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="https://wa.me/?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">'+esc(X.send)+'</a><button type="button" class="link small" data-act="share">'+esc(X.more)+'</button></section>';
+}
 function fbEligible(){
  if(!S.ready||S.mode!=='db'||!Store.sb) return false;
  const m=ls.get('gp-fb',null)||{}; if(m.done) return false;
@@ -2290,6 +2364,10 @@ document.addEventListener('click',e=>{
  if(a==='safetyack'){ ls.set('gp-safety-ack',true); render(); return; }
  if(a==='safetytoggle'){ e.preventDefault(); S.safetyOpen=!S.safetyOpen; render(); return; }
  if(a==='installdismiss'){ ls.set('gp-install-dismissed',true); render(); return; }
+ if(a==='partnersend'){ try{ Usage.add('view',{screen:'partner:send'}); }catch(x){} return; }
+ if(a==='partnerclose'){ const m=ls.get('gp-partner',null)||{}; ls.set('gp-partner',{closed:(m.closed||0)+1,at:Date.now()}); try{ Usage.add('view',{screen:'partner:close'}); }catch(x){} render(); return; }
+ if(a==='pendretry'){ Pend.flush(); return; }
+ if(a==='pendclose'){ Pend.bad=false; Pend.paint(); return; }
  if(a==='installnow'){ if(installEvt){ installEvt.prompt(); installEvt.userChoice.finally(()=>{ installEvt=null; render(); }); } return; }
  if(a==='adminrefresh'){ loadAdmin(true); if(S.admUser) loadAdmUser(S.admUser); return; }
  if(a==='admlist'){ S.admList=el.dataset.v; render(); return; }
