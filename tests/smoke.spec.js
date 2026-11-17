@@ -117,6 +117,8 @@ test('feedback: form with stars per section is sent and the card disappears for 
   await page.locator('[data-act="fbstar"][data-k="all"][data-v="4"]').click();
   await page.locator('[data-act="fbstar"][data-k="foods"][data-v="5"]').click();
   await page.locator('[data-act="fbstar"][data-k="today"][data-v="3"]').click();
+  // the page redraws on the next frame after a tap; wait for it so the text is typed into the final field
+  await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
   await page.locator('#fb-improve').fill('תזכורת לוויטמין');
   await page.locator('[data-act="fbsend"]').click();
   await expect(page.locator('#view')).toContainText('תודה');
