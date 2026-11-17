@@ -2047,6 +2047,7 @@ function viewFeedback(){
 async function sendFeedback(){
  const f=fbState(), X=FB[S.lang]||FB.he;
  try{ const ae=document.activeElement; if(ae&&ae.blur) ae.blur(); }catch(e){}
+ try{ const li=document.getElementById('fb-liked'), im=document.getElementById('fb-improve'); if(li) f.liked=li.value; if(im) f.improve=im.value; }catch(e){}
  const sec={}; FB_KEYS.forEach(k=>{ if(f.sec[k]) sec[k]=f.sec[k]; });
  const liked=(f.liked||'').trim(), improve=(f.improve||'').trim();
  if(!f.all&&!Object.keys(sec).length&&!liked&&!improve){ f.st='empty'; render(); return; }
