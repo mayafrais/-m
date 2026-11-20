@@ -307,7 +307,6 @@ test('running timer: a big bar on home, one tap saves the sleep, and the message
   await page.locator('[data-act="firststep"][data-v="sleep"]').click();
   await expect(page.locator('#fs-toast')).toContainText('הטיימר רץ');
   await expect(page.locator('#fs-toast')).not.toContainText('נשמר');
-  await page.goto('/#home');
   const bar = page.locator('.timer-bar');
   await expect(bar).toBeVisible();
   await expect(bar.locator('[data-timer-hs]')).toHaveText(/\d\d:\d\d/);
