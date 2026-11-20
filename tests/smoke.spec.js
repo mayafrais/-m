@@ -297,3 +297,22 @@ test('home: short "today so far" summary shows after an entry, and the first-ste
   await expect(page.locator('.home-day')).toContainText('חיתול אחד');
   await expectNoErrors(page, errors, 'home summary');
 });
+
+
+test('running timer: a big bar on home, one tap saves the sleep, and the message says the timer is running', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_EMPTY }));
+  await page.goto('/#home');
+  await expect(page.locator('.timer-bar')).toHaveCount(0);
+  await page.locator('[data-act="firststep"][data-v="sleep"]').click();
+  await expect(page.locator('#fs-toast')).toContainText('הטיימר רץ');
+  await expect(page.locator('#fs-toast')).not.toContainText('נשמר');
+  await page.goto('/#home');
+  const bar = page.locator('.timer-bar');
+  await expect(bar).toBeVisible();
+  await expect(bar.locator('[data-timer-hs]')).toHaveText(/\d\d:\d\d/);
+  await bar.locator('.tb-btn').click();
+  await expect(page.locator('.timer-bar')).toHaveCount(0);
+  await expect(page.locator('.home-day')).toContainText('שינה');
+  await expectNoErrors(page, errors, 'timer bar');
+});
