@@ -2467,7 +2467,7 @@ document.addEventListener('click',e=>{
   else { weekDownload(txt,W.file); say(W.saved); }
   return; }
  if(a==='fbopen'){ ls.set(FB_CAMP,true); S.fb=null; try{ Usage.add('view',{screen:'feedback:open'}); }catch(x){} location.hash='#feedback'; return; }
- if(a==='fbclose'){ if(fbCampaign()){ ls.set(FB_CAMP,true); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; } const m=ls.get('gp-fb',null)||{}; ls.set('gp-fb',{closed:(m.closed||0)+1,at:Date.now()}); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; }
+ if(a==='fbclose'){ ls.set(FB_CAMP,true); const m=ls.get('gp-fb',null)||{}; ls.set('gp-fb',{closed:(m.closed||0)+1,at:Date.now()}); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; }
  if(a==='fbstar'){ const f=fbState(), k=el.dataset.k, v=+el.dataset.v; if(k==='all') f.all=f.all===v?0:v; else f.sec[k]=f.sec[k]===v?0:v; f.st=''; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.querySelector('[data-act=fbstar][data-k="'+k+'"][data-v="'+v+'"]'); if(n) n.focus({preventScroll:true}); })); return; }
  if(a==='fbsend'){ sendFeedback(); return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
