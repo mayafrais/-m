@@ -315,3 +315,21 @@ test('running timer: a big bar on home, one tap saves the sleep, and the message
   await expect(page.locator('.home-day')).toContainText('שינה');
   await expectNoErrors(page, errors, 'timer bar');
 });
+
+
+test('feedback request: shown once more to active users even after earlier closes, gone after X', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.addInitScript(() => { try { localStorage.setItem('gp-fb', JSON.stringify({ closed: 2, at: Date.now() })); } catch (e) {} });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_VETERAN }));
+  await page.goto('/#home');
+  const card = page.locator('.fb-home:not(.partner-home)');
+  await expect(card).toBeVisible();
+  await expect(card).toContainText('המשוב שלך חשוב לי');
+  await page.locator('[data-act="fbclose"]').click();
+  await expect(card).toHaveCount(0);
+  await page.reload();
+  await page.waitForSelector('#view');
+  await page.waitForTimeout(400);
+  await expect(page.locator('.fb-home:not(.partner-home)')).toHaveCount(0);
+  await expectNoErrors(page, errors, 'feedback request');
+});

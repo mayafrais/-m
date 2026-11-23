@@ -2036,16 +2036,25 @@ function partnerCard(){
  const msg=L.shareMsg(nm)+inviteLink()+'\n'+at().shareCode(S.invite||'');
  return '<section class="card first-step fb-home partner-home" aria-labelledby="pc-h"><button type="button" class="fb-x" data-act="partnerclose" aria-label="'+esc(X.close)+'"><span aria-hidden="true">×</span></button><span class="badge" style="align-self:flex-start">'+esc(X.badge)+'</span><h2 id="pc-h">'+esc(X.t)+'</h2><p class="muted">'+esc(X.h(nm))+'</p><a class="btn block" data-act="partnersend" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="https://wa.me/?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">'+esc(X.send)+'</a><button type="button" class="link small" data-act="share">'+esc(X.more)+'</button></section>';
 }
+// one-time request (23 Nov 2026) to everyone who already logs entries: shown on the next visits until they open or close it
+const FB_CAMP='gp-fb-camp-1123';
+function fbCampaign(){
+ if(!S.ready||S.mode!=='db'||!Store.sb) return false;
+ const m=ls.get('gp-fb',null)||{}; if(m.done||ls.get(FB_CAMP,false)) return false;
+ return (S.events||[]).length>=3;
+}
 function fbEligible(){
  if(!S.ready||S.mode!=='db'||!Store.sb) return false;
  const m=ls.get('gp-fb',null)||{}; if(m.done) return false;
+ if(fbCampaign()) return true;
  const n=m.closed||0, now=Date.now(); if(n>=2||(n>0&&now-(m.at||0)<14*864e5)) return false;
  const ev=S.events||[]; if(ev.length<5) return false;
  const first=Math.min.apply(null,ev.map(e=>e.t)); return now-first>=3*864e5;
 }
 function feedbackCard(){
  if(!fbEligible()) return '';
- const X=FB[S.lang]||FB.he;
+ const X=Object.assign({},FB[S.lang]||FB.he);
+ if(fbCampaign()&&S.lang==='he'){ X.card='המשוב שלך חשוב לי'; X.cardSub='האפליקציה עדיין בתקופת ניסיון. מה עוזר לך, מה מבלבל ומה חסר? זה לוקח דקה.'; }
  return '<section class="card first-step fb-home" aria-labelledby="fb-h"><button type="button" class="fb-x" data-act="fbclose" aria-label="'+esc(X.close)+'"><span aria-hidden="true">×</span></button><span class="badge" style="align-self:flex-start">'+esc(X.badge)+'</span><h2 id="fb-h">'+esc(X.card)+'</h2><p class="muted">'+esc(X.cardSub)+'</p><button type="button" class="btn" data-act="fbopen">'+esc(X.yes)+'</button></section>';
 }
 function fbStars(key,val,label){
@@ -2457,8 +2466,8 @@ document.addEventListener('click',e=>{
   if(navigator.share){ navigator.share({title:W.t,text:txt}).catch(err=>{ if(err&&err.name==='AbortError') return; weekDownload(txt,W.file); }); }
   else { weekDownload(txt,W.file); say(W.saved); }
   return; }
- if(a==='fbopen'){ S.fb=null; try{ Usage.add('view',{screen:'feedback:open'}); }catch(x){} location.hash='#feedback'; return; }
- if(a==='fbclose'){ const m=ls.get('gp-fb',null)||{}; ls.set('gp-fb',{closed:(m.closed||0)+1,at:Date.now()}); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; }
+ if(a==='fbopen'){ ls.set(FB_CAMP,true); S.fb=null; try{ Usage.add('view',{screen:'feedback:open'}); }catch(x){} location.hash='#feedback'; return; }
+ if(a==='fbclose'){ if(fbCampaign()){ ls.set(FB_CAMP,true); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; } const m=ls.get('gp-fb',null)||{}; ls.set('gp-fb',{closed:(m.closed||0)+1,at:Date.now()}); try{ Usage.add('view',{screen:'feedback:close'}); }catch(x){} render(); return; }
  if(a==='fbstar'){ const f=fbState(), k=el.dataset.k, v=+el.dataset.v; if(k==='all') f.all=f.all===v?0:v; else f.sec[k]=f.sec[k]===v?0:v; f.st=''; render(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const n=document.querySelector('[data-act=fbstar][data-k="'+k+'"][data-v="'+v+'"]'); if(n) n.focus({preventScroll:true}); })); return; }
  if(a==='fbsend'){ sendFeedback(); return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
