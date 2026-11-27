@@ -393,6 +393,9 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 .tb-clock{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
 .tb-btn{min-height:56px;font-size:1.1rem}
 .tb-hint{margin:0;text-align:center;opacity:.85}
+.tb-push{margin:0;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
+.tb-push p{margin:0}
+.tb-pbtn{min-height:44px}
 .tb-long{margin:0;text-align:center;font-weight:600}
 .tb-fix{align-self:center;min-height:44px}
 .tb-ago{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
@@ -1451,10 +1454,15 @@ function homeDayCard(b){
 
 // ---------- big bar on Home while a sleep or nursing timer is running ----------
 const TB={
- he:{sleep:(n)=>(n?n+' ישן/ה':'ישן/ה')+' כבר',feed:'הנקה בעיצומה',wake:'התעורר/ה ✓',done:'סיימנו ✓',hint:'לחיצה אחת שומרת את הרישום',long:'הטיימר רץ הרבה זמן. שכחת לעצור?',fix:'סיימתי קודם, לתקן שעה',fixT:'מתי סיימת?',ago:m=>m<60?'לפני '+m+' דקות':'לפני שעה',now:'עכשיו'},
- en:{sleep:(n)=>(n||'Baby')+' has been asleep for',feed:'Nursing now',wake:'Woke up ✓',done:'Finished ✓',hint:'One tap saves the entry',long:'This timer has been running a long time. Forgot to stop it?',fix:'I finished earlier, fix the time',fixT:'When did you finish?',ago:m=>m<60?m+' min ago':'1 hour ago',now:'Now'},
- ar:{sleep:(n)=>(n?n+' نائم منذ':'نائم منذ'),feed:'الرضاعة جارية',wake:'استيقظ ✓',done:'انتهينا ✓',hint:'لمسة واحدة تحفظ التسجيل',long:'المؤقت يعمل منذ وقت طويل. هل نسيتِ إيقافه؟',fix:'انتهيتُ قبل ذلك، تصحيح الوقت',fixT:'متى انتهيتِ؟',ago:m=>m<60?'قبل '+m+' دقيقة':'قبل ساعة',now:'الآن'}
+ he:{sleep:(n)=>(n?n+' ישן/ה':'ישן/ה')+' כבר',feed:'הנקה בעיצומה',wake:'התעורר/ה ✓',done:'סיימנו ✓',hint:'לחיצה אחת שומרת את הרישום',long:'הטיימר רץ הרבה זמן. שכחת לעצור?',fix:'סיימתי קודם, לתקן שעה',fixT:'מתי סיימת?',pAsk:'רוצה שנזכיר לך אם הטיימר נשאר פתוח? נשלח התראה אחרי 45 דקות.',pOn:'🔔 תזכורת פעילה: נשלח התראה אחרי 45 דקות',pEnable:'כן, להפעיל תזכורת',pNo:'לא עכשיו',pOff:'כיבוי',pDone:'התזכורת הופעלה',pFail:'לא הצלחנו להפעיל. אפשר לאשר התראות בהגדרות המכשיר ולנסות שוב',ago:m=>m<60?'לפני '+m+' דקות':'לפני שעה',now:'עכשיו'},
+ en:{sleep:(n)=>(n||'Baby')+' has been asleep for',feed:'Nursing now',wake:'Woke up ✓',done:'Finished ✓',hint:'One tap saves the entry',long:'This timer has been running a long time. Forgot to stop it?',fix:'I finished earlier, fix the time',fixT:'When did you finish?',pAsk:'Want a reminder if the timer is left running? We will send a notification after 45 minutes.',pOn:'🔔 Reminder on: a notification after 45 minutes',pEnable:'Yes, turn on the reminder',pNo:'Not now',pOff:'Turn off',pDone:'Reminder turned on',pFail:'Could not turn it on. You can allow notifications in your device settings and try again',ago:m=>m<60?m+' min ago':'1 hour ago',now:'Now'},
+ ar:{sleep:(n)=>(n?n+' نائم منذ':'نائم منذ'),feed:'الرضاعة جارية',wake:'استيقظ ✓',done:'انتهينا ✓',hint:'لمسة واحدة تحفظ التسجيل',long:'المؤقت يعمل منذ وقت طويل. هل نسيتِ إيقافه؟',fix:'انتهيتُ قبل ذلك، تصحيح الوقت',fixT:'متى انتهيتِ؟',pAsk:'هل تريدين تذكيرًا إذا بقي المؤقت يعمل؟ سنرسل إشعارًا بعد 45 دقيقة.',pOn:'🔔 التذكير مفعّل: إشعار بعد 45 دقيقة',pEnable:'نعم، فعّلي التذكير',pNo:'ليس الآن',pOff:'إيقاف',pDone:'تم تفعيل التذكير',pFail:'تعذّر التفعيل. يمكنك السماح بالإشعارات من إعدادات الجهاز والمحاولة مرة أخرى',ago:m=>m<60?'قبل '+m+' دقيقة':'قبل ساعة',now:'الآن'}
 };
+function pushLine(X){
+ if(Push.on()) return '<p class="small tb-push">'+esc(X.pOn)+' <button type="button" class="chip tb-pbtn" data-act="pushoff">'+esc(X.pOff)+'</button></p>';
+ if(Push.canAsk()) return '<div class="tb-push"><p class="small">'+esc(X.pAsk)+'</p><div class="tb-ago"><button type="button" class="btn tb-pbtn" data-act="pushon">'+esc(X.pEnable)+'</button><button type="button" class="chip tb-pbtn" data-act="pushno">'+esc(X.pNo)+'</button></div></div>';
+ return '';
+}
 function timerBars(b){
  const X=TB[S.lang]||TB.he, act=(S.family.active||{})[b.id], sl=(S.family.sleep||{})[b.id]; let h='';
  const bar=(kind,title,attr,start,act2,btn,ic,longMs)=>{ const long=Date.now()-start>longMs, open=S.tbFix===kind;
@@ -1462,7 +1470,7 @@ function timerBars(b){
   '<button type="button" class="btn ghost tb-fix" data-act="tbfix" data-kind="'+kind+'" aria-expanded="'+(open?'true':'false')+'">'+esc(X.fix)+'</button>'+
   (open?'<div class="tb-ago" role="group" aria-label="'+esc(X.fixT)+'">'+[5,10,20,30,60].map(m=>'<button type="button" class="chip" data-act="'+act2+'" data-ago="'+m+'">'+esc(X.ago(m))+'</button>').join('')+'</div>':'')+'</section>'; };
  if(sl) h+=bar('sleep',X.sleep(b.name||''),'data-timer-hs',sl.start,'sleep',X.wake,'😴',12*3600000);
- if(act) h+=bar('feed',X.feed,'data-timer-hf',act.start,'finish',X.done,'🤱',60*60000);
+ if(act) h+=bar('feed',X.feed,'data-timer-hf',act.start,'finish',X.done,'🤱',60*60000).replace(/<\/section>$/,pushLine(X)+'</section>');
  return h;
 }
 function viewHome(){
@@ -1942,6 +1950,21 @@ window.addEventListener('error',e=>{ let st=''; try{ st=e.error&&e.error.stack?S
 window.addEventListener('unhandledrejection',e=>Usage.err('promise: '+((e.reason&&(e.reason.message||e.reason))||'')));
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) Usage.flush(); else Usage.view(); });
 window.addEventListener('appinstalled',()=>Usage.add('install'));
+
+// ---------- reminder when a nursing timer is left running (Web Push; needs an account, and on iPhone the app added to the Home Screen) ----------
+const VAPID_PUB='BLs_KejSzjmjKZTHImDpfLjTx_CGUh62A3AAP8FT6dKhqAi1vqFGH6kPextaWB83gh8SQfPTFBp91NFg6b7G4aE', PUSH_MIN=45;
+const Push={ synced:false,
+ ok(){ try{ return S.mode==='db'&&!!S.me&&!!Store.sb&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window; }catch(e){ return false; } },
+ needsInstall(){ return isIOS()&&!isStandalone(); },
+ on(){ try{ return this.ok()&&!!ls.get('gp-push',false)&&Notification.permission==='granted'; }catch(e){ return false; } },
+ canAsk(){ try{ return this.ok()&&!this.needsInstall()&&Notification.permission==='default'&&!ls.get('gp-push-no',false); }catch(e){ return false; } },
+ key(){ const p='='.repeat((4-VAPID_PUB.length%4)%4), b=atob((VAPID_PUB+p).replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(b,c=>c.charCodeAt(0)); },
+ async reg(){ const reg=await navigator.serviceWorker.register('/sw.js'); await navigator.serviceWorker.ready; let sub=await reg.pushManager.getSubscription(); if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:this.key()}); const j=sub.toJSON(); const r=await Store.sb.rpc('register_push',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_lang:S.lang}); if(r&&r.error) throw r.error; },
+ async enable(){ try{ const perm=await Notification.requestPermission(); if(perm!=='granted') return false; await this.reg(); this.synced=true; ls.set('gp-push',true); return true; }catch(e){ return false; } },
+ async disable(){ try{ ls.set('gp-push',false); const reg=await navigator.serviceWorker.getRegistration('/'); const sub=reg&&await reg.pushManager.getSubscription(); if(sub){ const ep=sub.endpoint; await sub.unsubscribe(); await Store.sb.from('push_subs').delete().eq('endpoint',ep); } await Store.sb.from('timer_reminders').delete().neq('baby',''); }catch(e){} },
+ schedule(baby,start){ if(!this.on()) return; try{ if(!this.synced){ this.synced=true; this.reg().catch(()=>{}); } const due=Math.max(Date.now()+30000,(start||Date.now())+PUSH_MIN*60000); Promise.resolve(Store.sb.from('timer_reminders').upsert({baby:String(baby),due_at:new Date(due).toISOString(),mins:PUSH_MIN,sent_at:null},{onConflict:'user_id,baby'})).then(()=>{},()=>{}); }catch(e){} },
+ cancel(baby){ if(!this.on()) return; try{ Promise.resolve(Store.sb.from('timer_reminders').delete().eq('baby',String(baby))).then(()=>{},()=>{}); }catch(e){} }
+};
 
 // ---------- about the maker + contact (messages go to Supabase "feedback" with source=contact; the owner's email is never shown) ----------
 const WA_NUMBER='972528667266'; // international format without + (e.g. 9725XXXXXXXX). Empty = no WhatsApp button.
@@ -2431,11 +2454,14 @@ document.addEventListener('click',e=>{
  if(a==='addbaby'){ const bs=(S.family.babies||[]).slice(); bs.push({id:'b'+uid(),name:L.babyName+' '+(bs.length+1)}); Store.fam({babies:bs}); render(); return; }
  if(a==='rmbaby'){ const bs=(S.family.babies||[]).filter(x=>x.id!==el.dataset.id); Store.fam({babies:bs}); render(); return; }
  if(!b) return;
- if(a==='start'){ Store.fam({active:{[b.id]:{side:el.dataset.side,start:Date.now(),by:S.me||null,first:el.dataset.side}}}); render(); say(L.nursingNow); return; }
+ if(a==='pushon'){ const X=TB[S.lang]||TB.he; Push.enable().then(ok=>{ if(ok){ const cur=(S.family.active||{})[b.id]; if(cur) Push.schedule(b.id,cur.start); say(X.pDone); } else say(X.pFail); render(); }); return; }
+ if(a==='pushno'){ ls.set('gp-push-no',true); render(); return; }
+ if(a==='pushoff'){ Push.disable().then(()=>render()); return; }
+ if(a==='start'){ Store.fam({active:{[b.id]:{side:el.dataset.side,start:Date.now(),by:S.me||null,first:el.dataset.side}}}); Push.schedule(b.id,Date.now()); render(); say(L.nursingNow); return; }
  if(a==='switch'){ const cur=S.family.active[b.id]; if(cur) Store.fam({active:{[b.id]:Object.assign({},cur,{side:el.dataset.side,switched:true})}}); render(); return; }
  if(a==='tbfix'){ S.tbFix=S.tbFix===el.dataset.kind?null:el.dataset.kind; render(); return; }
  if(a==='finish'){ const cur=S.family.active[b.id]; if(!cur) return; const ago=Math.max(0,+el.dataset.ago||0), mins=Math.max(1,Math.round((Date.now()-ago*60000-cur.start)/60000)); S.tbFix=null;
-  Store.addEvent({baby:b.id,type:'feed',t:cur.start,mins,side:cur.switched?'B':cur.side,last:cur.side}); Store.fam({active:{[b.id]:null}}); render(); say(S.mode==='db'?L.savedBoth:L.saved); return; }
+  Store.addEvent({baby:b.id,type:'feed',t:cur.start,mins,side:cur.switched?'B':cur.side,last:cur.side}); Store.fam({active:{[b.id]:null}}); Push.cancel(b.id); render(); say(S.mode==='db'?L.savedBoth:L.saved); return; }
  if(a==='taste'){ const pf=(S.family.prefs||{}).feedingStyle; openSheet({mode:'taste',type:'taste',food:el.dataset.food,liked:'yes',style:S.foodStyle||(pf==='blw'?'blw':'mashed'),reaction:false,reactionTypes:[],note:''}); return; }
  if(a==='food'){ S.openFood=S.openFood===el.dataset.food?null:el.dataset.food; render(); return; }
  if(a==='untaste'){ S.confirmUntaste=el.dataset.food; render(); return; }
@@ -2460,7 +2486,7 @@ document.addEventListener('click',e=>{
   if(k==='taste'){ fsPick=null; location.hash='#foods'; setTimeout(()=>say(F.tasteTip),150); return; }
   const now=Date.now(); fsPick=null;
   if(k==='sleep'){ Store.fam({sleep:{[b.id]:{start:now,by:S.me||null}}}); fsCelebrate(F.started); render(); return; }
-  if(k==='feed'){ Store.fam({active:{[b.id]:{side:x,start:now,by:S.me||null,first:x}}}); fsCelebrate(F.started);
+  if(k==='feed'){ Store.fam({active:{[b.id]:{side:x,start:now,by:S.me||null,first:x}}}); Push.schedule(b.id,now); fsCelebrate(F.started);
    if(location.hash!=='#today') location.hash='#today';
    setTimeout(()=>{ say(F.tip); const cc=document.querySelector('.circle'); if(cc){ cc.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); cc.classList.add('pulse'); setTimeout(()=>{ const c2=document.querySelector('.circle'); if(c2) c2.classList.remove('pulse'); },3200); } },150);
    return; }

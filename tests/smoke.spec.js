@@ -334,6 +334,33 @@ test('forgotten timer: "I finished earlier" lets her pick how long ago, and save
 });
 
 
+test('timer reminder: asks once on the running nursing bar, turning it on shows the reminder is on', async ({ page }, info) => {
+  test.skip(info.project.name === 'iphone-safari', 'on iPhone the app must be installed first, so the ask is hidden in the browser');
+  await page.addInitScript(() => {
+    let perm = 'default';
+    Object.defineProperty(Notification, 'permission', { get: () => perm });
+    Notification.requestPermission = async () => { perm = 'granted'; return 'granted'; };
+    const sub = { endpoint: 'https://push.example.test/' + 'a'.repeat(40), toJSON() { return { endpoint: this.endpoint, keys: { p256dh: 'p'.repeat(40), auth: 'a'.repeat(16) } }; }, unsubscribe: async () => true };
+    const reg = { pushManager: { getSubscription: async () => null, subscribe: async () => sub } };
+    navigator.serviceWorker.register = async () => reg;
+    Object.defineProperty(navigator.serviceWorker, 'ready', { get: () => Promise.resolve(reg) });
+  });
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_EMPTY }));
+  await page.goto('/#home');
+  await page.locator('[data-act="firststep"][data-v="feed"]').click();
+  await page.locator('[data-act="firststep"][data-v="feed:L"]').click();
+  await page.evaluate(() => { location.hash = '#home'; });
+  const bar = page.locator('.timer-bar');
+  await expect(bar).toBeVisible();
+  await expect(bar.locator('[data-act="pushon"]')).toBeVisible();
+  await bar.locator('[data-act="pushon"]').click();
+  await expect(page.locator('.timer-bar .tb-push')).toContainText('45');
+  await expect(page.locator('.timer-bar [data-act="pushoff"]')).toBeVisible();
+  await expectNoErrors(page, errors, 'timer reminder');
+});
+
+
 test('feedback request: shown once more to active users even after earlier closes, gone after X', async ({ page }) => {
   const errors = await setup(page, { fresh: false });
   await page.addInitScript(() => { try { localStorage.setItem('gp-fb', JSON.stringify({ closed: 2, at: Date.now() })); } catch (e) {} });
