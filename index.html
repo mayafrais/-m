@@ -393,6 +393,10 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 .tb-clock{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
 .tb-btn{min-height:56px;font-size:1.1rem}
 .tb-hint{margin:0;text-align:center;opacity:.85}
+.tb-long{margin:0;text-align:center;font-weight:600}
+.tb-fix{align-self:center;min-height:44px}
+.tb-ago{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tb-ago .chip{min-height:44px;padding:0 14px}
 </style>
 </head>
 <body>
@@ -1447,15 +1451,18 @@ function homeDayCard(b){
 
 // ---------- big bar on Home while a sleep or nursing timer is running ----------
 const TB={
- he:{sleep:(n)=>(n?n+' ישן/ה':'ישן/ה')+' כבר',feed:'הנקה בעיצומה',wake:'התעורר/ה ✓',done:'סיימנו ✓',hint:'לחיצה אחת שומרת את הרישום'},
- en:{sleep:(n)=>(n||'Baby')+' has been asleep for',feed:'Nursing now',wake:'Woke up ✓',done:'Finished ✓',hint:'One tap saves the entry'},
- ar:{sleep:(n)=>(n?n+' نائم منذ':'نائم منذ'),feed:'الرضاعة جارية',wake:'استيقظ ✓',done:'انتهينا ✓',hint:'لمسة واحدة تحفظ التسجيل'}
+ he:{sleep:(n)=>(n?n+' ישן/ה':'ישן/ה')+' כבר',feed:'הנקה בעיצומה',wake:'התעורר/ה ✓',done:'סיימנו ✓',hint:'לחיצה אחת שומרת את הרישום',long:'הטיימר רץ הרבה זמן. שכחת לעצור?',fix:'סיימתי קודם, לתקן שעה',fixT:'מתי סיימת?',ago:m=>m<60?'לפני '+m+' דקות':'לפני שעה',now:'עכשיו'},
+ en:{sleep:(n)=>(n||'Baby')+' has been asleep for',feed:'Nursing now',wake:'Woke up ✓',done:'Finished ✓',hint:'One tap saves the entry',long:'This timer has been running a long time. Forgot to stop it?',fix:'I finished earlier, fix the time',fixT:'When did you finish?',ago:m=>m<60?m+' min ago':'1 hour ago',now:'Now'},
+ ar:{sleep:(n)=>(n?n+' نائم منذ':'نائم منذ'),feed:'الرضاعة جارية',wake:'استيقظ ✓',done:'انتهينا ✓',hint:'لمسة واحدة تحفظ التسجيل',long:'المؤقت يعمل منذ وقت طويل. هل نسيتِ إيقافه؟',fix:'انتهيتُ قبل ذلك، تصحيح الوقت',fixT:'متى انتهيتِ؟',ago:m=>m<60?'قبل '+m+' دقيقة':'قبل ساعة',now:'الآن'}
 };
 function timerBars(b){
  const X=TB[S.lang]||TB.he, act=(S.family.active||{})[b.id], sl=(S.family.sleep||{})[b.id]; let h='';
- const bar=(title,attr,start,act2,btn,ic)=>'<section class="card timer-bar" aria-label="'+esc(title)+'"><div class="tb-top"><span class="tb-ic" aria-hidden="true">'+ic+'</span><span class="tb-t">'+esc(title)+'</span><span class="tb-clock" '+attr+'>'+clock(start)+'</span></div><button type="button" class="btn block tb-btn" data-act="'+act2+'">'+esc(btn)+'</button><p class="small tb-hint">'+esc(X.hint)+'</p></section>';
- if(sl) h+=bar(X.sleep(b.name||''),'data-timer-hs',sl.start,'sleep',X.wake,'😴');
- if(act) h+=bar(X.feed,'data-timer-hf',act.start,'finish',X.done,'🤱');
+ const bar=(kind,title,attr,start,act2,btn,ic,longMs)=>{ const long=Date.now()-start>longMs, open=S.tbFix===kind;
+  return '<section class="card timer-bar" aria-label="'+esc(title)+'"><div class="tb-top"><span class="tb-ic" aria-hidden="true">'+ic+'</span><span class="tb-t">'+esc(title)+'</span><span class="tb-clock" '+attr+'>'+clock(start)+'</span></div>'+(long?'<p class="small tb-long" role="status">'+esc(X.long)+'</p>':'')+'<button type="button" class="btn block tb-btn" data-act="'+act2+'">'+esc(btn)+'</button><p class="small tb-hint">'+esc(X.hint)+'</p>'+
+  '<button type="button" class="btn ghost tb-fix" data-act="tbfix" data-kind="'+kind+'" aria-expanded="'+(open?'true':'false')+'">'+esc(X.fix)+'</button>'+
+  (open?'<div class="tb-ago" role="group" aria-label="'+esc(X.fixT)+'">'+[5,10,20,30,60].map(m=>'<button type="button" class="chip" data-act="'+act2+'" data-ago="'+m+'">'+esc(X.ago(m))+'</button>').join('')+'</div>':'')+'</section>'; };
+ if(sl) h+=bar('sleep',X.sleep(b.name||''),'data-timer-hs',sl.start,'sleep',X.wake,'😴',12*3600000);
+ if(act) h+=bar('feed',X.feed,'data-timer-hf',act.start,'finish',X.done,'🤱',60*60000);
  return h;
 }
 function viewHome(){
@@ -2116,7 +2123,7 @@ function viewAdmin(){
  if(!S.adminLoading&&(!S.adminAt||Date.now()-S.adminAt>15000)) setTimeout(loadAdmin,0);
  if(!window.__adminTimer) window.__adminTimer=setInterval(()=>{ if(S.view==='admin'&&!document.hidden){ loadAdmin(true); if(S.admUser) loadAdmUser(S.admUser); } else if(S.view!=='admin'){ clearInterval(window.__adminTimer); window.__adminTimer=null; } },60000);
  const A=S.admin, nf=n=>Number(n||0).toLocaleString('he-IL'), pc=(a,b)=>b?Math.round(a/b*100):0;
- const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+ const dt=v=>v?new Date(v).toLocaleString('he-IL',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):'—', dtf=v=>v?new Date(v).toLocaleString('he-IL',{weekday:'long',day:'numeric',month:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
  const ago=v=>{ if(!v) return '—'; const m=(Date.now()-new Date(v))/6e4; return m<60?'לפני '+Math.max(1,Math.round(m))+' דק׳':m<1440?'לפני '+Math.round(m/60)+' ש׳':'לפני '+Math.round(m/1440)+' ימים'; };
  const ex=!!ls.get('gp-adm-ex',false);
  const head='<header class="adm-head"><div><a class="link" href="#home">'+esc(t().back)+'</a><h1>לוח נתונים</h1>'+(A?'<p class="small muted">עודכן '+esc(dt(A.generated_at))+' · מתרענן לבד כל דקה · רק את רואה את המסך הזה</p>':'')+'</div>'+
@@ -2236,7 +2243,7 @@ function viewAdmin(){
  const contacts='<section class="card adm-card" id="adm-contact"><h2>פניות אלייך מ"נעים להכיר" ('+nf(cts.length)+')</h2>'+(cts.length?'<ul class="list">'+cts.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.role?' · '+esc(f.role):'')+(f.signed_in?' · משתמש/ת רשום/ה':'')+'</p><p style="white-space:pre-wrap">'+esc(f.message||'')+'</p>'+(f.contact?'<p class="small">לחזור אל: <span dir="auto">'+esc(f.contact)+'</span></p>':'<p class="small muted">לא השאירו פרטים לחזרה</p>')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין פניות. הן יגיעו לכאן מהמסך "נעים להכיר" באפליקציה.</p>')+'</section>';
  const SECL={today:'הנקה ומעקב',foods:'טעימות',routine:'סדר יום ושינה',dev:'התפתחות',family:'משפחה ושיתוף',about:'נעים להכיר'}, secAvg=(F.sections||[]);
  const secCard=secAvg.length?'<section class="card adm-card" id="adm-sec"><h2>דירוג לכל חלק באפליקציה</h2><p class="small muted">ממוצע של הדירוגים (1 עד 5) שנתנו המשתמשות לכל חלק.</p><div class="uwrap" tabindex="0" role="region" aria-label="דירוג לכל חלק"><table class="utable"><caption class="sr">דירוג לכל חלק באפליקציה</caption><thead><tr><th scope="col">חלק</th><th scope="col">ממוצע</th><th scope="col">מספר דירוגים</th></tr></thead><tbody>'+secAvg.map(x=>'<tr><th scope="row" style="text-align:right;font-weight:600">'+esc(SECL[x.k]||x.k)+'</th><td>'+esc(String(x.avg))+' ★</td><td>'+nf(x.n)+'</td></tr>').join('')+'</tbody></table></div></section>':'';
- const fb=card('adm-fb','משובים ('+nf(fbi.length)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p class="small muted">'+esc(dt(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
+ const fb=card('adm-fb','משובים ('+nf(fbi.length)+(F.avg?' · ממוצע '+F.avg+' מתוך 5':'')+')',(fbi.length?'<button type="button" class="btn ghost" data-act="admcsv" data-v="feedback" style="align-self:flex-start">ייצוא משובים (CSV)</button><ul class="list">'+fbi.map(f=>'<li style="display:block"><p><b>'+(f.name||f.email?esc(f.name||'')+(f.name&&f.email?' · ':'')+'<span dir="auto">'+esc(f.email||'')+'</span>':(f.signed_in?'משתמש/ת רשום/ה':'ללא חשבון'))+'</b></p><p class="small muted">'+esc(dtf(f.created_at))+(f.rating?' · '+'★'.repeat(f.rating)+'☆'.repeat(5-f.rating):'')+(f.role?' · '+esc(f.role):'')+'</p>'+
   (f.section_ratings&&typeof f.section_ratings==='object'?'<p class="small">'+Object.keys(f.section_ratings).map(k=>esc(SECL[k]||k)+': '+'★'.repeat(+f.section_ratings[k]||0)).join(' · ')+'</p>':'')+(f.liked?'<p><b>מה אהבו:</b> '+esc(f.liked)+'</p>':'')+(f.improve?'<p><b>מה לשפר:</b> '+esc(f.improve)+'</p>':'')+(f.contact?'<p class="small">ליצירת קשר: <span dir="auto">'+esc(f.contact)+'</span></p>':'')+'</li>').join('')+'</ul>':'<p class="small muted">עדיין אין משובים. הם מגיעים מטופס המשוב בדף הנחיתה.</p>'),'');
  return head+people+contacts+secCard+sources+'<h2 class="adm-all" id="adm-all">כל הנתונים</h2>'+over+'<div class="adm-grid">'+daily+funnel+ret+coh+feats+scr+heat+content+tech+errs+'</div>'+users+fb+
   '<p class="note">"פעילים" = תיעדו משהו או פתחו את האפליקציה כשהם מחוברים. משתמשות שעובדות בלי חשבון לא נספרות. מדידת המסכים והמכשירים פועלת רק אצל משתמשים מחוברים.</p>';
@@ -2414,7 +2421,7 @@ document.addEventListener('click',e=>{
  if(a==='admcopy'){ const v=el.dataset.v; const done=()=>{ el.textContent='הועתק ✓'; say('הקישור הועתק'); setTimeout(()=>{ el.textContent='העתקה'; },2000); }; try{ navigator.clipboard.writeText(v).then(done,()=>{ prompt('העתיקי את הקישור:',v); }); }catch(e){ prompt('העתיקי את הקישור:',v); } return; }
  if(a==='admex'){ ls.set('gp-adm-ex',!!el.checked); loadAdmin(true); return; }
  if(a==='admjump'){ const t2=document.getElementById(el.dataset.v); if(t2) t2.scrollIntoView({behavior:'smooth',block:'start'}); return; }
- if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','דירוג לחלקים':f.section_ratings?Object.keys(f.section_ratings).map(k=>k+'='+f.section_ratings[k]).join(' '):'','ליצירת קשר':f.contact||''}))); return; }
+ if(a==='admcsv'){ const A=S.admin||{}; if(el.dataset.v==='users') admCsv('users.csv',(A.users||[]).map(u=>({'שם':u.name||'','אימייל':u.email||'','סטטוס':admStatus(u)[0],'הצטרפו':u.signed_up,'נראו לאחרונה':u.last_seen||'','ימים פעילים':u.days_active,'רישומים':u.events,'במשפחה':u.family_size,'תינוקות':u.babies,'מכשיר':u.platform||'','כאפליקציה':u.installed?'כן':'','שפה':u.lang||''}))); else admCsv('feedback.csv',((S.adminFb||{}).items||[]).map(f=>({'תאריך':f.created_at,'שם':f.name||'','אימייל':f.email||'','דירוג':f.rating||'','מי':f.role||'','מה אהבו':f.liked||'','מה לשפר':f.improve||'','דירוג לחלקים':f.section_ratings?Object.keys(f.section_ratings).map(k=>k+'='+f.section_ratings[k]).join(' '):'','ליצירת קשר':f.contact||''}))); return; }
  if(a==='hday'){ S.histDay=Number(el.dataset.v); S.confirmDel=null; render(); return; }
  if(a==='rage'){ S.routineAge=Number(el.dataset.v); render(); return; }
  if(a==='devnow'){ S.devAge=null; render(); return; }
@@ -2426,7 +2433,8 @@ document.addEventListener('click',e=>{
  if(!b) return;
  if(a==='start'){ Store.fam({active:{[b.id]:{side:el.dataset.side,start:Date.now(),by:S.me||null,first:el.dataset.side}}}); render(); say(L.nursingNow); return; }
  if(a==='switch'){ const cur=S.family.active[b.id]; if(cur) Store.fam({active:{[b.id]:Object.assign({},cur,{side:el.dataset.side,switched:true})}}); render(); return; }
- if(a==='finish'){ const cur=S.family.active[b.id]; if(!cur) return; const mins=Math.max(1,Math.round((Date.now()-cur.start)/60000));
+ if(a==='tbfix'){ S.tbFix=S.tbFix===el.dataset.kind?null:el.dataset.kind; render(); return; }
+ if(a==='finish'){ const cur=S.family.active[b.id]; if(!cur) return; const ago=Math.max(0,+el.dataset.ago||0), mins=Math.max(1,Math.round((Date.now()-ago*60000-cur.start)/60000)); S.tbFix=null;
   Store.addEvent({baby:b.id,type:'feed',t:cur.start,mins,side:cur.switched?'B':cur.side,last:cur.side}); Store.fam({active:{[b.id]:null}}); render(); say(S.mode==='db'?L.savedBoth:L.saved); return; }
  if(a==='taste'){ const pf=(S.family.prefs||{}).feedingStyle; openSheet({mode:'taste',type:'taste',food:el.dataset.food,liked:'yes',style:S.foodStyle||(pf==='blw'?'blw':'mashed'),reaction:false,reactionTypes:[],note:''}); return; }
  if(a==='food'){ S.openFood=S.openFood===el.dataset.food?null:el.dataset.food; render(); return; }
@@ -2472,7 +2480,7 @@ document.addEventListener('click',e=>{
  if(a==='fbsend'){ sendFeedback(); return; }
  if(a==='quick'){ const ty=el.dataset.type; openSheet({mode:'now',type:ty}); return; }
  if(a==='sleep'){ const s=(S.family.sleep||{})[b.id];
-  if(s){ const mins=Math.max(1,Math.round((Date.now()-s.start)/60000)); Store.addEvent({baby:b.id,type:'sleep',t:s.start,mins}); Store.fam({sleep:{[b.id]:null}}); say(L.saved); }
+  if(s){ const ago=Math.max(0,+el.dataset.ago||0), mins=Math.max(1,Math.round((Date.now()-ago*60000-s.start)/60000)); S.tbFix=null; Store.addEvent({baby:b.id,type:'sleep',t:s.start,mins}); Store.fam({sleep:{[b.id]:null}}); say(L.saved); }
   else Store.fam({sleep:{[b.id]:{start:Date.now(),by:S.me||null}}});
   render(); return; }
  if(a==='delask'){ S.confirmDel=el.dataset.id; render(); return; }

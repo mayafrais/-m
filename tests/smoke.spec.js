@@ -317,6 +317,23 @@ test('running timer: a big bar on home, one tap saves the sleep, and the message
 });
 
 
+test('forgotten timer: "I finished earlier" lets her pick how long ago, and saves the entry', async ({ page }) => {
+  const errors = await setup(page, { fresh: false });
+  await page.route('**/vendor/sb/supabase.js', r => r.fulfill({ status: 200, contentType: 'application/javascript', body: MOCK_EMPTY }));
+  await page.goto('/#home');
+  await page.locator('[data-act="firststep"][data-v="sleep"]').click();
+  const bar = page.locator('.timer-bar');
+  await expect(bar).toBeVisible();
+  await expect(bar.locator('.tb-ago')).toHaveCount(0);
+  await bar.locator('.tb-fix').click();
+  await expect(bar.locator('.tb-ago .chip')).toHaveCount(5);
+  await bar.locator('.tb-ago .chip').first().click();
+  await expect(page.locator('.timer-bar')).toHaveCount(0);
+  await expect(page.locator('.home-day')).toContainText('שינה');
+  await expectNoErrors(page, errors, 'forgotten timer');
+});
+
+
 test('feedback request: shown once more to active users even after earlier closes, gone after X', async ({ page }) => {
   const errors = await setup(page, { fresh: false });
   await page.addInitScript(() => { try { localStorage.setItem('gp-fb', JSON.stringify({ closed: 2, at: Date.now() })); } catch (e) {} });
