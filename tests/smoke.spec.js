@@ -352,8 +352,9 @@ test('timer reminder: asked on the nursing page (not on home), turning it on sho
   await page.locator('[data-act="firststep"][data-v="feed:L"]').click();
   await expect(page).toHaveURL(/#today/);
   const feed = page.locator('section.feed');
-  await expect(feed.locator('[data-act="pushon"]')).toBeVisible();
-  await feed.locator('[data-act="pushon"]').click();
+  await expect(page.locator('section.push-card')).toBeVisible();
+  await page.locator('section.push-card [data-act="pushon"]').click();
+  await expect(page.locator('section.push-card')).toHaveCount(0);
   await expect(page.locator('section.feed .tb-push')).toContainText('45');
   await expect(page.locator('section.feed [data-act="pushoff"]')).toBeVisible();
   await page.evaluate(() => { location.hash = '#home'; });

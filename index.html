@@ -393,6 +393,13 @@ textarea{width:100%;min-height:120px;border-radius:14px;border:1px solid var(--l
 .tb-clock{font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
 .tb-btn{min-height:56px;font-size:1.1rem}
 .tb-hint{margin:0;text-align:center;opacity:.85}
+.push-card{background:var(--dawn-soft);color:var(--dawn-text);border:2px solid var(--dawn-text);gap:10px;align-items:center;text-align:center}
+.pc-top{display:flex;align-items:center;justify-content:center;gap:10px}
+.pc-ic{font-size:1.8rem}
+.pc-t{margin:0;font-size:1.2rem}
+.pc-tx{margin:0}
+.pc-btn{min-height:56px;font-size:1.1rem}
+.pc-no{align-self:center;min-height:44px}
 .tb-push{margin:0;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}
 .tb-push p{margin:0}
 .tb-pbtn{min-height:44px}
@@ -862,7 +869,7 @@ function viewToday(){
      :'<button type="button" class="icon-btn" data-act="delask" data-id="'+esc(e.id)+'" aria-label="'+esc(L.del+': '+evText(e)+' '+hhmm(e.t))+'">'+IC.trash+'</button>')+'</li>';
  }).join('')+'</ul>':'<p class="empty">'+esc(hd?L.nothingDay:L.nothingToday)+'</p>';
  return headerHTML(L.feeding,dateLine())+
- (S.mode==='local'?'<p class="banner">'+esc(L.local)+'</p>':'')+
+ (S.mode==='local'?'<p class="banner">'+esc(L.local)+'</p>':'')+pushCard()+
  ((()=>{ const dd=ageWeeks(baby()); return dd!=null&&dd<15&&S.lang==='he'?'<a class="opt" href="#firstdays" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">🌱</span><span class="opt-tx"><span class="opt-t">הימים הראשונים להנקה</span><span class="opt-h">קולוסטרום, כמויות, חיתולים ומה נורמלי</span></span></a>':''; })())+
  '<section class="feed" aria-label="'+esc(L.feeding)+'"><p class="muted" aria-live="polite" style="text-align:center">'+esc(status)+'</p><div class="circle">'+half('L')+half('R')+'</div>'+
  (act?'<button type="button" class="btn ink" style="width:min(256px,72vw)" data-act="finish">'+esc(L.finish)+'</button>':'<button type="button" class="link" data-act="past">'+esc(L.forgot)+'</button>')+pushLine(TB[S.lang]||TB.he)+'</section>'+
@@ -1454,14 +1461,18 @@ function homeDayCard(b){
 
 // ---------- big bar on Home while a sleep or nursing timer is running ----------
 const TB={
- he:{sleep:(n)=>(n?n+' ישן/ה':'ישן/ה')+' כבר',feed:'הנקה בעיצומה',wake:'התעורר/ה ✓',done:'סיימנו ✓',hint:'לחיצה אחת שומרת את הרישום',long:'הטיימר רץ הרבה זמן. שכחת לעצור?',fix:'סיימתי קודם, לתקן שעה',fixT:'מתי סיימת?',pAsk:'רוצה שנזכיר לך אם הטיימר נשאר פתוח? נשלח התראה אחרי 45 דקות.',pOn:'🔔 תזכורת פעילה: נשלח התראה אחרי 45 דקות',pEnable:'כן, להפעיל תזכורת',pNo:'לא עכשיו',pOff:'כיבוי',pDone:'התזכורת הופעלה',pFail:'לא הצלחנו להפעיל. אפשר לאשר התראות בהגדרות המכשיר ולנסות שוב',ago:m=>m<60?'לפני '+m+' דקות':'לפני שעה',now:'עכשיו'},
- en:{sleep:(n)=>(n||'Baby')+' has been asleep for',feed:'Nursing now',wake:'Woke up ✓',done:'Finished ✓',hint:'One tap saves the entry',long:'This timer has been running a long time. Forgot to stop it?',fix:'I finished earlier, fix the time',fixT:'When did you finish?',pAsk:'Want a reminder if the timer is left running? We will send a notification after 45 minutes.',pOn:'🔔 Reminder on: a notification after 45 minutes',pEnable:'Yes, turn on the reminder',pNo:'Not now',pOff:'Turn off',pDone:'Reminder turned on',pFail:'Could not turn it on. You can allow notifications in your device settings and try again',ago:m=>m<60?m+' min ago':'1 hour ago',now:'Now'},
- ar:{sleep:(n)=>(n?n+' نائم منذ':'نائم منذ'),feed:'الرضاعة جارية',wake:'استيقظ ✓',done:'انتهينا ✓',hint:'لمسة واحدة تحفظ التسجيل',long:'المؤقت يعمل منذ وقت طويل. هل نسيتِ إيقافه؟',fix:'انتهيتُ قبل ذلك، تصحيح الوقت',fixT:'متى انتهيتِ؟',pAsk:'هل تريدين تذكيرًا إذا بقي المؤقت يعمل؟ سنرسل إشعارًا بعد 45 دقيقة.',pOn:'🔔 التذكير مفعّل: إشعار بعد 45 دقيقة',pEnable:'نعم، فعّلي التذكير',pNo:'ليس الآن',pOff:'إيقاف',pDone:'تم تفعيل التذكير',pFail:'تعذّر التفعيل. يمكنك السماح بالإشعارات من إعدادات الجهاز والمحاولة مرة أخرى',ago:m=>m<60?'قبل '+m+' دقيقة':'قبل ساعة',now:'الآن'}
+ he:{sleep:(n)=>(n?n+' ישן/ה':'ישן/ה')+' כבר',feed:'הנקה בעיצומה',wake:'התעורר/ה ✓',done:'סיימנו ✓',hint:'לחיצה אחת שומרת את הרישום',long:'הטיימר רץ הרבה זמן. שכחת לעצור?',fix:'סיימתי קודם, לתקן שעה',fixT:'מתי סיימת?',pTitle:'תזכורת אם שוכחים לעצור',pAsk:'רוצה שנזכיר לך אם הטיימר נשאר פתוח? נשלח התראה אחרי 45 דקות.',pOn:'🔔 תזכורת פעילה: נשלח התראה אחרי 45 דקות',pEnable:'כן, להפעיל תזכורת',pNo:'לא עכשיו',pOff:'כיבוי',pDone:'התזכורת הופעלה',pFail:'לא הצלחנו להפעיל. אפשר לאשר התראות בהגדרות המכשיר ולנסות שוב',ago:m=>m<60?'לפני '+m+' דקות':'לפני שעה',now:'עכשיו'},
+ en:{sleep:(n)=>(n||'Baby')+' has been asleep for',feed:'Nursing now',wake:'Woke up ✓',done:'Finished ✓',hint:'One tap saves the entry',long:'This timer has been running a long time. Forgot to stop it?',fix:'I finished earlier, fix the time',fixT:'When did you finish?',pTitle:'A reminder if you forget to stop',pAsk:'Want a reminder if the timer is left running? We will send a notification after 45 minutes.',pOn:'🔔 Reminder on: a notification after 45 minutes',pEnable:'Yes, turn on the reminder',pNo:'Not now',pOff:'Turn off',pDone:'Reminder turned on',pFail:'Could not turn it on. You can allow notifications in your device settings and try again',ago:m=>m<60?m+' min ago':'1 hour ago',now:'Now'},
+ ar:{sleep:(n)=>(n?n+' نائم منذ':'نائم منذ'),feed:'الرضاعة جارية',wake:'استيقظ ✓',done:'انتهينا ✓',hint:'لمسة واحدة تحفظ التسجيل',long:'المؤقت يعمل منذ وقت طويل. هل نسيتِ إيقافه؟',fix:'انتهيتُ قبل ذلك، تصحيح الوقت',fixT:'متى انتهيتِ؟',pTitle:'تذكير إذا نسيتِ الإيقاف',pAsk:'هل تريدين تذكيرًا إذا بقي المؤقت يعمل؟ سنرسل إشعارًا بعد 45 دقيقة.',pOn:'🔔 التذكير مفعّل: إشعار بعد 45 دقيقة',pEnable:'نعم، فعّلي التذكير',pNo:'ليس الآن',pOff:'إيقاف',pDone:'تم تفعيل التذكير',pFail:'تعذّر التفعيل. يمكنك السماح بالإشعارات من إعدادات الجهاز والمحاولة مرة أخرى',ago:m=>m<60?'قبل '+m+' دقيقة':'قبل ساعة',now:'الآن'}
 };
 function pushLine(X){
  if(Push.on()) return '<p class="small tb-push">'+esc(X.pOn)+' <button type="button" class="chip tb-pbtn" data-act="pushoff">'+esc(X.pOff)+'</button></p>';
- if(Push.canAsk()) return '<div class="tb-push"><p class="small">'+esc(X.pAsk)+'</p><div class="tb-ago"><button type="button" class="btn tb-pbtn" data-act="pushon">'+esc(X.pEnable)+'</button><button type="button" class="chip tb-pbtn" data-act="pushno">'+esc(X.pNo)+'</button></div></div>';
  return '';
+}
+function pushCard(){
+ if(!Push.canAsk()) return '';
+ const X=TB[S.lang]||TB.he;
+ return '<section class="card push-card" aria-label="'+esc(X.pTitle)+'"><div class="pc-top"><span class="pc-ic" aria-hidden="true">🔔</span><h2 class="pc-t">'+esc(X.pTitle)+'</h2></div><p class="pc-tx">'+esc(X.pAsk)+'</p><button type="button" class="btn block pc-btn" data-act="pushon">'+esc(X.pEnable)+'</button><button type="button" class="chip pc-no" data-act="pushno">'+esc(X.pNo)+'</button></section>';
 }
 function timerBars(b){
  const X=TB[S.lang]||TB.he, act=(S.family.active||{})[b.id], sl=(S.family.sleep||{})[b.id]; let h='';
