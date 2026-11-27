@@ -865,7 +865,7 @@ function viewToday(){
  (S.mode==='local'?'<p class="banner">'+esc(L.local)+'</p>':'')+
  ((()=>{ const dd=ageWeeks(baby()); return dd!=null&&dd<15&&S.lang==='he'?'<a class="opt" href="#firstdays" style="text-decoration:none"><span class="opt-ic" aria-hidden="true">🌱</span><span class="opt-tx"><span class="opt-t">הימים הראשונים להנקה</span><span class="opt-h">קולוסטרום, כמויות, חיתולים ומה נורמלי</span></span></a>':''; })())+
  '<section class="feed" aria-label="'+esc(L.feeding)+'"><p class="muted" aria-live="polite" style="text-align:center">'+esc(status)+'</p><div class="circle">'+half('L')+half('R')+'</div>'+
- (act?'<button type="button" class="btn ink" style="width:min(256px,72vw)" data-act="finish">'+esc(L.finish)+'</button>':'<button type="button" class="link" data-act="past">'+esc(L.forgot)+'</button>')+'</section>'+
+ (act?'<button type="button" class="btn ink" style="width:min(256px,72vw)" data-act="finish">'+esc(L.finish)+'</button>':'<button type="button" class="link" data-act="past">'+esc(L.forgot)+'</button>')+pushLine(TB[S.lang]||TB.he)+'</section>'+
  '<nav class="quick" aria-label="'+esc(L.quick)+'">'+
   qb('bottle',L.bottle)+qb('pump',L.pump)+qb('diaper',L.diaper)+
   '<button type="button" class="qbtn" data-act="sleep" aria-pressed="'+(!!sl)+'"><span class="ic">'+IC.sleep+'</span>'+esc(sl?L.sleeping+' '+'':L.sleep)+(sl?'<span data-timer-s style="font-variant-numeric:tabular-nums">'+clock(sl.start)+'</span>':'')+'</button>'+
@@ -1470,7 +1470,7 @@ function timerBars(b){
   '<button type="button" class="btn ghost tb-fix" data-act="tbfix" data-kind="'+kind+'" aria-expanded="'+(open?'true':'false')+'">'+esc(X.fix)+'</button>'+
   (open?'<div class="tb-ago" role="group" aria-label="'+esc(X.fixT)+'">'+[5,10,20,30,60].map(m=>'<button type="button" class="chip" data-act="'+act2+'" data-ago="'+m+'">'+esc(X.ago(m))+'</button>').join('')+'</div>':'')+'</section>'; };
  if(sl) h+=bar('sleep',X.sleep(b.name||''),'data-timer-hs',sl.start,'sleep',X.wake,'😴',12*3600000);
- if(act) h+=bar('feed',X.feed,'data-timer-hf',act.start,'finish',X.done,'🤱',60*60000).replace(/<\/section>$/,pushLine(X)+'</section>');
+ if(act) h+=bar('feed',X.feed,'data-timer-hf',act.start,'finish',X.done,'🤱',60*60000);
  return h;
 }
 function viewHome(){

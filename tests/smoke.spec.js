@@ -334,7 +334,7 @@ test('forgotten timer: "I finished earlier" lets her pick how long ago, and save
 });
 
 
-test('timer reminder: asks once on the running nursing bar, turning it on shows the reminder is on', async ({ page }, info) => {
+test('timer reminder: asked on the nursing page (not on home), turning it on shows the reminder is on', async ({ page }, info) => {
   test.skip(info.project.name === 'iphone-safari', 'on iPhone the app must be installed first, so the ask is hidden in the browser');
   await page.addInitScript(() => {
     let perm = 'default';
@@ -350,13 +350,15 @@ test('timer reminder: asks once on the running nursing bar, turning it on shows 
   await page.goto('/#home');
   await page.locator('[data-act="firststep"][data-v="feed"]').click();
   await page.locator('[data-act="firststep"][data-v="feed:L"]').click();
+  await expect(page).toHaveURL(/#today/);
+  const feed = page.locator('section.feed');
+  await expect(feed.locator('[data-act="pushon"]')).toBeVisible();
+  await feed.locator('[data-act="pushon"]').click();
+  await expect(page.locator('section.feed .tb-push')).toContainText('45');
+  await expect(page.locator('section.feed [data-act="pushoff"]')).toBeVisible();
   await page.evaluate(() => { location.hash = '#home'; });
-  const bar = page.locator('.timer-bar');
-  await expect(bar).toBeVisible();
-  await expect(bar.locator('[data-act="pushon"]')).toBeVisible();
-  await bar.locator('[data-act="pushon"]').click();
-  await expect(page.locator('.timer-bar .tb-push')).toContainText('45');
-  await expect(page.locator('.timer-bar [data-act="pushoff"]')).toBeVisible();
+  await expect(page.locator('.timer-bar')).toBeVisible();
+  await expect(page.locator('.timer-bar [data-act="pushon"], .timer-bar [data-act="pushoff"]')).toHaveCount(0);
   await expectNoErrors(page, errors, 'timer reminder');
 });
 
